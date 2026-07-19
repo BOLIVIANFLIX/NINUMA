@@ -1,0 +1,39 @@
+---
+---
+
+<div class="cursor" id="cursor" aria-hidden="true"></div>
+
+<script>
+  const cursor = document.getElementById("cursor");
+
+  if (cursor) {
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+      cursor.remove();
+    } else {
+      let cx = 0;
+      let cy = 0;
+      let raf: number | null = null;
+
+      document.addEventListener("mousemove", (e) => {
+        cx = e.clientX;
+        cy = e.clientY;
+        if (!raf) {
+          raf = requestAnimationFrame(() => {
+            cursor.style.left = `${cx}px`;
+            cursor.style.top = `${cy}px`;
+            raf = null;
+          });
+        }
+      });
+
+      document.addEventListener("mouseleave", () => cursor.classList.add("cursor--hidden"));
+      document.addEventListener("mouseenter", () => cursor.classList.remove("cursor--hidden"));
+
+      const hoverTargets = "a, button, select, .pieza, .tilt-card, [role='button']";
+      document.querySelectorAll(hoverTargets).forEach((el) => {
+        el.addEventListener("mouseenter", () => cursor.classList.add("cursor--hover"));
+        el.addEventListener("mouseleave", () => cursor.classList.remove("cursor--hover"));
+      });
+    }
+  }
+</script>

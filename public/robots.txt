@@ -1,0 +1,14 @@
+User-agent: *
+Disallow: /confirmacion/
+
+# Bloquear crawlers de IA que no respetan llms.txt
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow:
+
+User-agent: Googlebot
+Allow: /
+
+Sitemap: https://www.ninuma.es/sitemap-index.xml

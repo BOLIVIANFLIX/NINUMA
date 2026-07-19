@@ -1,0 +1,132 @@
+---
+---
+
+<script>
+  import gsap from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+  import { SplitText } from "gsap/SplitText";
+  import Lenis from "lenis";
+
+  gsap.registerPlugin(ScrollTrigger, SplitText);
+
+  const reducedMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const reduceMotion = reducedMQ.matches;
+
+  // ---- Lenis smooth scroll, driven by GSAP's ticker so it and
+  // ScrollTrigger always agree on scroll position (no jitter/lag). ----
+  let lenis: Lenis | null = null;
+  if (!reduceMotion) {
+    lenis = new Lenis({ duration: 1.1, smoothWheel: true });
+    lenis.on("scroll", ScrollTrigger.update);
+    gsap.ticker.add((time) => lenis!.raf(time * 1000));
+    gsap.ticker.lagSmoothing(0);
+  }
+
+  // ---- React live to the user toggling reduced-motion mid-session:
+  // stop all motion and snap everything to its resting state. ----
+  reducedMQ.addEventListener("change", (e) => {
+    if (!e.matches) return;
+    lenis?.stop();
+    ScrollTrigger.getAll().forEach((st) => st.kill());
+    gsap.set(".gs-reveal, .gs-item, .split-target", { opacity: 1, y: 0 });
+  });
+
+  // ---- Header: solid backdrop once the hero has scrolled past. ----
+  const header = document.getElementById("site-header");
+  if (header) {
+    ScrollTrigger.create({
+      start: "top -80",
+      onUpdate: (self) => {
+        header.classList.toggle("bg-black/85", self.progress > 0 || self.direction === 1);
+        header.classList.toggle("backdrop-blur-sm", self.scroll() > 80);
+      },
+    });
+  }
+
+  // ---- Hero: split headline reveal on load. ----
+  const heroSplitEl = document.querySelector("#top h1");
+  const heroSub = document.querySelector("#top p.split-target");
+  document.documentElement.classList.add("split-ready");
+
+  if (reduceMotion) {
+    gsap.set([heroSplitEl, heroSub], { opacity: 1, y: 0 });
+  } else if (heroSplitEl) {
+    const split = new SplitText(heroSplitEl, { type: "chars" });
+    gsap.set(heroSplitEl, { opacity: 1 });
+    gsap.set(split.chars, { yPercent: 130, opacity: 0 });
+    gsap
+      .timeline({ delay: 0.3 })
+      .to(split.chars, {
+        yPercent: 0,
+        opacity: 1,
+        duration: 1.1,
+        ease: "power4.out",
+        stagger: 0.045,
+      })
+      .to(heroSub, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, "-=0.5");
+    gsap.set(heroSub, { y: 16 });
+  }
+
+  // ---- Generic scroll reveals for any section marked .gs-reveal ----
+  if (!reduceMotion) {
+    gsap.utils.toArray<HTMLElement>(".gs-reveal").forEach((el) => {
+      gsap.from(el, {
+        opacity: 0,
+        y: 40,
+        duration: 0.9,
+        ease: "power3.out",
+        scrollTrigger: { trigger: el, start: "top 82%" },
+      });
+    });
+
+    // Staggered lists/steps (.gs-stagger > .gs-item)
+    gsap.utils.toArray<HTMLElement>(".gs-stagger").forEach((group) => {
+      const items = group.querySelectorAll(".gs-item");
+      gsap.from(items, {
+        opacity: 0,
+        y: 24,
+        duration: 0.7,
+        ease: "power3.out",
+        stagger: 0.12,
+        scrollTrigger: { trigger: group, start: "top 80%" },
+      });
+    });
+  } else {
+    gsap.set(".gs-reveal, .gs-item", { opacity: 1, y: 0 });
+  }
+
+  // ---- Micro-interaction: tilt on the featured piece card ----
+  const tiltCard = document.querySelector<HTMLElement>(".tilt-card");
+  if (tiltCard && !reduceMotion) {
+    const rotX = gsap.quickTo(tiltCard, "rotationX", { duration: 0.5, ease: "power3.out" });
+    const rotY = gsap.quickTo(tiltCard, "rotationY", { duration: 0.5, ease: "power3.out" });
+    tiltCard.addEventListener("mousemove", (e) => {
+      const rect = tiltCard.getBoundingClientRect();
+      const px = (e.clientX - rect.left) / rect.width - 0.5;
+      const py = (e.clientY - rect.top) / rect.height - 0.5;
+      rotX(py * -8);
+      rotY(px * 8);
+    });
+    tiltCard.addEventListener("mouseleave", () => {
+      rotX(0);
+      rotY(0);
+    });
+  }
+
+  // ---- Micro-interaction: magnetic pull on outlined CTA buttons ----
+  if (!reduceMotion) {
+    document.querySelectorAll<HTMLElement>("a.rounded-full").forEach((btn) => {
+      const moveX = gsap.quickTo(btn, "x", { duration: 0.4, ease: "power3.out" });
+      const moveY = gsap.quickTo(btn, "y", { duration: 0.4, ease: "power3.out" });
+      btn.addEventListener("mousemove", (e) => {
+        const rect = btn.getBoundingClientRect();
+        moveX(((e.clientX - rect.left) / rect.width - 0.5) * 10);
+        moveY(((e.clientY - rect.top) / rect.height - 0.5) * 10);
+      });
+      btn.addEventListener("mouseleave", () => {
+        moveX(0);
+        moveY(0);
+      });
+    });
+  }
+</script>

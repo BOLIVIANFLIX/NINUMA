@@ -1,0 +1,124 @@
+---
+---
+
+<div
+  id="cookie-panel"
+  hidden
+  role="dialog"
+  aria-label="Consentimiento de cookies"
+  data-i18n-aria-label="cookies.ariaLabel"
+  aria-modal="true"
+  tabindex="-1"
+  class="fixed inset-x-4 bottom-4 z-[90] mx-auto max-w-2xl rounded-sm border border-white/10 bg-charcoal-2/95 p-6 text-sm text-white/80 shadow-2xl backdrop-blur-sm md:inset-x-auto md:right-6 md:bottom-6"
+>
+  <div id="cookie-panel-inner">
+    <p data-i18n="cookies.message">
+      Usamos cookies propias y de terceros (Google Analytics) para analizar el uso de la web y mejorar tu
+      experiencia. Puedes aceptar todas o usar solo las necesarias.
+      <a href="/cookies/" class="text-pink underline underline-offset-2" aria-label="Más información sobre nuestra política de cookies">Más información</a>
+    </p>
+    <div class="mt-4 flex flex-wrap gap-3">
+      <button
+        type="button"
+        id="cookie-accept"
+        data-i18n="cookies.accept"
+        class="rounded-full bg-pink px-5 py-2 text-xs tracking-[0.1em] text-black uppercase"
+      >
+        Aceptar todas
+      </button>
+      <button
+        type="button"
+        id="cookie-reject"
+        data-i18n="cookies.reject"
+        class="rounded-full border border-white/30 px-5 py-2 text-xs tracking-[0.1em] text-white/80 uppercase"
+      >
+        Solo necesarias
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { COOKIE_KEY, GA_ID, readConsent, writeConsent } from "../lib/cookies";
+
+  const panel = document.getElementById("cookie-panel");
+  const accept = document.getElementById("cookie-accept");
+  const reject = document.getElementById("cookie-reject");
+
+  function loadGA4() {
+    if (typeof (window as any).gtag === "function") return;
+    (window as any).dataLayer = (window as any).dataLayer || [];
+    (window as any).gtag = function () {
+      (window as any).dataLayer.push(arguments);
+    };
+    (window as any).gtag("consent", "update", { analytics_storage: "granted" });
+    (window as any).gtag("js", new Date());
+    (window as any).gtag("config", GA_ID, { send_page_view: true });
+    const s = document.createElement("script");
+    s.async = true;
+    s.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
+    document.head.appendChild(s);
+  }
+
+  function trapFocus(e: KeyboardEvent) {
+    if (e.key !== "Tab" || !panel) return;
+    const focusable = panel.querySelectorAll<HTMLElement>(
+      'button, [href], [tabindex]:not([tabindex="-1"])'
+    );
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (e.shiftKey) {
+      if (document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      }
+    } else {
+      if (document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  }
+
+  function removeTrap() {
+    document.removeEventListener("keydown", trapFocus);
+  }
+
+  function setChoice(accepted: boolean) {
+    writeConsent(accepted ? "accepted" : "rejected");
+    if (panel) panel.hidden = true;
+    if (accepted) loadGA4();
+  }
+
+  function openPanel() {
+    if (!panel) return;
+    panel.hidden = false;
+    panel.focus();
+    document.addEventListener("keydown", trapFocus);
+  }
+
+  accept?.addEventListener("click", () => {
+    removeTrap();
+    setChoice(true);
+  });
+  reject?.addEventListener("click", () => {
+    removeTrap();
+    setChoice(false);
+  });
+
+  const stored = readConsent();
+  if (stored !== null) {
+    if (panel) panel.hidden = true;
+    if (stored.value === "accepted") loadGA4();
+  } else {
+    openPanel();
+  }
+
+  // Reabrir desde el botón "Revisar mi elección" de /cookies/
+  document.addEventListener("ninuma:review-cookies", () => {
+    localStorage.removeItem(COOKIE_KEY);
+    document.addEventListener("keydown", trapFocus);
+    openPanel();
+  });
+</script>

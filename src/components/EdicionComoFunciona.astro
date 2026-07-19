@@ -1,0 +1,25 @@
+---
+const pasos = [
+  { num: "01", title: "Reserva", text: "Rellena el formulario antes del cierre. El número de unidades es limitado y no se añaden más una vez agotadas.", key: "ediciones.paso1" },
+  { num: "02", title: "Confirmación", text: "Recibirás un correo confirmando tu reserva con todos los detalles de recogida.", key: "ediciones.paso2" },
+  { num: "03", title: "Recogida", text: "Solo en el obrador. El pago se realiza en el momento de la recogida. Sin envíos.", key: "ediciones.paso3" },
+];
+---
+
+<section class="border-t border-white/10 bg-charcoal px-6 py-24 md:px-12 md:py-36" aria-labelledby="como-heading">
+  <div class="mx-auto max-w-[1440px]">
+    <div class="gs-reveal mb-16">
+      <span class="text-xs tracking-[0.14em] text-pink uppercase" data-i18n="ediciones.comoEyebrow">El proceso</span>
+      <h2 id="como-heading" class="mt-4 h2-fluid" data-i18n="ediciones.comoHeading">Así funciona<br />el encargo.</h2>
+    </div>
+    <div class="gs-stagger grid grid-cols-1 gap-px border border-white/10 bg-white/10 md:grid-cols-3" role="list" aria-label="Pasos del proceso de encargo" data-i18n-aria-label="ediciones.comoAriaLabel">
+      {pasos.map((p) => (
+        <article class="gs-item flex flex-col gap-4 bg-charcoal p-8 md:p-10" role="listitem">
+          <span class="font-display text-5xl font-light text-pink/15">{p.num}</span>
+          <h3 class="font-display text-xl" data-i18n={`${p.key}.title`}>{p.title}</h3>
+          <p class="text-sm leading-relaxed text-white/60" data-i18n={`${p.key}.text`}>{p.text}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

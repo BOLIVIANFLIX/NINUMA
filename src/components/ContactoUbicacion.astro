@@ -1,0 +1,71 @@
+---
+---
+
+<section
+  id="ubicacion"
+  aria-labelledby="ubicacion-heading"
+  class="gs-reveal border-t border-white/10 bg-charcoal px-6 py-24 md:px-12 md:py-36"
+>
+  <div class="mx-auto grid max-w-[1440px] items-center gap-12 md:grid-cols-2 md:gap-16">
+    <div class="flex flex-col gap-8">
+      <div>
+        <span class="text-xs tracking-[0.14em] text-pink uppercase" data-i18n="contacto.ubicacionEyebrow">Visitas sin cita</span>
+        <h2 id="ubicacion-heading" class="mt-4 font-display text-4xl leading-tight md:text-5xl" data-i18n="contacto.ubicacionHeading">
+          Ven a ver<br />el obrador.
+        </h2>
+      </div>
+      <div class="flex flex-col gap-6">
+        <div class="flex flex-col gap-1">
+          <span class="text-[0.58rem] font-medium tracking-[0.22em] text-pink uppercase" data-i18n="contacto.direccionLabel">Dirección</span>
+          <address class="text-sm text-white/60 not-italic">
+            Carrer de Guillem Massot, 48<br />
+            07003 Palma de Mallorca<br />
+            Islas Baleares, España
+          </address>
+        </div>
+        <div class="flex flex-col gap-1">
+          <span class="text-[0.58rem] font-medium tracking-[0.22em] text-pink uppercase" data-i18n="contacto.horarioLabel">Horario</span>
+          <p class="text-sm text-white/60">
+            Lunes a Jueves: 10:00–13:30<br />
+            Viernes: 10:30–13:30<br />
+            Sábado: 10:00–13:30<br />
+            Domingo: Cerrado
+          </p>
+        </div>
+        <div class="flex flex-col gap-1">
+          <span class="text-[0.58rem] font-medium tracking-[0.22em] text-pink uppercase" data-i18n="contacto.contactoLabel">Contacto</span>
+          <p class="text-sm text-white/60">
+            <a href="tel:+34666138465" class="hover:text-pink">+34 666 13 84 65</a><br />
+            <a href="mailto:ariadna@ninuma.es" class="hover:text-pink">ariadna@ninuma.es</a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="group relative aspect-square overflow-hidden border border-white/10 bg-charcoal-2"
+      aria-label="Mapa de ubicación del obrador NINUMÁ en Palma de Mallorca"
+      data-i18n-aria-label="contacto.mapaAria"
+    >
+      <iframe
+        src="https://maps.google.com/maps?q=Carrer+Guillem+Massot+48+Palma+de+Mallorca&z=16&output=embed"
+        title="Ubicación de NINUMÁ — Carrer de Guillem Massot, 48, Palma de Mallorca"
+        loading="lazy"
+        allowfullscreen
+        referrerpolicy="no-referrer-when-downgrade"
+        class="absolute inset-0 h-full w-full border-0 [filter:grayscale(1)_invert(1)_contrast(.85)_brightness(.7)] transition-[filter] duration-500 group-hover:[filter:grayscale(.6)_invert(1)_contrast(.9)_brightness(.8)]"
+      ></iframe>
+      <a
+        href="https://maps.app.goo.gl/SqVpRzihGBG3brtX8"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="absolute inset-x-0 bottom-0 flex items-center justify-between gap-4 border-t border-white/10 bg-black/80 px-5 py-3 backdrop-blur-sm transition-colors hover:bg-black/95"
+        aria-label="Abrir en Google Maps (se abre en nueva pestaña)"
+        data-i18n-aria-label="contacto.abrirMapsAria"
+      >
+        <span class="text-[0.62rem] tracking-[0.16em] text-white/60 uppercase">Carrer de Guillem Massot, 48 · Palma</span>
+        <span class="text-xs text-pink" data-i18n="contacto.abrirMaps">Abrir Maps →</span>
+      </a>
+    </div>
+  </div>
+</section>

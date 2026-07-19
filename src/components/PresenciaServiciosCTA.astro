@@ -1,0 +1,63 @@
+---
+const servicios = [
+  { key: "cartaExclusiva", nombre: "Carta de postre exclusiva", desc: "Diseño completo de carta de postres de temporada para tu restaurante. Piezas de autor, cambio estacional, presentación editorial.", tag: "Restauración" },
+  { key: "amenity", nombre: "Amenity de bienvenida", desc: "Pieza de pastelería en la habitación. Puede ser chocolate, pequeño surtido o una pieza de temporada. Packaging sellado, entrega diaria o semanal.", tag: "Alojamiento" },
+  { key: "cajaCheckout", nombre: "Caja de regalo en check-out", desc: "Caja personalizada con sello del hotel o de NINUMÁ. Una firma que el huésped se lleva a casa y recuerda.", tag: "Alojamiento" },
+  { key: "petitFours", nombre: "Petit fours de autor", desc: "Piezas de un bocado para acompañar café, cierre de menú o cóctel de bienvenida. Diseño visual propio, sabor sin concesiones.", tag: "Restauración · Beach club" },
+  { key: "mesaDulce", nombre: "Mesa dulce para eventos", desc: "Propuesta completa para bodas, eventos corporativos o fiestas privadas. Diseño conceptual ajustado a la identidad del anfitrión.", tag: "Eventos" },
+  { key: "tartaEncargo", nombre: "Tarta de encargo conceptual", desc: "Para eventos privados, corporativos o celebraciones con identidad propia. Sin formas estándar. Cada tarta nace de una idea, una referencia o una historia que tú traes y yo traduzco en pastelería.", tag: "Eventos" },
+  { key: "bombonesColeccion", nombre: "Bombonería colección", desc: "Colecciones de bombón de temporada o permanentes para venta en tu establecimiento o como regalo de cliente.", tag: "Retail · Alojamiento" },
+];
+---
+
+<section id="servicios-tabla" class="border-b border-white/10 px-6 py-24 md:px-12 md:py-36">
+  <div class="mx-auto max-w-[1440px]">
+    <div class="gs-reveal mb-12 md:mb-16">
+      <span class="text-xs tracking-[0.14em] text-pink uppercase" data-i18n="presencia.serviciosEyebrow">Servicios disponibles</span>
+      <h2 class="mt-4 h2-fluid" data-i18n="presencia.serviciosHeading">La oferta, clara.</h2>
+    </div>
+
+    <div class="gs-stagger flex flex-col" role="list" aria-label="Lista de servicios B2B disponibles">
+      {servicios.map((s) => (
+        <article class="gs-item grid grid-cols-1 gap-2 border-b border-white/10 py-6 md:grid-cols-[2fr_3fr_1fr] md:items-start md:gap-8" role="listitem">
+          <span class="font-display text-lg" data-i18n={`presencia.servicio_${s.key}_Nombre`}>{s.nombre}</span>
+          <p class="text-sm text-white/70" data-i18n={`presencia.servicio_${s.key}_Desc`}>{s.desc}</p>
+          <span class="text-[0.58rem] tracking-[0.18em] text-pink uppercase whitespace-nowrap" data-i18n={`presencia.servicio_${s.key}_Tag`}>{s.tag}</span>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<section id="cta-b2b" class="border-b border-white/10 bg-charcoal px-6 py-24 md:px-12 md:py-36">
+  <div class="mx-auto grid max-w-[1440px] items-center gap-10 md:grid-cols-[1fr_auto] md:gap-20">
+    <div class="gs-reveal flex flex-col gap-6">
+      <span class="text-xs tracking-[0.14em] text-pink uppercase" data-i18n="presencia.ctaEyebrow">Empezamos</span>
+      <h2 class="h2-fluid" data-i18n="presencia.ctaHeading">¿Tiene sentido<br />hablar?</h2>
+      <p class="max-w-[48ch] text-sm text-white/70" data-i18n="presencia.ctaParagraph">
+        Cuéntame brevemente tu espacio y lo que necesitas. Si encajamos, lo sabremos enseguida.
+      </p>
+      <div class="flex flex-wrap items-center gap-6">
+        <a
+          href="/contacto/?tipo=b2b"
+          class="rounded-full border border-pink px-6 py-3 text-xs tracking-[0.1em] text-pink uppercase transition-colors hover:bg-pink hover:text-black"
+          data-i18n="presencia.ctaSolicitar"
+        >
+          Solicitar propuesta
+        </a>
+        <a href="mailto:ariadna@ninuma.es" class="text-xs tracking-[0.18em] text-white/60 uppercase hover:text-pink" data-i18n="presencia.ctaEmailLink">
+          ariadna@ninuma.es →
+        </a>
+      </div>
+    </div>
+
+    <div class="gs-reveal flex flex-col gap-3">
+      <span class="text-[0.58rem] tracking-[0.22em] text-pink uppercase" data-i18n="presencia.ctaContactoDirectoLabel">Contacto directo</span>
+      <address class="flex flex-col gap-1 text-sm text-white/70 not-italic">
+        <a href="tel:+34666138465" class="text-pink hover:text-white">+34 666 13 84 65</a>
+        <a href="mailto:ariadna@ninuma.es" class="text-pink hover:text-white">ariadna@ninuma.es</a>
+        <span class="mt-1 text-xs text-white/50">Palma de Mallorca · Islas Baleares</span>
+      </address>
+    </div>
+  </div>
+</section>

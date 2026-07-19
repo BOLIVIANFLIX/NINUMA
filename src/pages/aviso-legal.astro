@@ -1,0 +1,113 @@
+---
+import LegalLayout from "../layouts/LegalLayout.astro";
+
+const sections = [
+  { id: "datos", label: "Datos identificativos", i18nKey: "legal.avisoLegalSec1Label" },
+  { id: "objeto", label: "Objeto y ámbito", i18nKey: "legal.avisoLegalSec2Label" },
+  { id: "propiedad", label: "Propiedad intelectual", i18nKey: "legal.avisoLegalSec3Label" },
+  { id: "responsabilidad", label: "Responsabilidad", i18nKey: "legal.avisoLegalSec4Label" },
+  { id: "enlaces", label: "Enlaces externos", i18nKey: "legal.avisoLegalSec5Label" },
+  { id: "legislacion", label: "Legislación aplicable", i18nKey: "legal.avisoLegalSec6Label" },
+];
+---
+
+<LegalLayout
+  title="Aviso Legal · NINUMÁ"
+  description="Aviso legal de NINUMÁ. Datos identificativos de Ariadna Salvador, condiciones de uso, propiedad intelectual y legislación aplicable conforme a la LSSI-CE."
+  path="/aviso-legal/"
+  pageTitle="Aviso Legal"
+  breadcrumbLabel="Aviso Legal"
+  dateLabel="Última actualización: junio de 2025"
+  sections={sections}
+  titleKey="legal.avisoLegalTitle"
+  breadcrumbKey="legal.avisoLegalBreadcrumb"
+  dateKey="legal.avisoLegalDate"
+>
+  <div id="datos" class="flex scroll-mt-32 flex-col gap-5">
+    <span class="text-[0.6rem] font-medium tracking-[0.2em] text-pink uppercase">01</span>
+    <h2 class="font-display text-2xl leading-tight font-light md:text-3xl" data-i18n="legal.avisoLegalS1Heading">Datos identificativos</h2>
+    <p class="text-[0.85rem] leading-[1.85] text-white/60" data-i18n="legal.avisoLegalS1Body">
+      En cumplimiento del artículo 10 de la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la
+      Información y Comercio Electrónico (LSSI-CE), se exponen a continuación los datos identificativos del titular
+      del sitio web:
+    </p>
+    <div class="border border-white/[.07] border-l-2 border-l-pink bg-charcoal px-8 py-6">
+      <p class="text-[0.82rem] leading-[1.85] text-white/60" data-i18n="legal.avisoLegalS1Box">
+        <strong class="font-medium text-pink">Titular:</strong> Ariadna Salvador<br />
+        <strong class="font-medium text-pink">Nombre comercial:</strong> NINUMÁ<br />
+        <strong class="font-medium text-pink">NIF:</strong> 43173933N<br />
+        <strong class="font-medium text-pink">Domicilio del obrador:</strong> Carrer de Guillem Massot, 48, 07003
+        Palma de Mallorca (Islas Baleares)<br />
+        <strong class="font-medium text-pink">Correo electrónico:</strong>{" "}
+        <a href="mailto:ariadna@ninuma.es" class="text-pink hover:text-white">ariadna@ninuma.es</a><br />
+        <strong class="font-medium text-pink">Teléfono:</strong>{" "}
+        <a href="tel:+34666138465" class="text-pink hover:text-white">+34 666 13 84 65</a><br />
+        <strong class="font-medium text-pink">Sitio web:</strong> www.ninuma.es
+      </p>
+    </div>
+  </div>
+
+  <div id="objeto" class="flex scroll-mt-32 flex-col gap-3">
+    <span class="text-[0.6rem] font-medium tracking-[0.2em] text-pink uppercase">02</span>
+    <h2 class="font-display text-2xl leading-tight font-light md:text-3xl" data-i18n="legal.avisoLegalS2Heading">Objeto y ámbito de aplicación</h2>
+    <p class="text-[0.85rem] leading-[1.85] text-white/60" data-i18n="legal.avisoLegalS2Body1">
+      Las presentes condiciones regulan el acceso y uso del sitio web www.ninuma.es. La navegación por este sitio
+      implica la aceptación plena de todas las disposiciones incluidas en este Aviso Legal.
+    </p>
+    <p class="text-[0.85rem] leading-[1.85] text-white/60" data-i18n="legal.avisoLegalS2Body2">
+      El sitio web tiene carácter informativo y actúa como escaparate para los productos y servicios de NINUMÁ. Los
+      encargos o reservas realizados a través de los medios de contacto de la web no conllevan pago electrónico a
+      través de la misma. Todas las transacciones económicas se formalizan directamente en el obrador (efectivo,
+      datáfono o transferencia bancaria).
+    </p>
+  </div>
+
+  <div id="propiedad" class="flex scroll-mt-32 flex-col gap-3">
+    <span class="text-[0.6rem] font-medium tracking-[0.2em] text-pink uppercase">03</span>
+    <h2 class="font-display text-2xl leading-tight font-light md:text-3xl" data-i18n="legal.avisoLegalS3Heading">Propiedad intelectual e industrial</h2>
+    <p class="text-[0.85rem] leading-[1.85] text-white/60" data-i18n="legal.avisoLegalS3Body1">
+      El sitio web, incluyendo a título enunciativo su programación, diseños, logotipos, textos, fotografías y
+      gráficos, es propiedad exclusiva de Ariadna Salvador (NINUMÁ). Todo el contenido está protegido por la
+      normativa nacional e internacional de propiedad intelectual e industrial.
+    </p>
+    <p class="text-[0.85rem] leading-[1.85] text-white/60" data-i18n="legal.avisoLegalS3Body2">
+      La reproducción total o parcial, uso, distribución o comercialización de cualquier elemento de este sitio
+      requiere la autorización escrita previa de la titular. Cualquier uso no autorizado constituirá un
+      incumplimiento grave de los derechos de propiedad intelectual.
+    </p>
+  </div>
+
+  <div id="responsabilidad" class="flex scroll-mt-32 flex-col gap-3">
+    <span class="text-[0.6rem] font-medium tracking-[0.2em] text-pink uppercase">04</span>
+    <h2 class="font-display text-2xl leading-tight font-light md:text-3xl" data-i18n="legal.avisoLegalS4Heading">Responsabilidad y condiciones de uso</h2>
+    <p class="text-[0.85rem] leading-[1.85] text-white/60" data-i18n="legal.avisoLegalS4Body1">
+      El usuario se compromete a hacer un uso adecuado, lícito y de buena fe del contenido de la web.
+    </p>
+    <p class="text-[0.85rem] leading-[1.85] text-white/60" data-i18n="legal.avisoLegalS4Body2">
+      Ariadna Salvador se exime de responsabilidad derivada de la información publicada en su sitio si esta ha sido
+      manipulada por terceros ajenos a la misma, así como por daños ocasionados por fallos en la red, ataques
+      informáticos o fallos en sistemas de telecomunicaciones ajenos a su control.
+    </p>
+  </div>
+
+  <div id="enlaces" class="flex scroll-mt-32 flex-col gap-3">
+    <span class="text-[0.6rem] font-medium tracking-[0.2em] text-pink uppercase">05</span>
+    <h2 class="font-display text-2xl leading-tight font-light md:text-3xl" data-i18n="legal.avisoLegalS5Heading">Enlaces externos</h2>
+    <p class="text-[0.85rem] leading-[1.85] text-white/60" data-i18n="legal.avisoLegalS5Body">
+      En caso de que el sitio disponga de enlaces hacia otros lugares de Internet, NINUMÁ no ejerce control sobre
+      dichos sitios ni asume responsabilidad por sus contenidos, calidad técnica o veracidad de la información en
+      ellos contenida.
+    </p>
+  </div>
+
+  <div id="legislacion" class="flex scroll-mt-32 flex-col gap-3">
+    <span class="text-[0.6rem] font-medium tracking-[0.2em] text-pink uppercase">06</span>
+    <h2 class="font-display text-2xl leading-tight font-light md:text-3xl" data-i18n="legal.avisoLegalS6Heading">Legislación aplicable y jurisdicción</h2>
+    <p class="text-[0.85rem] leading-[1.85] text-white/60" data-i18n="legal.avisoLegalS6Body">
+      Para la resolución de controversias relacionadas con este sitio web será de aplicación la legislación
+      española. Para todos los conflictos derivados del uso de la web, serán competentes los Juzgados y Tribunales
+      de Palma de Mallorca (Islas Baleares), salvo que la ley disponga lo contrario de forma imperativa para la
+      defensa de consumidores y usuarios.
+    </p>
+  </div>
+</LegalLayout>

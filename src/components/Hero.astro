@@ -1,0 +1,118 @@
+---
+import { Image } from "astro:assets";
+import poster from "../assets/img/poster.jpg";
+
+// Móvil: la sección crece con la altura real del viewport (hasta un tope) para que el
+// manifiesto de abajo siempre termine justo tras la cita "guiones comestibles", sin
+// dejar asomar el párrafo siguiente antes de deslizar. El recorte de video/texto abajo
+// (top-[94px] h-[332px]) es de tamaño FIJO — no debe stretchear con la sección, o el
+// vídeo se deforma/desborda. Si se toca el offset 260/530/430, revisar en varias
+// alturas de móvil (iPhone SE 667 a iPhone 14 Pro Max 932) que el párrafo siga oculto.
+---
+
+<section
+  id="top"
+  class="umbral relative flex h-[min(calc(100dvh-260px),530px)] min-h-[430px] items-center justify-center overflow-hidden md:h-[100dvh] md:min-h-[600px]"
+  aria-label="Presentación de NINUMÁ"
+>
+  <div class="absolute inset-0 bg-black">
+    <div class="absolute inset-x-0 top-[94px] h-[332px] md:inset-0 md:h-full">
+      <Image
+        id="hero-poster"
+        class="absolute inset-0 h-full w-full object-cover"
+        src={poster}
+        alt=""
+        aria-hidden="true"
+        loading="eager"
+        fetchpriority="high"
+        widths={[480, 768, 1024, 1440, 1920]}
+        sizes="100vw"
+      />
+      <video
+        id="hero-video"
+        class="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-700"
+        muted
+        loop
+        playsinline
+        preload="auto"
+        disablepictureinpicture
+        aria-hidden="true"
+      >
+        <source src="/assets/video/hero-loop.mp4" type="video/mp4" />
+      </video>
+      <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-black/60" aria-hidden="true"></div>
+    </div>
+  </div>
+
+  <div class="absolute inset-x-0 top-[94px] h-[332px] z-10 flex flex-col items-center justify-center text-center md:static md:inset-auto md:h-auto md:z-auto md:block">
+    <h1 class="split-target font-display text-[clamp(2.75rem,13vw,5rem)] leading-[0.88] tracking-[-0.025em] md:text-[clamp(5.5rem,19vw,24rem)]">NINUMÁ</h1>
+    <p class="split-target mt-2 font-display text-base italic text-pink md:mt-4 md:text-lg lg:text-xl" data-i18n="hero.subtitle">Alquimia Cultural</p>
+  </div>
+
+  <a
+    href="#manifiesto"
+    class="scroll-hint absolute bottom-8 left-1/2 z-10 hidden -translate-x-1/2 text-center text-xs tracking-[0.14em] text-white/70 uppercase md:block"
+  >
+    <span data-i18n="hero.scrollHint">Descubrir</span>
+    <div class="mx-auto mt-2 h-10 w-px bg-white/40"></div>
+  </a>
+</section>
+
+<script>
+  const poster = document.getElementById("hero-poster");
+  const video = document.getElementById("hero-video") as HTMLVideoElement | null;
+  const reducedMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  let shown = false;
+  function showVideo() {
+    if (shown || !video) return;
+    shown = true;
+    video.classList.remove("opacity-0");
+    poster?.classList.add("opacity-0");
+  }
+
+  function hideVideo() {
+    if (!video) return;
+    shown = false;
+    video.pause();
+    video.classList.add("opacity-0");
+    poster?.classList.remove("opacity-0");
+  }
+
+  function tryPlay() {
+    if (!video || reducedMQ.matches) return;
+    const promise = video.play();
+    if (promise !== undefined) {
+      promise.then(showVideo).catch(() => {});
+    }
+  }
+
+  if (video) {
+    if (reducedMQ.matches) {
+      hideVideo();
+    } else {
+      video.addEventListener("playing", showVideo);
+      video.addEventListener("canplaythrough", showVideo, { once: true });
+      tryPlay();
+      setTimeout(() => {
+        if (!shown) poster?.classList.remove("opacity-0");
+      }, 4000);
+
+      new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (reducedMQ.matches) return;
+            if (entry.isIntersecting) tryPlay();
+            else video.pause();
+          });
+        },
+        { threshold: 0.1 }
+      ).observe(video);
+    }
+
+    reducedMQ.addEventListener("change", (e) => {
+      if (e.matches) hideVideo();
+      else tryPlay();
+    });
+  }
+</script>

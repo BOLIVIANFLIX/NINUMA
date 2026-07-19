@@ -1,0 +1,110 @@
+---
+import type { ActiveEdition } from "../lib/edition";
+
+interface Props {
+  edition: ActiveEdition;
+}
+const { edition: EDITION } = Astro.props;
+---
+
+<section class="relative overflow-hidden border-b border-pink/40 bg-charcoal px-6 pt-20 pb-20 md:px-12 md:pt-40 md:pb-28" aria-labelledby="edition-name">
+  <span
+    class="pointer-events-none absolute top-0 right-0 font-display text-[26rem] leading-[0.85] font-light text-white/[0.025] select-none"
+    aria-hidden="true"
+  >
+    NM
+  </span>
+
+  <div class="relative z-10 mx-auto max-w-[1440px]">
+    <nav aria-label="Ruta de navegación" data-i18n-aria-label="ediciones.breadcrumbAria" class="mb-10 flex items-center gap-2 text-xs tracking-wide text-white/50 uppercase">
+      <a href="/" data-i18n="ediciones.breadcrumbInicio" class="hover:text-pink">Inicio</a>
+      <span aria-hidden="true">/</span>
+      <strong aria-current="page" data-i18n="ediciones.breadcrumbCurrent" class="text-white/80">Ediciones Especiales</strong>
+    </nav>
+
+    <div class="flex flex-wrap items-center gap-4">
+      <span class="text-xs tracking-[0.14em] text-pink uppercase" data-i18n="ediciones.heroLabel">Edición especial · Activa ahora</span>
+      <span class="inline-block border border-pink/30 px-5 py-2 text-xs tracking-[0.24em] text-pink uppercase" data-i18n={EDITION.plazoLabelKey}>
+        {EDITION.plazoLabel}
+      </span>
+    </div>
+    <h1 id="edition-name" class="mt-6 font-display text-[clamp(3.5rem,9vw,10rem)] leading-[0.9] font-light">
+      {EDITION.nombre}
+    </h1>
+    <p class="mt-8 max-w-[52ch] text-sm leading-relaxed text-white/60" data-i18n={EDITION.descripcionKey}>{EDITION.descripcion}</p>
+
+    <div
+      id="hero-countdown"
+      data-deadline={EDITION.fechaLimiteISO}
+      aria-label="Tiempo restante para el cierre de encargos"
+      data-i18n-aria-label="ediciones.countdownAria"
+      class="mt-10 flex flex-wrap items-end gap-6 md:gap-12"
+    >
+      <div class="flex flex-col items-center gap-1">
+        <span class="font-display text-5xl font-light md:text-7xl" id="cd-dias">00</span>
+        <span class="text-[0.6rem] tracking-[0.18em] text-white/50 uppercase" data-i18n="ediciones.countdownDias">Días</span>
+      </div>
+      <span class="pb-3 font-display text-3xl font-light text-white/15 md:text-5xl" aria-hidden="true">:</span>
+      <div class="flex flex-col items-center gap-1">
+        <span class="font-display text-5xl font-light md:text-7xl" id="cd-horas">00</span>
+        <span class="text-[0.6rem] tracking-[0.18em] text-white/50 uppercase" data-i18n="ediciones.countdownHoras">Horas</span>
+      </div>
+      <span class="pb-3 font-display text-3xl font-light text-white/15 md:text-5xl" aria-hidden="true">:</span>
+      <div class="flex flex-col items-center gap-1">
+        <span class="font-display text-5xl font-light md:text-7xl" id="cd-min">00</span>
+        <span class="text-[0.6rem] tracking-[0.18em] text-white/50 uppercase" data-i18n="ediciones.countdownMin">Min</span>
+      </div>
+      <span class="pb-3 font-display text-3xl font-light text-white/15 md:text-5xl" aria-hidden="true">:</span>
+      <div class="flex flex-col items-center gap-1">
+        <span class="font-display text-5xl font-light md:text-7xl" id="cd-seg">00</span>
+        <span class="text-[0.6rem] tracking-[0.18em] text-white/50 uppercase" data-i18n="ediciones.countdownSeg">Seg</span>
+      </div>
+    </div>
+    <span id="countdown-live" role="status" aria-live="polite" class="sr-only"></span>
+  </div>
+</section>
+
+<script>
+  import { t } from "../lib/i18n";
+
+  const wrap = document.getElementById("hero-countdown");
+  const raw = wrap?.getAttribute("data-deadline");
+  const deadline = raw ? new Date(raw) : null;
+
+  if (wrap && deadline && !isNaN(deadline.getTime())) {
+    const dEl = document.getElementById("cd-dias");
+    const hEl = document.getElementById("cd-horas");
+    const mEl = document.getElementById("cd-min");
+    const sEl = document.getElementById("cd-seg");
+    const live = document.getElementById("countdown-live");
+
+    const pad = (n: number) => String(n).padStart(2, "0");
+
+    const tick = () => {
+      const diff = deadline.getTime() - Date.now();
+      if (diff <= 0) {
+        clearInterval(timer);
+        if (dEl) dEl.textContent = "00";
+        if (hEl) hEl.textContent = "00";
+        if (mEl) mEl.textContent = "00";
+        if (sEl) sEl.textContent = "00";
+        if (live) live.textContent = t("ediciones.countdownExpired", "El período de encargo ha finalizado.");
+        document.documentElement.dataset.edicionCerrada = "true";
+        document.dispatchEvent(new CustomEvent("ninuma:edicion-cerrada"));
+        return;
+      }
+      const totalSec = Math.floor(diff / 1000);
+      const d = Math.floor(totalSec / 86400);
+      const h = Math.floor((totalSec % 86400) / 3600);
+      const m = Math.floor((totalSec % 3600) / 60);
+      const s = totalSec % 60;
+      if (dEl) dEl.textContent = pad(d);
+      if (hEl) hEl.textContent = pad(h);
+      if (mEl) mEl.textContent = pad(m);
+      if (sEl) sEl.textContent = pad(s);
+    };
+
+    const timer = setInterval(tick, 1000);
+    tick();
+  }
+</script>

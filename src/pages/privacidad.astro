@@ -1,0 +1,178 @@
+---
+import LegalLayout from "../layouts/LegalLayout.astro";
+
+const sections = [
+  { id: "responsable", label: "Responsable del tratamiento", i18nKey: "legal.privacidadSec1Label" },
+  { id: "datos-recogidos", label: "Datos que recogemos", i18nKey: "legal.privacidadSec2Label" },
+  { id: "finalidad", label: "Finalidad y legitimación", i18nKey: "legal.privacidadSec3Label" },
+  { id: "conservacion", label: "Conservación", i18nKey: "legal.privacidadSec4Label" },
+  { id: "destinatarios", label: "Destinatarios", i18nKey: "legal.privacidadSec5Label" },
+  { id: "derechos", label: "Tus derechos", i18nKey: "legal.privacidadSec6Label" },
+  { id: "seguridad", label: "Seguridad", i18nKey: "legal.privacidadSec7Label" },
+  { id: "menores", label: "Menores de edad", i18nKey: "legal.privacidadSec8Label" },
+];
+---
+
+<LegalLayout
+  title="Política de Privacidad · NINUMÁ"
+  description="Política de privacidad de NINUMÁ. Información sobre el tratamiento de datos personales conforme al RGPD (UE) 2016/679 y la LOPDGDD."
+  path="/privacidad/"
+  pageTitle="Política de<br />Privacidad"
+  breadcrumbLabel="Política de Privacidad"
+  dateLabel="Última actualización: junio de 2025"
+  sections={sections}
+  titleKey="legal.privacidadTitle"
+  breadcrumbKey="legal.privacidadBreadcrumb"
+  dateKey="legal.privacidadDate"
+>
+  <div id="responsable" class="flex scroll-mt-32 flex-col gap-5">
+    <span class="text-[0.6rem] font-medium tracking-[0.2em] text-pink uppercase">01</span>
+    <h2 class="font-display text-2xl leading-tight font-light md:text-3xl" data-i18n="legal.privacidadS1Heading">Responsable del tratamiento</h2>
+    <div class="border border-white/[.07] border-l-2 border-l-pink bg-charcoal px-8 py-6">
+      <p class="text-[0.82rem] leading-[1.85] text-white/60" data-i18n="legal.privacidadS1Box">
+        <strong class="font-medium text-pink">Responsable:</strong> Ariadna Salvador<br />
+        <strong class="font-medium text-pink">Nombre comercial:</strong> NINUMÁ<br />
+        <strong class="font-medium text-pink">NIF:</strong> 43173933N<br />
+        <strong class="font-medium text-pink">Correo electrónico:</strong>{" "}
+        <a href="mailto:ariadna@ninuma.es" class="text-pink hover:text-white">ariadna@ninuma.es</a><br />
+        <strong class="font-medium text-pink">Dirección:</strong> Carrer de Guillem Massot, 48, 07003 Palma de Mallorca
+        (Islas Baleares)
+      </p>
+    </div>
+    <p class="text-[0.85rem] leading-[1.85] text-white/60" data-i18n="legal.privacidadS1Body">
+      El tratamiento de datos personales recogidos a través de www.ninuma.es se realiza de conformidad con el
+      Reglamento (UE) 2016/679 del Parlamento Europeo y del Consejo (RGPD) y la Ley Orgánica 3/2018, de 5 de
+      diciembre, de Protección de Datos Personales y Garantía de los Derechos Digitales (LOPDGDD).
+    </p>
+  </div>
+
+  <div id="datos-recogidos" class="flex scroll-mt-32 flex-col gap-5">
+    <span class="text-[0.6rem] font-medium tracking-[0.2em] text-pink uppercase">02</span>
+    <h2 class="font-display text-2xl leading-tight font-light md:text-3xl" data-i18n="legal.privacidadS2Heading">Datos que recogemos</h2>
+    <p class="text-[0.85rem] leading-[1.85] text-white/60" data-i18n="legal.privacidadS2Body">
+      Únicamente tratamos datos que tú nos facilitas de forma activa a través de los formularios del sitio. No
+      recogemos datos de navegación de forma invasiva.
+    </p>
+    <div class="overflow-x-auto">
+      <table class="w-full border-collapse text-[0.82rem]">
+        <thead>
+          <tr>
+            <th class="border-b border-white/10 px-4 py-3 text-left text-[0.68rem] font-medium tracking-[0.1em] text-pink uppercase" data-i18n="legal.privacidadTableOrigen">Origen</th>
+            <th class="border-b border-white/10 px-4 py-3 text-left text-[0.68rem] font-medium tracking-[0.1em] text-pink uppercase" data-i18n="legal.privacidadTableDatos">Datos tratados</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="border-b border-white/5 px-4 py-3.5 align-top whitespace-nowrap text-white" data-i18n="legal.privacidadRow1Origen">Formulario de encargo (/contacto/)</td>
+            <td class="border-b border-white/5 px-4 py-3.5 align-top leading-relaxed text-white/60" data-i18n="legal.privacidadRow1Datos">Nombre, correo electrónico, teléfono (opcional), tipo de consulta, descripción del proyecto, fecha si procede.</td>
+          </tr>
+          <tr>
+            <td class="border-b border-white/5 px-4 py-3.5 align-top whitespace-nowrap text-white" data-i18n="legal.privacidadRow2Origen">Formulario de reserva de edición</td>
+            <td class="border-b border-white/5 px-4 py-3.5 align-top leading-relaxed text-white/60" data-i18n="legal.privacidadRow2Datos">Nombre, correo electrónico, número de unidades, nota opcional.</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3.5 align-top whitespace-nowrap text-white" data-i18n="legal.privacidadRow3Origen">Cookies analíticas (GA4, con consentimiento)</td>
+            <td class="px-4 py-3.5 align-top leading-relaxed text-white/60" data-i18n="legal.privacidadRow3Datos">Datos de comportamiento de navegación anonimizados. Solo si aceptas las cookies analíticas.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="finalidad" class="flex scroll-mt-32 flex-col gap-3">
+    <span class="text-[0.6rem] font-medium tracking-[0.2em] text-pink uppercase">03</span>
+    <h2 class="font-display text-2xl leading-tight font-light md:text-3xl" data-i18n="legal.privacidadS3Heading">Finalidad y base de legitimación</h2>
+    <p class="text-[0.85rem] leading-[1.85] text-white/60" data-i18n="legal.privacidadS3Body1">
+      <strong class="font-medium text-white">Gestión de consultas y encargos:</strong> Tratamos tus datos para
+      responderte y gestionar tu solicitud. Base jurídica: ejecución de un precontrato o contrato (art. 6.1.b RGPD).
+    </p>
+    <p class="text-[0.85rem] leading-[1.85] text-white/60" data-i18n="legal.privacidadS3Body2">
+      <strong class="font-medium text-white">Análisis estadístico:</strong> Si aceptas las cookies analíticas,
+      utilizamos Google Analytics 4 para analizar el uso del sitio y mejorarlo. Base jurídica: consentimiento (art.
+      6.1.a RGPD). Puedes revocar tu consentimiento en cualquier momento cambiando tu configuración de cookies.
+    </p>
+    <p class="text-[0.85rem] leading-[1.85] text-white/60" data-i18n="legal.privacidadS3Body3">
+      No tomamos decisiones automatizadas ni realizamos perfilado a partir de los datos recogidos.
+    </p>
+  </div>
+
+  <div id="conservacion" class="flex scroll-mt-32 flex-col gap-3">
+    <span class="text-[0.6rem] font-medium tracking-[0.2em] text-pink uppercase">04</span>
+    <h2 class="font-display text-2xl leading-tight font-light md:text-3xl" data-i18n="legal.privacidadS4Heading">Conservación de los datos</h2>
+    <p class="text-[0.85rem] leading-[1.85] text-white/60" data-i18n="legal.privacidadS4Body1">
+      Los datos de formularios de contacto y encargo se conservan durante el tiempo necesario para gestionar tu
+      solicitud y durante el plazo de prescripción de las posibles responsabilidades legales derivadas (máximo 3
+      años desde el último contacto).
+    </p>
+    <p class="text-[0.85rem] leading-[1.85] text-white/60" data-i18n="legal.privacidadS4Body2">
+      Los datos analíticos de GA4 se gestionan con la configuración de retención de datos establecida por Google
+      (por defecto, 14 meses).
+    </p>
+  </div>
+
+  <div id="destinatarios" class="flex scroll-mt-32 flex-col gap-3">
+    <span class="text-[0.6rem] font-medium tracking-[0.2em] text-pink uppercase">05</span>
+    <h2 class="font-display text-2xl leading-tight font-light md:text-3xl" data-i18n="legal.privacidadS5Heading">Destinatarios y transferencias internacionales</h2>
+    <p class="text-[0.85rem] leading-[1.85] text-white/60" data-i18n="legal.privacidadS5Body1">
+      Tus datos no se ceden a terceros salvo obligación legal. Utilizamos los siguientes encargados del tratamiento:
+    </p>
+    <p class="text-[0.85rem] leading-[1.85] text-white/60" data-i18n="legal.privacidadS5Body2">
+      <strong class="font-medium text-white">Formspree, Inc.</strong> — Procesamiento de formularios. Datos
+      transferidos a EE.UU. bajo el marco de privacidad UE-EE.UU. y cláusulas contractuales tipo.
+    </p>
+    <p class="text-[0.85rem] leading-[1.85] text-white/60" data-i18n="legal.privacidadS5Body3">
+      <strong class="font-medium text-white">Google LLC (Google Analytics 4)</strong> — Análisis estadístico. Solo
+      activo si aceptas las cookies analíticas. Transferencias internacionales cubiertas por las decisiones de
+      adecuación de la Comisión Europea.
+    </p>
+  </div>
+
+  <div id="derechos" class="flex scroll-mt-32 flex-col gap-3">
+    <span class="text-[0.6rem] font-medium tracking-[0.2em] text-pink uppercase">06</span>
+    <h2 class="font-display text-2xl leading-tight font-light md:text-3xl" data-i18n="legal.privacidadS6Heading">Tus derechos</h2>
+    <p class="text-[0.85rem] leading-[1.85] text-white/60" data-i18n="legal.privacidadS6Body1">
+      De acuerdo con el RGPD, puedes ejercer los siguientes derechos enviando un correo a{" "}
+      <a href="mailto:ariadna@ninuma.es" class="text-pink hover:text-white">ariadna@ninuma.es</a> con el asunto
+      "Protección de datos":
+    </p>
+    <p class="text-[0.85rem] leading-[1.85] text-white/60" data-i18n="legal.privacidadS6Body2">
+      <strong class="font-medium text-white">Acceso</strong> — Obtener confirmación de si tratamos tus datos y una
+      copia de ellos.<br />
+      <strong class="font-medium text-white">Rectificación</strong> — Corregir datos inexactos o incompletos.<br />
+      <strong class="font-medium text-white">Supresión</strong> — Solicitar la eliminación de tus datos cuando ya no
+      sean necesarios.<br />
+      <strong class="font-medium text-white">Oposición</strong> — Oponerte al tratamiento en determinadas
+      circunstancias.<br />
+      <strong class="font-medium text-white">Limitación</strong> — Solicitar la restricción del tratamiento en
+      ciertos supuestos.<br />
+      <strong class="font-medium text-white">Portabilidad</strong> — Recibir tus datos en un formato estructurado y
+      legible por máquina.
+    </p>
+    <p class="text-[0.85rem] leading-[1.85] text-white/60" data-i18n="legal.privacidadS6Body3">
+      Tienes derecho a presentar una reclamación ante la Agencia Española de Protección de Datos (AEPD) si
+      consideras que el tratamiento vulnera la normativa:{" "}
+      <a href="https://www.aepd.es" target="_blank" rel="noopener noreferrer" class="text-pink hover:text-white">www.aepd.es</a>.
+    </p>
+  </div>
+
+  <div id="seguridad" class="flex scroll-mt-32 flex-col gap-3">
+    <span class="text-[0.6rem] font-medium tracking-[0.2em] text-pink uppercase">07</span>
+    <h2 class="font-display text-2xl leading-tight font-light md:text-3xl" data-i18n="legal.privacidadS7Heading">Seguridad</h2>
+    <p class="text-[0.85rem] leading-[1.85] text-white/60" data-i18n="legal.privacidadS7Body">
+      Adoptamos las medidas técnicas y organizativas necesarias para proteger la seguridad e integridad de los datos
+      personales tratados y para evitar su pérdida, alteración, tratamiento o acceso no autorizado. Las
+      comunicaciones entre tu navegador y este sitio se realizan mediante protocolo HTTPS (TLS).
+    </p>
+  </div>
+
+  <div id="menores" class="flex scroll-mt-32 flex-col gap-3">
+    <span class="text-[0.6rem] font-medium tracking-[0.2em] text-pink uppercase">08</span>
+    <h2 class="font-display text-2xl leading-tight font-light md:text-3xl" data-i18n="legal.privacidadS8Heading">Menores de edad</h2>
+    <p class="text-[0.85rem] leading-[1.85] text-white/60" data-i18n="legal.privacidadS8Body">
+      Este sitio web no está dirigido a menores de 14 años. Si detectamos que hemos recogido datos de un menor sin
+      el consentimiento de sus padres o tutores, procederemos a eliminarlos de inmediato. Si eres padre o tutor y
+      crees que tu hijo nos ha facilitado datos personales, contacta con nosotros en{" "}
+      <a href="mailto:ariadna@ninuma.es" class="text-pink hover:text-white">ariadna@ninuma.es</a>.
+    </p>
+  </div>
+</LegalLayout>

@@ -1,0 +1,92 @@
+---
+const filtros = [
+  { filter: "all", label: "Todo", key: "creaciones.filterAll" },
+  { filter: "tartas", label: "Tartas de encargo", key: "creaciones.filterTartas" },
+  { filter: "bombones", label: "Bombones", key: "creaciones.filterBombones" },
+  { filter: "ediciones", label: "Ediciones especiales", key: "creaciones.filterEdiciones" },
+  { filter: "b2b", label: "B2B", key: "creaciones.filterB2b" },
+];
+---
+
+<div id="filtros-wrap" role="region" aria-label="Filtros de creaciones" data-i18n-aria-label="creaciones.filtrosRegionAria" class="sticky top-[72px] z-30 border-y border-white/10 bg-black/90 backdrop-blur-sm">
+  <div class="mx-auto flex max-w-[1440px] flex-wrap items-center justify-between gap-4 px-6 py-4 md:px-12">
+    <div role="group" aria-label="Filtrar por categoría" data-i18n-aria-label="creaciones.filtrarPorCategoriaAria" class="flex flex-wrap gap-2">
+      {filtros.map((f, i) => (
+        <button
+          type="button"
+          class="filtro-btn rounded-full border px-4 py-1.5 text-xs tracking-[0.08em] uppercase transition-colors"
+          class:list={[i === 0 ? "border-pink bg-pink text-black" : "border-white/20 text-white/70 hover:border-pink hover:text-pink"]}
+          data-filter={f.filter}
+          data-i18n={f.key}
+          aria-pressed={i === 0 ? "true" : "false"}
+        >
+          {f.label}
+        </button>
+      ))}
+    </div>
+    <div class="flex items-center gap-2 text-xs tracking-wide text-white/50 uppercase">
+      <strong class="font-display text-lg text-white not-italic" id="count-display" role="status" aria-live="polite" aria-atomic="true">08</strong>
+      <span aria-hidden="true" data-i18n="creaciones.piezasSuffix">piezas</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { t } from "../lib/i18n";
+
+  const btns = document.querySelectorAll<HTMLButtonElement>(".filtro-btn");
+  const cards = document.querySelectorAll<HTMLElement>(".pieza[data-category]");
+  const empty = document.getElementById("grid-empty");
+  const countEl = document.getElementById("count-display");
+
+  function updateCount(n: number) {
+    if (!countEl) return;
+    countEl.textContent = String(n).padStart(2, "0");
+    countEl.setAttribute("aria-label", `${n} ${t("creaciones.countAriaSuffix", "creaciones visibles")}`);
+  }
+
+  document.addEventListener("ninuma:lang-changed", () => {
+    updateCount(Array.from(cards).filter((c) => !c.classList.contains("hidden")).length);
+  });
+
+  function applyFilter(filter: string | null) {
+    let visible = 0;
+    cards.forEach((card) => {
+      const show = filter === "all" || card.getAttribute("data-category") === filter;
+      card.classList.toggle("hidden", !show);
+      if (show) visible++;
+    });
+    if (empty) empty.hidden = visible > 0;
+    updateCount(visible);
+  }
+
+  btns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      btns.forEach((b) => {
+        b.classList.remove("border-pink", "bg-pink", "text-black");
+        b.classList.add("border-white/20", "text-white/70");
+        b.setAttribute("aria-pressed", "false");
+      });
+      btn.classList.add("border-pink", "bg-pink", "text-black");
+      btn.classList.remove("border-white/20", "text-white/70");
+      btn.setAttribute("aria-pressed", "true");
+      applyFilter(btn.getAttribute("data-filter"));
+
+      requestAnimationFrame(() => {
+        const galeria = document.getElementById("creaciones-grid");
+        const filtros = document.getElementById("filtros-wrap");
+        if (!galeria) return;
+        const filtrosH = filtros ? filtros.getBoundingClientRect().height : 48;
+        const top = galeria.getBoundingClientRect().top + window.scrollY - 80 - filtrosH - 24;
+        window.scrollTo({ top, behavior: "smooth" });
+      });
+    });
+  });
+
+  const resetBtn = document.getElementById("reset-filter-btn");
+  resetBtn?.addEventListener("click", () => {
+    document.querySelector<HTMLButtonElement>('.filtro-btn[data-filter="all"]')?.click();
+  });
+
+  updateCount(cards.length);
+</script>

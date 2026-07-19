@@ -1,0 +1,64 @@
+---
+import { Image } from "astro:assets";
+import { getCollection } from "astro:content";
+
+const entries = await getCollection("piezas");
+const piezas = entries
+  .sort((a, b) => a.data.orden - b.data.orden)
+  .map((e) => ({
+    num: e.data.numero,
+    img: e.data.imagen,
+    alt: e.data.alt,
+    categoria: e.data.categoria,
+    tipo: e.data.tipo,
+    tipoKey: e.data.tipoKey,
+    nombre: e.data.nombre,
+    materiales: e.data.materiales,
+    materialesKey: e.data.materialesKey,
+    ref: e.data.referencia,
+    refKey: e.data.referenciaKey,
+    estado: e.data.estado,
+    estadoKey: e.data.estadoKey,
+    year: e.data.anio,
+  }));
+---
+
+<section aria-label="Portfolio de creaciones NINUMÁ" class="px-6 py-16 md:px-12">
+  <div id="creaciones-grid" class="mx-auto grid max-w-[1440px] grid-cols-1 gap-px bg-white/10 sm:grid-cols-2 lg:grid-cols-3">
+    <div id="grid-empty" hidden role="status" aria-live="polite" class="col-span-full flex flex-col items-center gap-4 bg-black py-24 text-center">
+      <p class="text-white/60" data-i18n="creaciones.emptyMessage">Ninguna pieza en esta categoría.</p>
+      <button type="button" id="reset-filter-btn" data-i18n="creaciones.emptyReset" class="rounded-full border border-pink px-5 py-2 text-xs tracking-[0.1em] text-pink uppercase hover:bg-pink hover:text-black">
+        Ver todas las creaciones
+      </button>
+    </div>
+
+    {piezas.map((p) => (
+      <article
+        class="pieza gs-reveal group relative flex flex-col bg-black"
+        data-category={p.categoria}
+        aria-label={`Pieza N.º ${p.num} — ${p.nombre}`}
+      >
+        <div class="relative overflow-hidden">
+          <Image
+            src={p.img}
+            alt={p.alt}
+            loading="lazy"
+            class="aspect-[4/5] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+          />
+          <span class="absolute top-3 left-3 text-xs tracking-[0.1em] text-white/70 uppercase">N.º {p.num}</span>
+        </div>
+        <div class="flex flex-1 flex-col gap-3 p-6">
+          <span class="text-xs tracking-[0.14em] text-pink uppercase" data-i18n={p.tipoKey}>{p.tipo}</span>
+          <h2 class="font-display text-2xl leading-tight">{p.nombre}</h2>
+          <div class="h-px w-10 bg-white/15"></div>
+          <p class="text-sm text-white/70" data-i18n={p.materialesKey}>{p.materiales}</p>
+          <p class="text-xs text-white/50 italic" data-i18n={p.refKey}>{p.ref}</p>
+          <div class="mt-auto flex items-center justify-between pt-2 text-xs tracking-wide text-white/50 uppercase">
+            <span data-i18n={p.estadoKey}>{p.estado}</span>
+            <span>{p.year}</span>
+          </div>
+        </div>
+      </article>
+    ))}
+  </div>
+</section>

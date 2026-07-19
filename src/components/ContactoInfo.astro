@@ -1,0 +1,60 @@
+---
+const links = [
+  { name: "ariadna@ninuma.es", info: "Para consultas y encargos", infoKey: "contacto.infoLink1", href: "mailto:ariadna@ninuma.es", external: false },
+  { name: "+34 666 13 84 65", info: "Lun–Sáb en horario de obrador", infoKey: "contacto.infoLink2", href: "tel:+34666138465", external: false },
+  { name: "@ninuma_concept", info: "DMs abiertos para consultas rápidas", infoKey: "contacto.infoLink3", href: "https://www.instagram.com/ninuma_concept/", external: true },
+];
+---
+
+<div class="flex flex-col gap-12">
+  <div>
+    <span class="gs-reveal text-xs tracking-[0.14em] text-pink uppercase" data-i18n="contacto.infoEyebrow">El primer paso</span>
+    <h1 class="gs-reveal mt-4 font-display text-[clamp(3rem,9vw,7rem)] leading-[0.95] tracking-tight" data-i18n="contacto.infoHeading">
+      Empe&shy;zamos.
+    </h1>
+    <p class="gs-reveal mt-4 max-w-[44ch] text-sm leading-relaxed text-white/60" data-i18n="contacto.infoIntro">
+      Cuéntame tu proyecto con el máximo detalle posible: qué necesitas, para cuándo y cualquier referencia que
+      tengas. Cuanto más sepas explicar, mejor podré responderte.
+    </p>
+  </div>
+
+  <div class="gs-stagger flex flex-col">
+    {links.map((l) => (
+      <a
+        href={l.href}
+        target={l.external ? "_blank" : undefined}
+        rel={l.external ? "noopener noreferrer" : undefined}
+        class="gs-item group flex items-center justify-between gap-4 border-b border-white/10 py-5 last:border-b-0"
+      >
+        <div>
+          <p class="font-display text-xl md:text-2xl">{l.name}</p>
+          <p class="mt-1 text-xs text-white/60" data-i18n={l.infoKey}>{l.info}</p>
+        </div>
+        <span class="text-xs text-white/60 transition-colors group-hover:text-pink" aria-hidden="true">→</span>
+      </a>
+    ))}
+  </div>
+
+  <div class="gs-reveal flex flex-col gap-5 border-l-2 border-pink bg-charcoal px-8 py-8">
+    <span class="text-[0.58rem] font-medium tracking-[0.22em] text-pink uppercase" data-i18n="contacto.obradorLabel">El Obrador</span>
+    <address class="flex flex-col gap-1 text-sm text-white/60 not-italic">
+      <span>Carrer de Guillem Massot, 48</span>
+      <span>07003 Palma de Mallorca, Islas Baleares</span>
+      <a href="https://maps.app.goo.gl/SqVpRzihGBG3brtX8" target="_blank" rel="noopener noreferrer" class="mt-2 text-white hover:text-pink" data-i18n="contacto.mapsLink">
+        Ver en Google Maps →
+      </a>
+    </address>
+    <p class="text-xs leading-relaxed text-white/60">
+      Lun–Jue 10:00–13:30 · Vie 10:30–13:30 · Sáb 10:00–13:30<br />
+      Dom cerrado
+    </p>
+  </div>
+
+  <div class="gs-reveal flex items-start gap-4 border border-white/10 bg-charcoal-2 px-6 py-5">
+    <span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-pink" aria-hidden="true"></span>
+    <p class="text-xs leading-relaxed text-white/60" data-i18n="contacto.respondeText">
+      <strong class="text-white">Respondo en menos de 48h</strong> en días laborables. Para encargos urgentes o
+      fechas muy cercanas, lo mejor es llamar o escribir por Instagram.
+    </p>
+  </div>
+</div>

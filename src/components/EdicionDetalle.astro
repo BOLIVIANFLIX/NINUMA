@@ -1,0 +1,34 @@
+---
+import { Image } from "astro:assets";
+import type { ActiveEdition } from "../lib/edition";
+
+interface Props {
+  edition: ActiveEdition;
+}
+const { edition: EDITION } = Astro.props;
+---
+
+<section class="gs-reveal border-t border-white/10 bg-black px-6 py-24 md:px-12 md:py-36" aria-labelledby="detalle-heading">
+  <div class="mx-auto grid max-w-[1440px] gap-12 md:grid-cols-2 md:gap-20">
+    <div class="relative aspect-[3/4] overflow-hidden bg-charcoal-2">
+      <Image src={EDITION.imagenDetalle} alt={`Bombones ${EDITION.nombre} — NINUMÁ`} loading="lazy" class="h-full w-full object-cover" />
+    </div>
+    <div class="flex flex-col gap-8">
+      <div>
+        <span class="text-xs tracking-[0.14em] text-pink uppercase" data-i18n="ediciones.detalleEyebrow">Esta edición</span>
+        <h2 id="detalle-heading" class="mt-4 h2-fluid" data-i18n="ediciones.detalleHeading">
+          Tres piezas.<br />Una sola referencia.
+        </h2>
+      </div>
+      <p class="text-sm leading-relaxed text-white/60" data-i18n={EDITION.introDetalleKey}>{EDITION.introDetalle}</p>
+      <dl class="flex flex-col divide-y divide-white/5 border-t border-white/10">
+        {EDITION.especificaciones.map((s) => (
+          <div class="grid grid-cols-[9ch_1fr] gap-6 py-4 text-sm md:grid-cols-[12ch_1fr]">
+            <dt class="text-white/50" data-i18n={s.etiquetaKey}>{s.etiqueta}</dt>
+            <dd class="text-white" data-i18n={s.valorKey}>{s.valor}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </div>
+</section>

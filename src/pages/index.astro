@@ -1,0 +1,28 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Hero from "../components/Hero.astro";
+import Manifiesto from "../components/Manifiesto.astro";
+import PiezaSpotlight from "../components/PiezaSpotlight.astro";
+import Proceso from "../components/Proceso.astro";
+import EdicionTeaser from "../components/EdicionTeaser.astro";
+import B2BTeaser from "../components/B2BTeaser.astro";
+import Contacto from "../components/Contacto.astro";
+import { bakerySchema, cafeSchema, breadcrumbSchema } from "../lib/schema";
+---
+
+<Layout
+  title="NINUMÁ · Pastelería Conceptual · Palma de Mallorca"
+  description="NINUMÁ — pastelería conceptual y cafetería de especialidad de Ariadna Salvador Ávila en Palma de Mallorca. Guiones comestibles inspirados en cultura pop, expresionismo y rococó."
+  path="/"
+  schema={[bakerySchema(), cafeSchema(), breadcrumbSchema([{ name: "Inicio", item: "/" }])]}
+>
+  <main id="main-content" tabindex="-1">
+    <Hero />
+    <Manifiesto />
+    <PiezaSpotlight />
+    <Proceso />
+    <EdicionTeaser />
+    <B2BTeaser />
+    <Contacto />
+  </main>
+</Layout>

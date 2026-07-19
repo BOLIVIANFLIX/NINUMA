@@ -1,0 +1,38 @@
+---
+import { getActiveEdition } from "../lib/edition";
+
+const edition = await getActiveEdition();
+const year = edition ? new Date(edition.fechaLimiteISO).getFullYear() : null;
+---
+
+{
+  edition && (
+    <div
+      id="edition-banner"
+      role="region"
+      aria-label="Edición activa"
+      class="fixed inset-x-0 top-0 z-[60] flex flex-wrap items-center justify-center gap-3 bg-pink px-6 py-1.5 text-center text-xs tracking-[0.12em] text-black uppercase md:gap-6"
+    >
+      <p class="m-0">
+        <span data-i18n="banner.label">Edición activa:</span>{" "}
+        <span class="font-medium">
+          {edition.nombre} · {year}
+        </span>
+      </p>
+      <a href="/ediciones-especiales/" class="font-medium underline underline-offset-[3px] hover:opacity-75" data-i18n="banner.cta">
+        Ver la edición →
+      </a>
+    </div>
+  )
+}
+
+<script>
+  const banner = document.getElementById("edition-banner");
+  if (banner) {
+    const syncHeight = () => {
+      document.documentElement.style.setProperty("--banner-h", `${banner.offsetHeight}px`);
+    };
+    syncHeight();
+    window.addEventListener("resize", syncHeight);
+  }
+</script>

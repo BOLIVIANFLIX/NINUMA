@@ -1,0 +1,56 @@
+---
+import { Image } from "astro:assets";
+import ariadna from "../assets/img/ariadna.jpg";
+---
+
+<section id="ariadna" class="gs-reveal border-b border-white/10 px-6 pt-5 pb-24 md:px-12 md:py-36">
+  <div class="mx-auto grid max-w-[1440px] items-start gap-12 md:grid-cols-[3fr_2fr] md:gap-20">
+    <div class="order-2 flex flex-col gap-10 md:order-1">
+      <div>
+        <span class="text-xs tracking-[0.14em] text-pink uppercase" data-i18n="obrador.perfilEyebrow">Fundadora y directora creativa</span>
+        <h2 class="mt-4 h2-fluid" data-i18n="obrador.perfilHeading">
+          Vengo del diseño de moda.<br />Eso cambia todo lo que hago aquí.
+        </h2>
+      </div>
+
+      <blockquote class="border-l-2 border-pink pl-6 font-display text-xl text-white/70 italic md:text-2xl" data-i18n="obrador.perfilQuote">
+        Antes de que existiera NINUMÁ, existía una forma de mirar las cosas. Sigo mirando igual.
+      </blockquote>
+
+      <div class="flex max-w-[52ch] flex-col gap-4 text-sm text-white/70">
+        <p data-i18n="obrador.perfilParagraph1">
+          Nací en Valencia. Estudié audiovisuales, luego diseño de moda. Monté mi propia tienda. Trabajé en una
+          multinacional textil. Hice todo lo que se supone que hay que hacer.
+        </p>
+        <p data-i18n="obrador.perfilParagraph2">
+          La pastelería entró como hobby. Salió como vocación. Empecé con <em class="text-pink not-italic">Aloha Pastelitos</em>
+          —un puesto en mercadillos de Mallorca— y entendí que aquí era donde tenía que estar. Lo dejé todo y estudié
+          pastelería en serio.
+        </p>
+        <p data-i18n="obrador.perfilParagraph3">
+          Pasé por la restauración. Aprendí que la narrativa funciona en cualquier disciplina. Que la gente no solo
+          come: experimenta. Cerré ese capítulo para escribir el siguiente.
+        </p>
+        <p data-i18n="obrador.perfilParagraph4">
+          NINUMÁ es el proyecto definitivo. El mismo criterio que aprendí en moda, aplicado a lo que se come. Cultura
+          pop, expresionismo alemán, rococó. Todo cabe si tiene argumento.
+        </p>
+      </div>
+    </div>
+
+    <div class="relative order-1 aspect-[4/5] overflow-hidden bg-charcoal-2 md:order-2">
+      <Image
+        src={ariadna}
+        alt="Ariadna Salvador, fundadora y directora creativa de NINUMÁ, en el obrador de Palma de Mallorca"
+        loading="lazy"
+        class="h-full w-full object-cover"
+        data-i18n-alt="obrador.perfilPhotoAlt"
+      />
+      <div class="absolute bottom-6 left-6 border border-white/10 bg-black/85 px-4 py-3 backdrop-blur-sm">
+        <p class="text-[0.6rem] tracking-[0.15em] text-white/50 uppercase">
+          <span data-i18n="obrador.perfilPhotoCaptionRole">Fundadora y directora creativa</span><span class="mt-0.5 block text-pink normal-case">Ariadna Salvador</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>

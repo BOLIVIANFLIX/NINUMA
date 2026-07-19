@@ -1,0 +1,45 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout
+  title="404 · Página no encontrada · NINUMÁ"
+  description="Esta página no existe en NINUMÁ. Puede que el enlace haya cambiado o que la pieza ya se haya agotado."
+  path="/404/"
+  noindex={true}
+  nofollow={true}
+  motion={false}
+>
+  <main id="main-content" tabindex="-1">
+    <section class="relative flex min-h-[100dvh] items-center justify-center overflow-hidden bg-black px-6 pt-32 pb-24 md:px-12">
+      <div
+        aria-hidden="true"
+        class="pointer-events-none absolute -right-8 -bottom-16 font-display text-[28rem] leading-[0.85] font-light tracking-tight text-white/[.018] select-none md:text-[40rem]"
+      >
+        404
+      </div>
+      <div class="relative z-10 flex max-w-xl flex-col items-start gap-8">
+        <span class="font-display text-[6rem] leading-[0.85] font-light tracking-tight text-pink/10 md:text-[9rem]">404</span>
+        <h1 class="-mt-2 font-display text-4xl leading-tight font-light tracking-tight md:text-6xl" data-i18n="legal.404Heading">
+          Esta pieza<br />no existe.
+        </h1>
+        <p class="max-w-[40ch] text-[0.88rem] leading-[1.85] text-white/60" data-i18n="legal.404Body">
+          Puede que la URL haya cambiado, que la edición se haya agotado o que simplemente hayas seguido un enlace
+          roto. Pasa.
+        </p>
+        <div class="flex flex-wrap items-center gap-6">
+          <a
+            href="/"
+            data-i18n="legal.404CtaHome"
+            class="rounded-full border border-pink px-6 py-3 text-xs tracking-[0.1em] text-pink uppercase transition-colors hover:bg-pink hover:text-black"
+          >
+            Volver al inicio
+          </a>
+          <a href="/creaciones/" data-i18n="legal.404CtaCreaciones" class="text-[0.68rem] tracking-[0.2em] text-white/60 uppercase transition-colors hover:text-pink">
+            Ver creaciones →
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>

@@ -1,0 +1,184 @@
+---
+import LanguageSwitcher from "./LanguageSwitcher.astro";
+
+interface Props {
+  currentPath?: string;
+}
+const { currentPath = "" } = Astro.props as Props;
+
+const links = [
+  { href: "/obrador/", label: "Obrador", key: "header.navObrador" },
+  { href: "/creaciones/", label: "Creaciones", key: "header.navCreaciones" },
+  { href: "/ediciones-especiales/", label: "Ediciones", key: "header.navEdiciones" },
+  { href: "/presencia/", label: "B2B", key: "header.navB2b" },
+];
+---
+
+<header
+  id="site-header"
+  class="fixed inset-x-0 top-[var(--banner-h)] z-50 flex items-center justify-between px-6 py-5 transition-colors duration-500 md:px-12"
+>
+  <a
+    href="/"
+    class="font-display text-xl tracking-wide"
+    aria-label="NINUMÁ — Ir al inicio"
+    data-i18n-aria-label="header.logoAria"
+  >
+    NINUMÁ
+  </a>
+
+  <nav aria-label="Navegación principal" data-i18n-aria-label="header.navPrincipalAria" class="hidden items-center gap-8 md:flex">
+    <ul class="flex items-center gap-8 text-xs tracking-[0.14em] text-white/80 uppercase">
+      {links.map((l) => (
+        <li>
+          <a
+            href={l.href}
+            data-i18n={l.key}
+            class="transition-colors hover:text-pink aria-[current=page]:text-pink"
+            aria-current={currentPath === l.href ? "page" : undefined}
+          >
+            {l.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+    <a
+      href="/contacto/"
+      data-i18n="header.ctaEmpezar"
+      aria-label="Empezar un proyecto — ir a contacto"
+      data-i18n-aria-label="header.ctaEmpezarAria"
+      class="rounded-full border border-pink px-5 py-2 text-xs tracking-[0.1em] text-pink uppercase transition-colors hover:bg-pink hover:text-black"
+    >
+      Empezar
+    </a>
+    <LanguageSwitcher id="desktop" />
+  </nav>
+
+  <div class="flex items-center gap-4 md:hidden">
+    <LanguageSwitcher id="mobile-bar" />
+    <button
+      id="menu-toggle"
+      type="button"
+      class="flex flex-col gap-1.5"
+      aria-label="Abrir menú de navegación"
+      data-i18n-aria-label="header.openMenuAria"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+    >
+      <span class="block h-px w-6 bg-white" aria-hidden="true"></span>
+      <span class="block h-px w-6 bg-white" aria-hidden="true"></span>
+    </button>
+  </div>
+</header>
+
+<div
+  id="mobile-menu"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Menú de navegación"
+  data-i18n-aria-label="header.mobileMenuAria"
+  aria-hidden="true"
+  class="fixed inset-0 z-40 flex translate-x-full flex-col justify-center gap-8 bg-black px-10 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] md:hidden"
+>
+  <button
+    id="menu-close"
+    type="button"
+    class="absolute top-5 right-6 text-3xl leading-none text-white"
+    aria-label="Cerrar menú de navegación"
+    data-i18n-aria-label="header.closeMenuAria"
+  >
+    &times;
+  </button>
+  <nav aria-label="Navegación móvil" data-i18n-aria-label="header.navMobileAria">
+    <ul class="flex flex-col gap-6 font-display text-3xl italic">
+      {links.map((l) => (
+        <li><a href={l.href} data-i18n={l.key} class="mobile-link">{l.label}</a></li>
+      ))}
+      <li><a href="/contacto/" data-i18n="header.ctaEmpezar" aria-label="Empezar un proyecto — ir a contacto" data-i18n-aria-label="header.ctaEmpezarAria" class="mobile-link text-pink">Empezar</a></li>
+    </ul>
+  </nav>
+</div>
+
+<script>
+  const toggle = document.getElementById("menu-toggle");
+  const close = document.getElementById("menu-close");
+  const menu = document.getElementById("mobile-menu");
+  const links = menu?.querySelectorAll<HTMLAnchorElement>(".mobile-link");
+
+  let lastFocus: HTMLElement | null = null;
+  const siblings = Array.from(document.body.children).filter((el) => el !== menu) as HTMLElement[];
+
+  function setInert(on: boolean) {
+    siblings.forEach((el) => {
+      if ("inert" in HTMLElement.prototype) {
+        (el as any).inert = on;
+      } else if (on) {
+        el.setAttribute("aria-hidden", "true");
+      } else {
+        el.removeAttribute("aria-hidden");
+      }
+    });
+  }
+
+  function getFocusable(): HTMLElement[] {
+    if (!menu) return [];
+    return Array.from(
+      menu.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )
+    ).filter((el) => !el.closest("[hidden]"));
+  }
+
+  function openMenu() {
+    lastFocus = document.activeElement as HTMLElement | null;
+    menu?.classList.remove("translate-x-full");
+    toggle?.setAttribute("aria-expanded", "true");
+    menu?.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+    setInert(true);
+    requestAnimationFrame(() => close?.focus());
+  }
+
+  function closeMenu() {
+    menu?.classList.add("translate-x-full");
+    toggle?.setAttribute("aria-expanded", "false");
+    menu?.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+    setInert(false);
+    if (lastFocus) lastFocus.focus();
+  }
+
+  function trapFocus(e: KeyboardEvent) {
+    if (e.key !== "Tab") return;
+    const focusable = getFocusable();
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (e.shiftKey) {
+      if (document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      }
+    } else {
+      if (document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  }
+
+  toggle?.addEventListener("click", openMenu);
+  close?.addEventListener("click", closeMenu);
+
+  document.addEventListener("keydown", (e) => {
+    const isOpen = !menu?.classList.contains("translate-x-full");
+    if (!isOpen) return;
+    if (e.key === "Escape") {
+      closeMenu();
+      return;
+    }
+    trapFocus(e);
+  });
+
+  links?.forEach((l) => l.addEventListener("click", closeMenu));
+</script>

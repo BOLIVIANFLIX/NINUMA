@@ -1,0 +1,48 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout
+  title="Mensaje recibido · NINUMÁ"
+  description="Tu mensaje ha llegado. Ariadna te responderá en menos de 48 horas."
+  path="/confirmacion/"
+  noindex={true}
+  nofollow={true}
+  motion={false}
+>
+  <main id="main-content" tabindex="-1">
+    <section class="flex min-h-[100dvh] items-center justify-center bg-black px-6 pt-32 pb-24 md:px-12">
+      <div class="flex w-full max-w-xl flex-col items-start gap-10">
+        <span
+          aria-hidden="true"
+          class="-ml-[0.05em] font-display text-[8rem] leading-[0.85] font-light tracking-tight text-pink/[.08] select-none md:text-[13rem]"
+        >
+          OK
+        </span>
+        <h1 class="-mt-4 font-display text-5xl leading-tight font-light tracking-tight md:text-7xl" data-i18n="legal.confirmacionHeading">
+          Mensaje<br />recibido.
+        </h1>
+        <p class="max-w-[42ch] text-[0.88rem] leading-[1.85] text-white/60" data-i18n="legal.confirmacionBody1">
+          Te respondo en menos de 48 horas en días laborables. Si tienes urgencia, escríbeme directamente a{" "}
+          <a href="mailto:ariadna@ninuma.es" class="text-pink hover:text-white">ariadna@ninuma.es</a> o llámame al{" "}
+          <a href="tel:+34666138465" class="text-pink hover:text-white">+34 666 13 84 65</a>.
+        </p>
+        <p class="max-w-[42ch] text-[0.88rem] leading-[1.85] text-white/60" data-i18n="legal.confirmacionBody2">
+          Mientras tanto, puedes echar un vistazo al catálogo o seguir el obrador en Instagram.
+        </p>
+        <div class="flex flex-wrap items-center gap-6">
+          <a
+            href="/creaciones/"
+            data-i18n="legal.confirmacionCtaCreaciones"
+            class="rounded-full border border-pink px-6 py-3 text-xs tracking-[0.1em] text-pink uppercase transition-colors hover:bg-pink hover:text-black"
+          >
+            Ver creaciones
+          </a>
+          <a href="/" data-i18n="legal.confirmacionCtaHome" class="text-[0.68rem] tracking-[0.2em] text-white/60 uppercase transition-colors hover:text-pink">
+            Volver al inicio →
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>

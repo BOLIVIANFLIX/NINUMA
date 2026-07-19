@@ -1,0 +1,64 @@
+---
+import Layout from "../layouts/Layout.astro";
+import CreacionesFiltros from "../components/CreacionesFiltros.astro";
+import CreacionesGrid from "../components/CreacionesGrid.astro";
+import { itemListSchema, breadcrumbSchema } from "../lib/schema";
+
+const piezaNombres = [
+  { name: "Medusa" },
+  { name: "Draculina" },
+  { name: "Lateralus" },
+  { name: "Halloween Collection 2024" },
+  { name: "The Velvet Room" },
+  { name: "Salomé" },
+  { name: "Dead End" },
+  { name: "Madre Noche" },
+];
+---
+
+<Layout
+  title="Creaciones · Pastelería de Autor · NINUMÁ Palma"
+  description="Portfolio de pastelería conceptual en Palma de Mallorca. Tartas de encargo únicas, bombones y ediciones especiales. Cada pieza nace de una referencia cultural. NINUMÁ, Ariadna Salvador."
+  path="/creaciones/"
+  schema={[
+    itemListSchema(piezaNombres),
+    breadcrumbSchema([
+      { name: "Inicio", item: "/" },
+      { name: "Creaciones", item: "/creaciones/" },
+    ]),
+  ]}
+>
+  <main id="main-content" tabindex="-1">
+    <header class="gs-reveal px-6 pt-20 pb-12 md:px-12 md:pt-40">
+      <nav aria-label="Ruta de navegación" data-i18n-aria-label="creaciones.breadcrumbAria" class="flex items-center gap-2 text-xs tracking-wide text-white/50 uppercase">
+        <a href="/" data-i18n="creaciones.breadcrumbInicio" class="hover:text-pink">Inicio</a>
+        <span aria-hidden="true">/</span>
+        <strong aria-current="page" data-i18n="creaciones.breadcrumbCurrent" class="text-white/80">Creaciones</strong>
+      </nav>
+      <h1 class="mt-4 font-display text-5xl leading-none md:text-7xl" data-i18n="creaciones.pageTitle">Creaciones</h1>
+      <p class="mt-4 max-w-[52ch] text-white/70" data-i18n="creaciones.pageIntro">
+        Cada pieza nace de una referencia cultural. Ninguna es igual a otra. Ninguna se repetirá.
+      </p>
+    </header>
+
+    <CreacionesFiltros />
+    <CreacionesGrid />
+
+    <section class="gs-reveal border-t border-white/10 px-6 py-24 text-center md:px-12 md:py-40" aria-labelledby="creaciones-cta-heading">
+      <span class="text-xs tracking-[0.14em] text-pink uppercase" data-i18n="creaciones.ctaEyebrow">¿Algo te ha inspirado?</span>
+      <h2 id="creaciones-cta-heading" class="h2-fluid mx-auto mt-4 max-w-3xl" data-i18n="creaciones.ctaHeading">
+        Tu pieza<br /><em class="text-pink">empieza aquí.</em>
+      </h2>
+      <a
+        href="mailto:ariadna@ninuma.es"
+        class="mt-8 inline-block font-display text-2xl text-pink underline decoration-pink/40 underline-offset-8 hover:decoration-pink md:text-3xl"
+      >
+        ariadna@ninuma.es
+      </a>
+      <div class="mt-8 flex flex-col gap-1 text-sm text-white/50">
+        <p data-i18n="creaciones.ctaNote1">Todos los encargos pasan por una conversación previa.</p>
+        <p data-i18n="creaciones.ctaNote2">Sin catálogo · Sin plantillas · Solo en Mallorca</p>
+      </div>
+    </section>
+  </main>
+</Layout>

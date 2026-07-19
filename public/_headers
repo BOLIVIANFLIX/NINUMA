@@ -1,0 +1,21 @@
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  Content-Security-Policy: __CSP_SCRIPT_HASHES__
+
+# El valor de arriba es un placeholder: scripts/generate-csp-headers.mjs lo
+# sustituye tras `astro build` por la CSP real, con el hash SHA-256 exacto de
+# cada <script> inline y atributo onload="" que existan en el HTML generado
+# (el script de detección de idioma en Layout.astro + un bloque JSON-LD
+# distinto por página). Así el hash nunca queda desincronizado del contenido:
+# si cambia el script o el JSON-LD, el hash se recalcula solo en cada build.
+# Editar este fichero a mano para tocar cualquier OTRA cabecera (headers no
+# relacionados con la CSP) sigue funcionando normal.
+
+# Astro fingerprints every filename in /_astro/ with a content hash, so if the
+# file ever changes it gets a new URL - safe to cache "forever".
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable

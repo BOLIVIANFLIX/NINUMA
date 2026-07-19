@@ -1,0 +1,78 @@
+---
+const sectores = [
+  {
+    n: "01",
+    title: "Hoteles de lujo y boutique",
+    text: "Amenities de habitación, cartas exclusivas de postre para restaurante o carta de té de tarde. Una firma de pastelería propia que el huésped lleva en la memoria.",
+    items: ["Amenities gourmet de bienvenida", "Carta de postre de autor", "Turn-down service de pastelería", "Caja para regalar en check-out"],
+  },
+  {
+    n: "02",
+    title: "Restaurantes y gastrobares",
+    text: "El postre es el último sabor que se recuerda de una comida. Ofrecemos una carta de postres de encargo o piezas en exclusiva que elevan el cierre de tu menú sin necesidad de un equipo de pastelería propio.",
+    items: ["Carta de postres de temporada", "Petit fours de autor", "Pastas de té y panes especiales", "Repostería para brunch o desayunos"],
+  },
+  {
+    n: "03",
+    title: "Beach clubs",
+    text: "El criterio no se negocia por el sol. Piezas pensadas para el calor, la sal y la temporada de Mallorca: resistentes, bellas y con argumento.",
+    items: ["Postres de playa resistentes al calor", "Bombonería de temporada", "Pastelería para cócteles y bienvenidas", "Propuesta de fin de tarde"],
+  },
+  {
+    n: "04",
+    title: "Co-Branding",
+    text: "Tu marca tiene una identidad. La nuestra también. Cuando coinciden, el resultado es una pieza que los dos podéis firmar. Con el ADN visual de ambas marcas, lo que tenga sentido.",
+    items: ["Ediciones limitadas de marca compartida", "Packaging con identidad dual", "Acciones de lanzamiento o presentación", "Colaboraciones para lifestyle, moda y diseño"],
+  },
+  {
+    n: "05",
+    title: "Regalos corporativos",
+    text: "Nada de cajas genéricas. El regalo corporativo de NINUMÁ lleva dentro una idea, una referencia a tu empresa o a la persona que lo recibe. Tú nos cuentas, nosotros lo convertimos.",
+    items: ["Bombonería personalizada con concepto", "Packaging con branding de empresa", "Piezas para clientes, equipo o eventos", "Pedidos desde una unidad"],
+  },
+  {
+    n: "06",
+    title: "Eventos privados",
+    text: "Aniversarios, lanzamientos de marca, fiestas privadas, cenas conceptuales. Una propuesta construida desde tu idea: qué quieres que sienta tu invitado cuando se lleva el primer bocado a la boca.",
+    items: ["Mesa dulce de autor", "Bombonería personalizada", "Packaging y presentación exclusiva", "Experiencia gastronómica conceptual"],
+  },
+];
+---
+
+<section id="sectores" class="border-b border-white/10 px-6 py-24 md:px-12 md:py-36">
+  <div class="mx-auto max-w-[1440px]">
+    <div class="gs-reveal mb-12 md:mb-16">
+      <span class="text-xs tracking-[0.14em] text-pink uppercase" data-i18n="presencia.sectoresEyebrow">Con quién trabajamos</span>
+      <h2 class="mt-4 max-w-xl h2-fluid" data-i18n="presencia.sectoresHeading">
+        Espacios que<br />elevan el detalle.
+      </h2>
+    </div>
+
+    <div
+      class="gs-stagger grid grid-cols-1 gap-px overflow-hidden border border-white/10 bg-white/10 md:grid-cols-2"
+      role="list"
+      aria-label="Sectores de colaboración"
+    >
+      {sectores.map((s) => (
+        <article class="gs-item group relative flex flex-col gap-5 bg-black p-8 transition-colors hover:bg-charcoal md:p-12" role="listitem">
+          <span class="pointer-events-none absolute top-6 right-8 font-display text-7xl text-white/[0.03] select-none" aria-hidden="true">
+            {s.n}
+          </span>
+          <h3 class="font-display text-2xl leading-tight md:text-3xl" data-i18n={`presencia.sector${s.n}Title`}>{s.title}</h3>
+          <p class="max-w-[44ch] text-sm text-white/70" data-i18n={`presencia.sector${s.n}Text`}>{s.text}</p>
+          <ul class="mt-2 flex flex-col gap-1" aria-label={`Servicios para ${s.title}`}>
+            {s.items.map((it, i) => (
+              <li
+                class="text-[0.65rem] tracking-[0.1em] text-white/60 uppercase before:mr-1.5 before:text-pink before:content-['—']"
+                data-i18n={`presencia.sector${s.n}Item${i + 1}`}
+              >
+                {it}
+              </li>
+            ))}
+          </ul>
+          <span class="mt-auto h-px w-6 bg-pink" aria-hidden="true"></span>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

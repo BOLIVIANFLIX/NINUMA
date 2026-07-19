@@ -1,0 +1,275 @@
+---
+---
+
+<div class="lg:sticky lg:top-28">
+  <h2 class="gs-reveal mb-8 font-display text-2xl md:text-3xl" data-i18n="contacto.formHeading">Cuéntame tu proyecto.</h2>
+
+  <form
+    id="encargo-form"
+    action="https://formspree.io/f/xjgqwdye"
+    method="POST"
+    novalidate
+    aria-label="Formulario de encargo o consulta a NINUMÁ"
+    class="gs-reveal flex flex-col gap-6"
+  >
+    <div class="absolute -left-[9999px]" aria-hidden="true">
+      <label for="website">No rellenar</label>
+      <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="text-xs tracking-wide text-white/60" for="f-nombre" data-i18n="contacto.formLabelNombre">
+        Nombre completo <span aria-hidden="true">*</span>
+      </label>
+      <input
+        class="border border-white/15 bg-transparent px-4 py-3 text-sm text-white outline-none focus:border-pink"
+        type="text"
+        id="f-nombre"
+        name="nombre"
+        autocomplete="name"
+        required
+        aria-required="true"
+        aria-invalid="false"
+        aria-describedby="f-nombre-error"
+      />
+      <span id="f-nombre-error" class="field-error text-xs text-pink-deep" role="alert"></span>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="text-xs tracking-wide text-white/60" for="f-email" data-i18n="contacto.formLabelEmail">
+        Correo electrónico <span aria-hidden="true">*</span>
+      </label>
+      <input
+        class="border border-white/15 bg-transparent px-4 py-3 text-sm text-white outline-none focus:border-pink"
+        type="email"
+        id="f-email"
+        name="email"
+        autocomplete="email"
+        required
+        aria-required="true"
+        aria-invalid="false"
+        aria-describedby="f-email-error"
+      />
+      <span id="f-email-error" class="field-error text-xs text-pink-deep" role="alert"></span>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="text-xs tracking-wide text-white/60" for="f-telefono" data-i18n="contacto.formLabelTelefono">Teléfono (opcional)</label>
+      <input
+        class="border border-white/15 bg-transparent px-4 py-3 text-sm text-white outline-none focus:border-pink"
+        type="tel"
+        id="f-telefono"
+        name="telefono"
+        autocomplete="tel"
+        aria-invalid="false"
+      />
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="text-xs tracking-wide text-white/60" for="f-tipo" data-i18n="contacto.formLabelTipo">
+        ¿Qué necesitas? <span aria-hidden="true">*</span>
+      </label>
+      <select
+        class="border border-white/15 bg-black px-4 py-3 text-sm text-white outline-none focus:border-pink"
+        id="f-tipo"
+        name="tipo"
+        required
+        aria-required="true"
+        aria-invalid="false"
+        aria-describedby="f-tipo-error"
+      >
+        <option value="" disabled selected data-i18n="contacto.formOptionSelect">Selecciona una opción</option>
+        <option value="encargo" data-i18n="contacto.formOptionEncargo">Encargo de pastelería (tarta, bombonería…)</option>
+        <option value="b2b" data-i18n="contacto.formOptionB2b">Colaboración B2B (hotel, restaurante, evento)</option>
+        <option value="edicion" data-i18n="contacto.formOptionEdicion">Información sobre edición especial</option>
+        <option value="informacion" data-i18n="contacto.formOptionInformacion">Información general</option>
+      </select>
+      <span id="f-tipo-error" class="field-error text-xs text-pink-deep" role="alert"></span>
+    </div>
+
+    <div class="hidden flex-col gap-2" id="field-fecha">
+      <label class="text-xs tracking-wide text-white/60" for="f-fecha" data-i18n="contacto.formLabelFecha">Fecha del encargo o evento</label>
+      <input
+        class="border border-white/15 bg-transparent px-4 py-3 text-sm text-white outline-none focus:border-pink"
+        type="date"
+        id="f-fecha"
+        name="fecha"
+        aria-describedby="f-fecha-hint"
+      />
+      <span id="f-fecha-hint" class="text-xs text-white/60" data-i18n="contacto.formHintFecha">Con cuánto tiempo de antelación quieres contar.</span>
+    </div>
+
+    <div class="hidden flex-col gap-2" id="field-personas">
+      <label class="text-xs tracking-wide text-white/60" for="f-personas" data-i18n="contacto.formLabelPersonas">
+        Número aproximado de comensales o asistentes
+      </label>
+      <input
+        class="border border-white/15 bg-transparent px-4 py-3 text-sm text-white outline-none focus:border-pink"
+        type="number"
+        id="f-personas"
+        name="personas"
+        min="1"
+        placeholder="Ej: 80"
+        data-i18n-placeholder="contacto.formPlaceholderPersonas"
+      />
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="text-xs tracking-wide text-white/60" for="f-descripcion" data-i18n="contacto.formLabelDescripcion">
+        Cuéntame <span aria-hidden="true">*</span>
+      </label>
+      <textarea
+        class="border border-white/15 bg-transparent px-4 py-3 text-sm text-white outline-none focus:border-pink"
+        id="f-descripcion"
+        name="descripcion"
+        rows="6"
+        required
+        aria-required="true"
+        aria-invalid="false"
+        aria-describedby="f-descripcion-error"
+        placeholder="Describe tu proyecto con el máximo detalle posible: qué necesitas, estilo o referencias, para cuándo, presupuesto orientativo…"
+        data-i18n-placeholder="contacto.formPlaceholderDescripcion"
+      ></textarea>
+      <span id="f-descripcion-error" class="field-error text-xs text-pink-deep" role="alert"></span>
+    </div>
+
+    <div class="flex items-start gap-3">
+      <input
+        type="checkbox"
+        id="rgpd-encargo"
+        name="rgpd"
+        required
+        aria-required="true"
+        aria-invalid="false"
+        aria-describedby="rgpd-encargo-error"
+        class="mt-1"
+      />
+      <label class="text-xs leading-relaxed text-white/60" for="rgpd-encargo" data-i18n="contacto.formRgpdLabel">
+        He leído y acepto la <a href="/privacidad/" class="text-pink underline underline-offset-2">política de privacidad</a>.
+        Mis datos se usarán exclusivamente para responder esta consulta.
+      </label>
+    </div>
+    <span id="rgpd-encargo-error" class="field-error -mt-4 text-xs text-pink-deep" role="alert"></span>
+
+    <button
+      type="submit"
+      id="btn-submit"
+      data-i18n="contacto.formSubmit"
+      class="mt-2 inline-flex w-fit items-center rounded-full border border-pink px-6 py-3 text-xs tracking-[0.1em] text-pink uppercase transition-colors hover:bg-pink hover:text-black disabled:opacity-50"
+    >
+      Enviar →
+    </button>
+
+    <p id="form-error-msg" class="hidden text-xs text-pink-deep" role="alert" aria-live="assertive"></p>
+  </form>
+
+  <div id="form-success" class="hidden border border-white/10 bg-charcoal p-10" tabindex="-1" aria-live="polite">
+    <h3 class="font-display text-2xl" data-i18n="contacto.formSuccessHeading">Mensaje recibido.</h3>
+    <p class="mt-4 text-sm leading-relaxed text-white/60" data-i18n="contacto.formSuccessBody">
+      Gracias. Te respondo antes de 48 horas en días laborables. Si tienes urgencia, escríbeme directamente a
+      <a href="mailto:ariadna@ninuma.es" class="text-pink">ariadna@ninuma.es</a>
+      o llámame al <a href="tel:+34666138465" class="text-pink">+34 666 13 84 65</a>.
+    </p>
+  </div>
+</div>
+
+<script>
+  import { t } from "../lib/i18n";
+  import { validateField, isHoneypotFilled, submitForm, type ValidationMessages } from "../lib/form";
+
+  const MESSAGES: ValidationMessages = {
+    required: ["contacto.validationRequired", "Este campo es obligatorio."],
+    email: ["contacto.validationEmail", "Introduce un correo electrónico válido."],
+    rgpd: ["contacto.validationRgpd", "Debes aceptar la política de privacidad para continuar."],
+  };
+
+  const form = document.getElementById("encargo-form") as HTMLFormElement | null;
+  const btn = document.getElementById("btn-submit") as HTMLButtonElement | null;
+  const successEl = document.getElementById("form-success");
+  const errorMsgEl = document.getElementById("form-error-msg");
+  const tipoSelect = document.getElementById("f-tipo") as HTMLSelectElement | null;
+  const fieldFecha = document.getElementById("field-fecha");
+  const fieldPersonas = document.getElementById("field-personas");
+
+  // ---- Prefill desde ?tipo= (deep-link desde /presencia/) ----
+  const urlParams = new URLSearchParams(window.location.search);
+  const tipoParam = urlParams.get("tipo");
+  if (tipoParam && tipoSelect) {
+    tipoSelect.value = tipoParam;
+    tipoSelect.dispatchEvent(new Event("change"));
+  }
+
+  // ---- Campos condicionales por tipo ----
+  function updateConditionalFields() {
+    if (!tipoSelect) return;
+    const v = tipoSelect.value;
+    const showFecha = v === "encargo" || v === "b2b" || v === "edicion";
+    const showPersonas = v === "b2b";
+    fieldFecha?.classList.toggle("hidden", !showFecha);
+    fieldFecha?.classList.toggle("flex", showFecha);
+    fieldPersonas?.classList.toggle("hidden", !showPersonas);
+    fieldPersonas?.classList.toggle("flex", showPersonas);
+  }
+  tipoSelect?.addEventListener("change", updateConditionalFields);
+  updateConditionalFields();
+
+  // ---- min=hoy en el input de fecha ----
+  const fechaInput = document.getElementById("f-fecha") as HTMLInputElement | null;
+  if (fechaInput && !fechaInput.getAttribute("min")) {
+    fechaInput.setAttribute("min", new Date().toISOString().split("T")[0]);
+  }
+
+  const requiredFields = form?.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
+    "input[required], select[required], textarea[required]"
+  );
+  requiredFields?.forEach((input) => {
+    input.addEventListener("blur", () => validateField(input, MESSAGES));
+    if (input instanceof HTMLInputElement && input.type === "checkbox") {
+      input.addEventListener("change", () => validateField(input, MESSAGES));
+    }
+  });
+
+  // ---- Envío ----
+  form?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (!form || !btn) return;
+
+    if (isHoneypotFilled(form)) return;
+
+    let allOk = true;
+    requiredFields?.forEach((f) => {
+      if (!validateField(f, MESSAGES)) allOk = false;
+    });
+    if (!allOk) {
+      const firstErr = form.querySelector<HTMLElement>('[aria-invalid="true"]');
+      firstErr?.focus();
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = t("contacto.sending", "Enviando…");
+    errorMsgEl?.classList.add("hidden");
+
+    submitForm(form)
+      .then((res) => {
+        if (res.ok) {
+          form.classList.add("hidden");
+          successEl?.classList.remove("hidden");
+          successEl?.focus();
+        } else {
+          throw new Error(`HTTP ${res.status}`);
+        }
+      })
+      .catch(() => {
+        btn.disabled = false;
+        btn.textContent = t("contacto.formSubmit", "Enviar →");
+        if (errorMsgEl) {
+          errorMsgEl.textContent = t(
+            "contacto.submitError",
+            "No se ha podido enviar el formulario. Por favor, escríbenos directamente a ariadna@ninuma.es."
+          );
+          errorMsgEl.classList.remove("hidden");
+        }
+      });
+  });
+</script>

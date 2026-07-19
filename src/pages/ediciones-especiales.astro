@@ -1,0 +1,39 @@
+---
+import Layout from "../layouts/Layout.astro";
+import EdicionHeroActiva from "../components/EdicionHeroActiva.astro";
+import EdicionDetalle from "../components/EdicionDetalle.astro";
+import EdicionComoFunciona from "../components/EdicionComoFunciona.astro";
+import EdicionReservaForm from "../components/EdicionReservaForm.astro";
+import EdicionEstadoEspera from "../components/EdicionEstadoEspera.astro";
+import EdicionArchivo from "../components/EdicionArchivo.astro";
+import { getActiveEdition } from "../lib/edition";
+import { breadcrumbSchema } from "../lib/schema";
+
+const EDITION = await getActiveEdition();
+---
+
+<Layout
+  title="Ediciones Especiales · NINUMÁ · Palma de Mallorca"
+  description="Ediciones de pastelería conceptual de temporada y encargo en Palma de Mallorca. Producciones limitadas de NINUMÁ: Halloween, Navidad, San Valentín, Día de la Madre. Ariadna Salvador."
+  path="/ediciones-especiales/"
+  schema={breadcrumbSchema([
+    { name: "Inicio", item: "/" },
+    { name: "Ediciones Especiales", item: "/ediciones-especiales/" },
+  ])}
+>
+  <main id="main-content" tabindex="-1">
+    {
+      EDITION ? (
+        <>
+          <EdicionHeroActiva edition={EDITION} />
+          <EdicionDetalle edition={EDITION} />
+          <EdicionComoFunciona />
+          <EdicionReservaForm />
+        </>
+      ) : (
+        <EdicionEstadoEspera />
+      )
+    }
+    <EdicionArchivo />
+  </main>
+</Layout>

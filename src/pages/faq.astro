@@ -1,0 +1,102 @@
+---
+import Layout from "../layouts/Layout.astro";
+import FaqHero from "../components/FaqHero.astro";
+import FaqLista from "../components/FaqLista.astro";
+import { faqSchema, breadcrumbSchema } from "../lib/schema";
+
+const FAQS = [
+  {
+    question: "¿Hacéis envíos fuera de Mallorca?",
+    questionKey: "faq.q1",
+    answer: "No. Todos los encargos son de recogida en el obrador, en Palma de Mallorca. No realizamos envíos a otras zonas.",
+    answerKey: "faq.a1",
+  },
+  {
+    question: "¿Con cuánto tiempo de antelación debo hacer mi encargo?",
+    questionKey: "faq.q2",
+    answer:
+      "Depende de la pieza y de la carga de trabajo del momento. Para las ediciones especiales hay siempre una fecha de cierre de encargos indicada en la propia edición. Para tartas o encargos personalizados, cuanto antes nos escribas, más margen tenemos para diseñar la pieza contigo.",
+    answerKey: "faq.a2",
+  },
+  {
+    question: "¿Cómo funciona un encargo personalizado?",
+    questionKey: "faq.q3",
+    answer:
+      "El proceso tiene cinco fases: la consulta inicial, una entrevista para entender tu universo (películas, música, recuerdos...), el diseño de una propuesta única, la creación en el obrador y la entrega. No trabajamos con catálogo, cada pieza se diseña desde cero.",
+    answerKey: "faq.a3",
+  },
+  {
+    question: "¿Tenéis un catálogo fijo de sabores o diseños?",
+    questionKey: "faq.q4",
+    answer:
+      "No. Cada pieza de NINUMÁ nace de una referencia cultural — una película, un disco, un libro — y se diseña como una pieza única. No hay dos encargos iguales.",
+    answerKey: "faq.a4",
+  },
+  {
+    question: "¿Cuánto tardáis en responder?",
+    questionKey: "faq.q5",
+    answer:
+      "Respondemos en menos de 48 horas en días laborables. Si tienes una fecha muy próxima o una urgencia, lo más rápido es llamar o escribir por WhatsApp/Instagram.",
+    answerKey: "faq.a5",
+  },
+  {
+    question: "¿Dónde está el obrador y puedo recoger mi encargo allí?",
+    questionKey: "faq.q6",
+    answer:
+      "Sí, la recogida es siempre en el obrador: Carrer de Guillem Massot, 48, 07003 Palma de Mallorca. El horario es de lunes a jueves de 10:00 a 13:30, viernes de 10:30 a 13:30 y sábados de 10:00 a 13:30. Domingos cerrado.",
+    answerKey: "faq.a6",
+  },
+  {
+    question: "¿Qué son las Ediciones Especiales?",
+    questionKey: "faq.q7",
+    answer:
+      "Son colecciones limitadas y temáticas — por ejemplo inspiradas en una fecha señalada o en una referencia cultural concreta — con un número de unidades y una fecha de cierre de encargos. Cuando se agotan o se cierra el plazo, no vuelven a estar disponibles hasta la siguiente edición.",
+    answerKey: "faq.a7",
+  },
+  {
+    question: "¿Trabajáis con hoteles, restaurantes o empresas?",
+    questionKey: "faq.q8",
+    answer:
+      "Sí. Ofrecemos pastelería de autor para hostelería y eventos: cartas de postre exclusivas, amenities, mesas dulces, regalos corporativos y colaboraciones de marca en Mallorca. Puedes contarnos tu proyecto desde la página de B2B.",
+    answerKey: "faq.a8",
+  },
+  {
+    question: "¿Puedo encargar una tarta o bombones para un evento privado?",
+    questionKey: "faq.q9",
+    answer:
+      "Sí, hacemos tartas de encargo y piezas para celebraciones y eventos privados, siempre con recogida en el obrador.",
+    answerKey: "faq.a9",
+  },
+  {
+    question: "¿Podéis adaptar un encargo a alergias o intolerancias?",
+    questionKey: "faq.q10",
+    answer: "Cuéntanoslo en el formulario de encargo con el máximo detalle — lo valoramos caso por caso según la pieza.",
+    answerKey: "faq.a10",
+  },
+  {
+    question: "¿Cómo os contacto?",
+    questionKey: "faq.q11",
+    answer:
+      "A través del formulario de contacto, por email (ariadna@ninuma.es), por teléfono (+34 666 13 84 65) o por Instagram (@ninuma_concept).",
+    answerKey: "faq.a11",
+  },
+];
+---
+
+<Layout
+  title="Preguntas Frecuentes · NINUMÁ · Palma de Mallorca"
+  description="Resolvemos las dudas más habituales sobre encargos, recogida, plazos y ediciones especiales de NINUMÁ, pastelería conceptual en Palma de Mallorca."
+  path="/faq/"
+  schema={[
+    faqSchema(FAQS.map((f) => ({ question: f.question, answer: f.answer }))),
+    breadcrumbSchema([
+      { name: "Inicio", item: "/" },
+      { name: "Preguntas Frecuentes", item: "/faq/" },
+    ]),
+  ]}
+>
+  <main id="main-content" tabindex="-1">
+    <FaqHero />
+    <FaqLista faqs={FAQS} />
+  </main>
+</Layout>

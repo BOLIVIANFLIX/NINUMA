@@ -1,0 +1,39 @@
+---
+import Layout from "../layouts/Layout.astro";
+import ContactoInfo from "../components/ContactoInfo.astro";
+import ContactoForm from "../components/ContactoForm.astro";
+import ContactoUbicacion from "../components/ContactoUbicacion.astro";
+import { contactPageSchema, breadcrumbSchema } from "../lib/schema";
+---
+
+<Layout
+  title="Contacto · NINUMÁ · Encargos de pastelería Palma de Mallorca"
+  description="Encarga pastelería conceptual de autor en Palma de Mallorca. Tartas de encargo, bombonería, mesas dulces y colaboraciones B2B. Contacta con Ariadna Salvador — NINUMÁ."
+  path="/contacto/"
+  schema={[
+    contactPageSchema(),
+    breadcrumbSchema([
+      { name: "Inicio", item: "/" },
+      { name: "Contacto", item: "/contacto/" },
+    ]),
+  ]}
+>
+  <main id="main-content" tabindex="-1">
+    <section aria-labelledby="contacto-title" class="px-6 pt-20 pb-24 md:px-12 md:pt-40 md:pb-36">
+      <div class="mx-auto max-w-[1440px]">
+        <nav aria-label="Ruta de navegación" data-i18n-aria-label="contacto.breadcrumbAria" class="mb-12 flex items-center gap-2 text-xs text-white/60">
+          <a href="/" data-i18n="contacto.breadcrumbInicio" class="hover:text-pink">Inicio</a>
+          <span aria-hidden="true">/</span>
+          <strong aria-current="page" data-i18n="contacto.breadcrumbCurrent" class="font-normal text-white/70">Contacto</strong>
+        </nav>
+
+        <div class="grid gap-16 lg:grid-cols-2 lg:gap-24">
+          <ContactoInfo />
+          <ContactoForm />
+        </div>
+      </div>
+    </section>
+
+    <ContactoUbicacion />
+  </main>
+</Layout>

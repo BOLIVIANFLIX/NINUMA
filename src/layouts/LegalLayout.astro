@@ -1,0 +1,72 @@
+---
+import Layout from "./Layout.astro";
+import { breadcrumbSchema } from "../lib/schema";
+
+interface Section {
+  id: string;
+  label: string;
+  i18nKey?: string;
+}
+
+interface Props {
+  title: string;
+  description: string;
+  path: string;
+  pageTitle: string;
+  breadcrumbLabel: string;
+  dateLabel: string;
+  sections: Section[];
+  titleKey?: string;
+  breadcrumbKey?: string;
+  dateKey?: string;
+}
+
+const { title, description, path, pageTitle, breadcrumbLabel, dateLabel, sections, titleKey, breadcrumbKey, dateKey } =
+  Astro.props;
+---
+
+<Layout
+  title={title}
+  description={description}
+  path={path}
+  noindex={true}
+  motion={false}
+  schema={breadcrumbSchema([{ name: "Inicio", item: "/" }, { name: breadcrumbLabel, item: path }])}
+>
+  <main id="main-content" tabindex="-1">
+    <section class="border-b border-white/[.07] bg-charcoal px-6 pt-36 pb-12 md:px-12 md:pt-44 md:pb-16">
+      <nav aria-label="Ruta de navegación" data-i18n-aria-label="legal.breadcrumbAria" class="flex items-center gap-2 text-xs text-white/50">
+        <a href="/" data-i18n="legal.breadcrumbInicio" class="hover:text-pink">Inicio</a>
+        <span aria-hidden="true">/</span>
+        <strong aria-current="page" class="font-normal text-white/80" data-i18n={breadcrumbKey}>{breadcrumbLabel}</strong>
+      </nav>
+      <h1 class="mt-6 font-display text-5xl leading-[0.95] tracking-tight md:text-7xl" data-i18n={titleKey} set:html={pageTitle} />
+      <p class="mt-4 text-[0.72rem] tracking-[0.12em] text-white/60" data-i18n={dateKey}>{dateLabel}</p>
+    </section>
+
+    <section class="bg-black px-6 py-16 md:px-12 md:py-24">
+      <div class="mx-auto grid max-w-[1440px] items-start gap-12 lg:grid-cols-[240px_1fr] lg:gap-20">
+        <nav
+          aria-label={`Índice de ${breadcrumbLabel.toLowerCase()}`}
+          class="flex flex-col overflow-hidden border border-white/[.07] lg:sticky lg:top-24"
+        >
+          <p class="border-b border-white/[.07] bg-charcoal px-5 py-3.5 text-[0.58rem] font-medium tracking-[0.22em] text-white/50 uppercase" data-i18n="legal.indiceLabel">
+            Índice
+          </p>
+          {sections.map((s, i) => (
+            <a
+              href={`#${s.id}`}
+              class="border-b border-white/5 px-5 py-3.5 text-[0.78rem] leading-relaxed text-white/60 transition-colors last:border-none hover:bg-pink/[.03] hover:text-white"
+            >
+              {i + 1}. <span data-i18n={s.i18nKey}>{s.label}</span>
+            </a>
+          ))}
+        </nav>
+
+        <div class="flex flex-col gap-12 md:gap-20">
+          <slot />
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>

@@ -1,0 +1,141 @@
+---
+import "../styles/global.css";
+import EdicionBanner from "../components/EdicionBanner.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import SkipLink from "../components/SkipLink.astro";
+import CookieConsent from "../components/CookieConsent.astro";
+import Cursor from "../components/Cursor.astro";
+import Animations from "../components/Animations.astro";
+import I18nBoot from "../components/I18nBoot.astro";
+import WhatsAppButton from "../components/WhatsAppButton.astro";
+
+interface Props {
+  title: string;
+  description: string;
+  path: string;
+  ogImage?: string;
+  schema?: Record<string, any> | Record<string, any>[];
+  noindex?: boolean;
+  nofollow?: boolean;
+  /** Desactiva en páginas que no usan clases .gs-reveal/.gs-stagger/.tilt-card/.split-target,
+   * para no cargar GSAP + ScrollTrigger + SplitText + Lenis sin necesidad. */
+  motion?: boolean;
+}
+
+const {
+  title,
+  description,
+  path,
+  ogImage = "/assets/img/og-image.png",
+  schema,
+  noindex = false,
+  nofollow = false,
+  motion = true,
+} = Astro.props;
+
+const canonicalURL = new URL(path, Astro.site);
+const ogImageURL = new URL(ogImage, Astro.site);
+const robotsContent = `${noindex ? "noindex" : "index"}, ${nofollow ? "nofollow" : "follow"}`;
+const schemaList = schema ? (Array.isArray(schema) ? schema : [schema]) : [];
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content={robotsContent} />
+    <link rel="canonical" href={canonicalURL} />
+    <meta name="theme-color" content="#080808" />
+
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="msapplication-config" content="/browserconfig.xml" />
+    <link rel="me" href="https://www.instagram.com/ninuma_concept" />
+    <link rel="me" href="https://www.tiktok.com/@ninuma_concept" />
+    <link rel="me" href="https://www.youtube.com/@ninuma_concept" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImageURL} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:site_name" content="NINUMÁ" />
+
+    <meta name="twitter:site" content="@ninuma_concept" />
+    <meta name="twitter:creator" content="@ninuma_concept" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageURL} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap"
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap"
+      />
+      <style>
+        /* Sin JS no hay GSAP para revelar estos elementos ni cursor personalizado —
+           mostrarlos directamente y devolver el cursor del sistema. */
+        .split-target {
+          opacity: 1 !important;
+        }
+        body {
+          cursor: auto !important;
+        }
+      </style>
+    </noscript>
+
+    {/* JSON.stringify no escapa "</", así que si algún día este contenido deja de ser
+       texto estático (p.ej. viniera de un CMS), un valor con "</script>" podría cerrar
+       la etiqueta y ejecutarse como HTML/JS. Escapamos "<" a su secuencia Unicode como
+       medida defensiva permanente, aunque hoy todo el contenido es de confianza. */}
+    {schemaList.map((block) => (
+      <script type="application/ld+json" set:html={JSON.stringify(block).replace(/</g, "\\u003c")} is:inline />
+    ))}
+
+    {/* La CSP (public/_headers) permite este script y el onload="" del <link
+       rel="preload"> de Google Fonts por hash SHA-256, sin 'unsafe-inline'.
+       El hash se recalcula solo en cada build (scripts/generate-csp-headers.mjs),
+       así que no hace falta tocar nada a mano si cambias su contenido. */}
+    <script is:inline>
+      (function () {
+        try {
+          var lang = localStorage.getItem("ninuma_lang");
+          if (lang && lang !== "es") {
+            document.documentElement.setAttribute("data-lang-loading", "true");
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <Cursor />
+    <SkipLink />
+    <EdicionBanner />
+    <Header currentPath={path} />
+    <slot />
+    <Footer />
+    <CookieConsent />
+    <WhatsAppButton />
+    {motion && <Animations />}
+    <I18nBoot />
+  </body>
+</html>

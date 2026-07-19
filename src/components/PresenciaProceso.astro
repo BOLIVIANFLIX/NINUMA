@@ -1,0 +1,30 @@
+---
+const steps = [
+  { n: "01", title: "Primera conversación", text: "Me explicas tu espacio, tus necesidades y el volumen aproximado. Yo escucho antes de proponer nada." },
+  { n: "02", title: "Propuesta específica", text: "Preparo una propuesta concreta para tu espacio: tipos de pieza, formatos, frecuencia y presupuesto orientativo." },
+  { n: "03", title: "Prueba de producto", text: "Antes de cualquier acuerdo, probamos. Te traigo una selección para que pruebes y decidas con criterio propio." },
+  { n: "04", title: "Acuerdo y producción", text: "Si encaja, formalizamos el acuerdo con todos los detalles logísticos y empezamos la producción regular." },
+];
+---
+
+<section id="proceso-b2b" class="border-b border-white/10 bg-charcoal px-6 py-24 md:px-12 md:py-36">
+  <div class="mx-auto max-w-[1440px]">
+    <div class="gs-reveal">
+      <span class="text-xs tracking-[0.14em] text-pink uppercase" data-i18n="presencia.procesoEyebrow">Cómo empezamos</span>
+      <h2 class="mt-4 h2-fluid" data-i18n="presencia.procesoHeading">Directo.<br />Sin rodeos.</h2>
+    </div>
+
+    <ol
+      class="gs-stagger mt-12 grid grid-cols-1 gap-px overflow-hidden border border-white/10 bg-white/10 sm:grid-cols-2 md:mt-16 md:grid-cols-4"
+      aria-label="Pasos del proceso de colaboración B2B"
+    >
+      {steps.map((s) => (
+        <li class="gs-item flex flex-col gap-3 bg-black p-8">
+          <span class="font-display text-4xl text-pink/20">{s.n}</span>
+          <h3 class="font-display text-lg font-medium" data-i18n={`presencia.procesoStep${s.n}Title`}>{s.title}</h3>
+          <p class="text-sm text-white/70" data-i18n={`presencia.procesoStep${s.n}Text`}>{s.text}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>

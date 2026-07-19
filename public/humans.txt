@@ -1,0 +1,27 @@
+/* NINUMÁ — Obrador de pastelería conceptual */
+/* Palma de Mallorca, España               */
+
+
+/* EQUIPO */
+
+Ariadna Salvador Ávila
+  Pastelera, diseñadora, creadora
+  Instagram: @ninuma_concept
+  TikTok: @ninuma_concept
+  YouTube: @ninuma_concept
+  Ubicación: Palma de Mallorca, España
+
+
+/* OBRADOR */
+
+Carrer de Guillem Massot, 48
+07003 Palma de Mallorca
+Lunes a sábado · 10:00–13:30
+
+
+/* SITIO */
+
+Idioma: Español
+Última actualización: 2026-07
+Estándares: Astro, Tailwind CSS, GSAP, Lenis
+Accesibilidad: WCAG 2.1 AA

@@ -1,0 +1,24 @@
+---
+import Layout from "../layouts/Layout.astro";
+import ObradorHero from "../components/ObradorHero.astro";
+import ObradorPerfil from "../components/ObradorPerfil.astro";
+import ObradorFilosofia from "../components/ObradorFilosofia.astro";
+import ObradorGaleria from "../components/ObradorGaleria.astro";
+import ObradorCafeCTA from "../components/ObradorCafeCTA.astro";
+import { aboutPageSchema, breadcrumbSchema } from "../lib/schema";
+---
+
+<Layout
+  title="El Obrador · NINUMÁ · Palma de Mallorca"
+  description="Ariadna Salvador Ávila, diseñadora y pastelera, fundadora de NINUMÁ en Palma de Mallorca. Pastelería conceptual de autor, café de especialidad y narrativa cultural en el obrador de Guillem Massot, 48."
+  path="/obrador/"
+  schema={[aboutPageSchema(), breadcrumbSchema([{ name: "Inicio", item: "/" }, { name: "El Obrador", item: "/obrador/" }])]}
+>
+  <main id="main-content" tabindex="-1">
+    <ObradorHero />
+    <ObradorPerfil />
+    <ObradorFilosofia />
+    <ObradorGaleria />
+    <ObradorCafeCTA />
+  </main>
+</Layout>

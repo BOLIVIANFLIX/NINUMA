@@ -1,0 +1,64 @@
+---
+const pilares = [
+  {
+    n: "01",
+    title: "La pregunta",
+    text: "¿Yo me lo comería? No existe otro criterio de calidad en este obrador. No hay guías ni tendencias que manden por encima de esa pregunta.",
+  },
+  {
+    n: "02",
+    title: "El diseño subordinado",
+    text: "Una pieza puede ser visualmente impactante y saber a nada. Eso no es NINUMÁ. El diseño existe para potenciar el sabor, nunca para camuflarlo.",
+  },
+  {
+    n: "03",
+    title: "La edición limitada",
+    text: "Producimos lo que podemos hacer bien. Cuando se acaba, se acaba. La limitación es una decisión filosófica, no una carencia logística.",
+  },
+];
+---
+
+<section id="filosofia" class="border-b border-white/10 bg-charcoal px-6 py-24 md:px-12 md:py-36">
+  <div class="mx-auto max-w-[1440px]">
+    <div class="gs-reveal max-w-2xl">
+      <span class="text-xs tracking-[0.14em] text-pink uppercase" data-i18n="obrador.filosofiaEyebrow">La filosofía</span>
+      <h2 class="mt-4 h2-fluid" data-i18n="obrador.filosofiaHeading">Diseño en dulce.<br />Concepto primero.</h2>
+      <p class="mt-6 max-w-[52ch] text-white/70" data-i18n="obrador.filosofiaParagraph1">
+        Cada creación de NINUMÁ nace de una idea antes que de una receta. Las referencias son la cultura pop, el
+        expresionismo alemán, el rococó. Cualquier corriente que tenga algo que decir puede convertirse en un postre
+        si el argumento es sólido.
+      </p>
+      <p class="mt-4 max-w-[52ch] text-white/70" data-i18n="obrador.filosofiaParagraph2">
+        El sabor es el hilo conductor. El diseño lo sirve. La técnica lo hace posible sin que se note el esfuerzo.
+      </p>
+    </div>
+
+    <div class="gs-stagger mt-16 grid divide-y divide-white/10 border border-white/10 md:grid-cols-3 md:divide-x md:divide-y-0">
+      {pilares.map((p) => (
+        <article class="gs-item relative flex flex-col gap-5 bg-black p-8 md:p-10">
+          <span class="pointer-events-none absolute top-4 right-6 font-display text-6xl text-white/[0.04] select-none" aria-hidden="true">
+            {p.n}
+          </span>
+          <h3 class="font-display text-lg tracking-wide uppercase" data-i18n={`obrador.filosofiaPillar${p.n}Title`}>{p.title}</h3>
+          <p class="text-sm text-white/70" data-i18n={`obrador.filosofiaPillar${p.n}Text`}>{p.text}</p>
+          <span class="mt-auto h-px w-6 bg-pink" aria-hidden="true"></span>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<section class="gs-reveal border-b border-white/10 bg-black px-6 py-24 text-center md:px-12 md:py-32" aria-label="Cita de Ariadna Salvador">
+  <div class="mx-auto flex max-w-3xl flex-col items-center gap-8">
+    <span class="font-display text-6xl text-pink/15" aria-hidden="true">&rdquo;</span>
+    <blockquote class="font-display text-2xl leading-snug md:text-4xl" data-i18n="obrador.filosofiaQuote">
+      El diseño nunca está por encima del sabor. Pero sin diseño,
+      <em class="text-pink not-italic">el sabor no tiene voz.</em>
+    </blockquote>
+    <div class="flex items-center gap-4 text-xs tracking-[0.18em] text-white/50 uppercase">
+      <span class="h-px w-5 bg-white/40" aria-hidden="true"></span>
+      Ariadna Salvador · NINUMÁ
+      <span class="h-px w-5 bg-white/40" aria-hidden="true"></span>
+    </div>
+  </div>
+</section>

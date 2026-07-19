@@ -1,0 +1,27 @@
+---
+import Layout from "../layouts/Layout.astro";
+import PresenciaHero from "../components/PresenciaHero.astro";
+import PresenciaSectores from "../components/PresenciaSectores.astro";
+import PresenciaDiferenciadores from "../components/PresenciaDiferenciadores.astro";
+import PresenciaProceso from "../components/PresenciaProceso.astro";
+import PresenciaServiciosCTA from "../components/PresenciaServiciosCTA.astro";
+import { serviceSchema, breadcrumbSchema } from "../lib/schema";
+---
+
+<Layout
+  title="Presencia B2B · NINUMÁ · Pastelería para hoteles y restaurantes Palma de Mallorca"
+  description="Pastelería de autor para hoteles de lujo, restaurantes, beach clubs y eventos privados en Palma de Mallorca. Cartas exclusivas de postre, amenities gourmet y pastelería para eventos B2B. NINUMÁ by Ariadna Salvador."
+  path="/presencia/"
+  schema={[
+    serviceSchema(["Pastelería B2B", "Amenities gourmet", "Carta de postres", "Pastelería para eventos"]),
+    breadcrumbSchema([{ name: "Inicio", item: "/" }, { name: "Presencia", item: "/presencia/" }]),
+  ]}
+>
+  <main id="main-content" tabindex="-1">
+    <PresenciaHero />
+    <PresenciaSectores />
+    <PresenciaDiferenciadores />
+    <PresenciaProceso />
+    <PresenciaServiciosCTA />
+  </main>
+</Layout>

@@ -1,0 +1,149 @@
+@import "tailwindcss";
+
+@theme {
+  --color-black:      #080808;
+  --color-charcoal:   #111111;
+  --color-charcoal-2: #191919;
+  --color-white:      #f2ede8;
+  --color-gray:       #7a7a7a;
+  --color-gray-light: #949494;
+  --color-pink:       #f0b4c4;
+  --color-pink-deep:  #c98499;
+
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-body:    "Inter", system-ui, sans-serif;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-std: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+html {
+  scroll-behavior: auto; /* Lenis owns scroll easing */
+  overflow-x: hidden;
+  color-scheme: dark;
+  --banner-h: 0px; /* JS la fija al alto real cuando hay edición activa */
+}
+
+body {
+  background: var(--color-black);
+  color: var(--color-white);
+  font-family: var(--font-body);
+  font-weight: 300;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  cursor: none;
+  padding-top: var(--banner-h);
+}
+
+@media (hover: none) {
+  body {
+    cursor: auto;
+  }
+}
+
+/* Evita el parpadeo de texto en español mientras se carga la traducción
+   guardada del usuario, en cada navegación de página (sitio multi-página). */
+html[data-lang-loading] body {
+  visibility: hidden;
+}
+
+@layer base {
+  img,
+  video {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: var(--color-pink);
+  color: var(--color-black);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Escala fluida para titulares de sección — crece con el viewport en vez
+   de saltar entre breakpoints, para que se vean grandes en escritorio
+   ancho sin desbordar en móvil. */
+.h2-fluid {
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 6.5vw, 7.5rem);
+  font-weight: 300;
+  line-height: 1.04;
+  letter-spacing: -0.01em;
+}
+
+/* Cursor personalizado — solo en dispositivos con puntero fino (ratón). */
+.cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  background: var(--color-pink);
+  border-radius: 9999px;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition:
+    width 0.35s var(--ease-out),
+    height 0.35s var(--ease-out),
+    background 0.35s ease,
+    opacity 0.25s ease,
+    border-color 0.35s ease;
+  will-change: transform;
+}
+.cursor--hover {
+  width: 52px;
+  height: 52px;
+  background: transparent;
+  border: 1px solid var(--color-pink);
+}
+.cursor--hidden {
+  opacity: 0;
+}
+
+@media (hover: none) {
+  .cursor {
+    display: none;
+  }
+}
+
+/* Split-text targets start hidden until GSAP measures + animates them,
+   so users never see a layout flash of unsplit text before JS runs. */
+.split-target {
+  opacity: 0;
+}
+.split-ready .split-target {
+  opacity: 1;
+}
+
+a:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--color-pink);
+  outline-offset: 3px;
+}
+
+/* Reserva altura fija para los mensajes de error de formulario, para que
+   aparecer/desaparecer no desplace el control siguiente justo cuando el
+   usuario hace clic en él. */
+.field-error {
+  display: block;
+  min-height: 1.1em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

@@ -1,0 +1,40 @@
+---
+const steps = [
+  { n: "I", title: "La Consulta", text: "Cuéntame tu universo. No hay formularios, hay conversación.", key: "proceso.step1" },
+  { n: "II", title: "La Entrevista", text: "Películas, música, colores, recuerdos, libros. Todo da contexto para crear algo que no existe todavía.", key: "proceso.step2" },
+  { n: "III", title: "El Diseño", text: "Una propuesta única. No hay plantillas ni catálogo de formas. Hay una idea que cobra forma.", key: "proceso.step3" },
+  { n: "IV", title: "La Creación", text: "El obrador como estudio de diseño. Cada pieza, una producción limitada.", key: "proceso.step4" },
+  { n: "V", title: "La Entrega", text: "Solo en Mallorca. La calidad no viaja en frío y no me arriesgo a garantizar algo que no puedo controlar.", key: "proceso.step5" },
+];
+---
+
+<section id="obrador" class="border-t border-white/10 px-6 py-24 md:px-12 md:py-36">
+  <div class="mx-auto max-w-[1440px]">
+    <div class="gs-reveal max-w-[46ch]">
+      <span class="text-xs tracking-[0.14em] text-pink uppercase" data-i18n="proceso.eyebrow">El Proceso</span>
+      <h2 class="h2-fluid mt-4" data-i18n="proceso.heading">
+        Antes de la receta,<br /><em class="text-pink">la conversación.</em>
+      </h2>
+    </div>
+
+    <ol
+      class="gs-stagger mt-16 grid border-t border-white/10 md:grid-cols-2"
+      aria-label="Etapas del proceso de encargo"
+      data-i18n-aria-label="proceso.ariaLabel"
+    >
+      {steps.map((s, i) => (
+        <li
+          class:list={[
+            "gs-item flex flex-col gap-2 border-b border-white/10 py-10",
+            i % 2 === 0 ? "md:border-r md:pr-12" : "md:pl-12",
+            i === steps.length - 1 && steps.length % 2 === 1 && "md:col-span-2 md:border-r-0 md:pr-0",
+          ]}
+        >
+          <span class="font-display text-5xl leading-none text-pink/25">{s.n}</span>
+          <h3 class="mt-4 font-display text-2xl" data-i18n={`${s.key}.title`}>{s.title}</h3>
+          <p class="mt-2 max-w-[38ch] text-sm leading-relaxed text-white/70" data-i18n={`${s.key}.text`}>{s.text}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>

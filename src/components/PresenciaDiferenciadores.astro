@@ -1,0 +1,51 @@
+---
+const diferenciadores = [
+  { key: "geografica", title: "Exclusividad geográfica", text: "No trabajamos con la competencia directa de nuestros clientes. Si tu espacio está en Palma, la propuesta es solo tuya." },
+  { key: "volumen", title: "Sin volumen, con criterio", text: "No hacemos producción industrial. Hacemos lo que podemos hacer bien. Eso limita el número de colaboraciones activas. Y eso es exactamente el punto." },
+  { key: "diseno", title: "Diseño y sabor, al mismo nivel", text: "Formación en diseño de moda aplicada a la pastelería. La estética no es un extra. Es parte del mismo argumento que el sabor." },
+  { key: "temporada", title: "Adaptación de temporada", text: "La carta no es estática. Cambia con la temporada, con los productos disponibles y con la dirección que toma tu establecimiento." },
+  { key: "identidad", title: "Identidad transferida", text: "Lo que tu cliente se lleva es la experiencia de haber probado algo con firma. No una pastelería anónima. Una voz reconocible." },
+  { key: "packaging", title: "Packaging propio", text: "Cada pieza lleva la presencia visual de NINUMÁ o, en acuerdos exclusivos, la de tu marca. El packaging es parte de la pieza." },
+];
+---
+
+<section id="diferenciadores" class="border-b border-white/10 bg-charcoal px-6 py-24 md:px-12 md:py-36">
+  <div class="mx-auto max-w-[1440px]">
+    <div class="gs-reveal mb-12 md:mb-16">
+      <span class="text-xs tracking-[0.14em] text-pink uppercase" data-i18n="presencia.diferenciadoresEyebrow">Por qué NINUMÁ</span>
+      <h2 class="mt-4 max-w-xl h2-fluid" data-i18n="presencia.diferenciadoresHeading">
+        No somos un proveedor.<br />Somos una firma.
+      </h2>
+    </div>
+
+    <div class="gs-reveal mb-8 border border-white/10 border-l-[3px] border-l-pink bg-black p-8 md:mb-14 md:p-16">
+      <span class="mb-5 block text-xs tracking-[0.14em] text-pink uppercase" data-i18n="presencia.destacadoEyebrow">Lo que nadie más ofrece</span>
+      <h3 class="mb-6 max-w-3xl font-display text-2xl leading-snug md:text-4xl" data-i18n="presencia.destacadoHeading">
+        Tráeme una idea, una película, un sonido, un olor.<br />
+        Yo lo convierto en algo que se come.
+      </h3>
+      <p class="max-w-[62ch] text-sm text-white/70" data-i18n="presencia.destacadoParagraph">
+        No necesitas saber qué quieres. Necesitas saber cómo quieres que se sienta. Trae una referencia, una emoción,
+        una historia o una estética —un libro, un color, una experiencia— y a partir de ahí construyo una pieza que
+        la traduce en sabor, forma y concepto. Eso es lo que diferencia a NINUMÁ del resto: la capacidad de convertir
+        cualquier universo en pastelería.
+      </p>
+    </div>
+
+    <div class="gs-stagger grid gap-6 md:grid-cols-3 md:gap-8" role="list" aria-label="Diferenciadores de NINUMÁ">
+      {diferenciadores.map((d) => (
+        <article class="gs-item flex flex-col gap-3 border border-white/10 bg-black p-8" role="listitem">
+          <h3 class="font-display text-xl leading-tight" data-i18n={`presencia.diferenciador_${d.key}_Title`}>{d.title}</h3>
+          <p class="text-sm text-white/70" data-i18n={`presencia.diferenciador_${d.key}_Text`}>{d.text}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<section id="b2b-cita" class="gs-reveal border-b border-white/10 px-6 py-24 text-center md:px-12 md:py-32" aria-label="Filosofía B2B de NINUMÁ">
+  <blockquote class="mx-auto max-w-3xl font-display text-2xl leading-snug md:text-5xl" data-i18n="presencia.b2bQuote">
+    El postre es el cierre de la experiencia.<br />
+    Si es <em class="text-pink not-italic">olvidable</em>, el resto pierde peso.
+  </blockquote>
+</section>

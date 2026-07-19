@@ -1,0 +1,209 @@
+---
+---
+
+<section id="reserva" class="gs-reveal border-t border-white/10 bg-black px-6 py-24 md:px-12 md:py-36" aria-labelledby="reserva-heading">
+  <div class="mx-auto grid max-w-[1440px] gap-12 md:grid-cols-2 md:gap-20">
+    <div class="flex flex-col gap-6">
+      <div>
+        <span class="text-xs tracking-[0.14em] text-pink uppercase" data-i18n="ediciones.reservaEyebrow">Reservar unidades</span>
+        <h2 id="reserva-heading" class="mt-4 h2-fluid" data-i18n="ediciones.reservaHeading">Asegura<br />tu pieza.</h2>
+      </div>
+      <p class="text-sm leading-relaxed text-white/60" data-i18n="ediciones.reservaIntro">
+        Rellena el formulario antes del cierre indicado. Las unidades se asignan por orden de solicitud.
+      </p>
+      <div class="border-l-2 border-pink bg-charcoal p-5">
+        <p class="text-xs leading-relaxed text-white/60" data-i18n="ediciones.reservaNota">
+          <strong class="font-medium text-pink">Sin envíos.</strong> La recogida es únicamente en el obrador. Guillem Massot, 48 · Palma de Mallorca.
+        </p>
+      </div>
+    </div>
+
+    <div>
+      <form
+        id="reserva-form"
+        action="https://formspree.io/f/xjgqwdye"
+        method="POST"
+        novalidate
+        aria-label="Formulario de reserva de edición especial"
+        data-i18n-aria-label="ediciones.formAria"
+        class="flex flex-col gap-5"
+      >
+        <div class="absolute -left-[9999px]" aria-hidden="true">
+          <label for="website-reserva">No rellenar</label>
+          <input type="text" id="website-reserva" name="website" tabindex="-1" autocomplete="off" />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs tracking-wide text-white/60" for="r-nombre" data-i18n="ediciones.labelNombre">Nombre completo *</label>
+          <input
+            class="border-b border-white/20 bg-transparent py-2 text-sm outline-none focus:border-pink"
+            type="text"
+            id="r-nombre"
+            name="nombre"
+            autocomplete="name"
+            required
+            aria-required="true"
+            aria-invalid="false"
+            aria-describedby="r-nombre-error"
+          />
+          <span id="r-nombre-error" class="field-error text-xs text-pink" role="alert"></span>
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs tracking-wide text-white/60" for="r-email" data-i18n="ediciones.labelEmail">Correo electrónico *</label>
+          <input
+            class="border-b border-white/20 bg-transparent py-2 text-sm outline-none focus:border-pink"
+            type="email"
+            id="r-email"
+            name="email"
+            autocomplete="email"
+            required
+            aria-required="true"
+            aria-invalid="false"
+            aria-describedby="r-email-error"
+          />
+          <span id="r-email-error" class="field-error text-xs text-pink" role="alert"></span>
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs tracking-wide text-white/60" for="r-unidades" data-i18n="ediciones.labelUnidades">Tamaño de caja *</label>
+          <select
+            class="border-b border-white/20 bg-transparent py-2 text-sm outline-none focus:border-pink"
+            id="r-unidades"
+            name="unidades"
+            required
+            aria-required="true"
+            aria-invalid="false"
+            aria-describedby="r-unidades-error"
+          >
+            <option value="" data-i18n="ediciones.optSelecciona">Selecciona una opción</option>
+            <option value="caja-3" data-i18n="ediciones.optCaja3">Caja de 3 bombones</option>
+            <option value="caja-6" data-i18n="ediciones.optCaja6">Caja de 6 bombones</option>
+            <option value="caja-12" data-i18n="ediciones.optCaja12">Caja de 12 bombones</option>
+          </select>
+          <span id="r-unidades-error" class="field-error text-xs text-pink" role="alert"></span>
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs tracking-wide text-white/60" for="r-nota" data-i18n="ediciones.labelNota">Nota (opcional)</label>
+          <textarea
+            class="border-b border-white/20 bg-transparent py-2 text-sm outline-none focus:border-pink"
+            id="r-nota"
+            name="nota"
+            rows="3"
+            placeholder="Alergias, peticiones especiales..."
+            data-i18n-placeholder="ediciones.placeholderNota"></textarea>
+        </div>
+
+        <div class="flex items-start gap-3">
+          <input type="checkbox" id="rgpd-reserva" name="rgpd" required aria-required="true" aria-invalid="false" aria-describedby="rgpd-reserva-error" class="mt-1" />
+          <label class="text-xs leading-relaxed text-white/60" for="rgpd-reserva" data-i18n="ediciones.rgpdLabel">
+            He leído y acepto la <a href="/privacidad/" class="text-pink underline">política de privacidad</a>. Mis datos se usarán únicamente para gestionar esta reserva.
+          </label>
+        </div>
+        <span id="rgpd-reserva-error" class="field-error text-xs text-pink" role="alert"></span>
+
+        <button
+          type="submit"
+          id="btn-reserva"
+          data-i18n="ediciones.btnReservar"
+          class="mt-2 rounded-full border border-pink px-6 py-3 text-xs tracking-[0.1em] text-pink uppercase transition-colors hover:bg-pink hover:text-black disabled:opacity-50"
+        >
+          Reservar →
+        </button>
+      </form>
+
+      <div id="reserva-success" class="hidden py-8" tabindex="-1" aria-live="polite">
+        <h3 class="font-display text-2xl" data-i18n="ediciones.successHeading">Reserva recibida.</h3>
+        <p class="mt-2 text-sm text-white/60" data-i18n="ediciones.successText">Confirmaremos tu reserva por correo en las próximas horas. Hasta pronto en el obrador.</p>
+      </div>
+      <div id="reserva-error" class="hidden py-6" tabindex="-1" aria-live="assertive">
+        <h3 class="font-display text-xl text-pink" data-i18n="ediciones.errorHeading">Algo no ha ido bien.</h3>
+        <p class="mt-2 text-sm text-white/60" data-i18n="ediciones.errorText">
+          Escríbenos directamente a <a href="mailto:ariadna@ninuma.es" class="text-pink underline">ariadna@ninuma.es</a> y te confirmamos la reserva a mano.
+        </p>
+      </div>
+      <div id="reserva-cerrada" class="hidden py-8" tabindex="-1" aria-live="polite">
+        <h3 class="font-display text-xl text-pink" data-i18n="ediciones.cerradaHeading">Encargos cerrados.</h3>
+        <p class="mt-2 text-sm text-white/60" data-i18n="ediciones.cerradaText">
+          El período de reserva para esta edición ha finalizado. Escríbenos a <a href="mailto:ariadna@ninuma.es" class="text-pink underline">ariadna@ninuma.es</a> si quieres que te avisemos de la próxima.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { t } from "../lib/i18n";
+  import { validateField, isHoneypotFilled, submitForm, type ValidationMessages } from "../lib/form";
+
+  const MESSAGES: ValidationMessages = {
+    required: ["ediciones.validationRequired", "Este campo es obligatorio."],
+    email: ["ediciones.validationEmailFormat", "Introduce un correo electrónico válido."],
+    rgpd: ["ediciones.validationRgpdRequired", "Debes aceptar la política de privacidad para continuar."],
+  };
+
+  const form = document.getElementById("reserva-form") as HTMLFormElement | null;
+  const btn = document.getElementById("btn-reserva") as HTMLButtonElement | null;
+  const successEl = document.getElementById("reserva-success");
+  const errorEl = document.getElementById("reserva-error");
+  const cerradaEl = document.getElementById("reserva-cerrada");
+
+  function cerrarReserva() {
+    if (btn) btn.disabled = true;
+    if (form) form.style.display = "none";
+    errorEl?.classList.add("hidden");
+    cerradaEl?.classList.remove("hidden");
+  }
+
+  // El countdown de EdicionHeroActiva puede correr (y expirar) antes de que este
+  // script registre el listener, así que también comprobamos el flag directamente.
+  if (document.documentElement.dataset.edicionCerrada === "true") {
+    cerrarReserva();
+  } else {
+    document.addEventListener("ninuma:edicion-cerrada", cerrarReserva);
+  }
+
+  if (form && btn) {
+    const requiredFields = form.querySelectorAll<HTMLInputElement | HTMLSelectElement>("[required]");
+    requiredFields.forEach((input) => {
+      input.addEventListener("blur", () => validateField(input, MESSAGES));
+      if (input.type === "checkbox") input.addEventListener("change", () => validateField(input, MESSAGES));
+    });
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      if (isHoneypotFilled(form)) return;
+
+      let allOk = true;
+      requiredFields.forEach((f) => {
+        if (!validateField(f, MESSAGES)) allOk = false;
+      });
+      if (!allOk) {
+        form.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = t("ediciones.btnEnviando", "Enviando…");
+      errorEl?.classList.add("hidden");
+
+      submitForm(form)
+        .then((res) => {
+          if (res.ok) {
+            form.style.display = "none";
+            successEl?.classList.remove("hidden");
+            successEl?.focus();
+          } else {
+            throw new Error(`HTTP ${res.status}`);
+          }
+        })
+        .catch(() => {
+          btn.disabled = false;
+          btn.textContent = t("ediciones.btnReservar", "Reservar →");
+          errorEl?.classList.remove("hidden");
+        });
+    });
+  }
+</script>

@@ -1,0 +1,97 @@
+---
+import { LANGS, LANG_LABELS } from "../lib/i18n";
+
+interface Props {
+  id: string;
+  class?: string;
+}
+const { id, class: className = "" } = Astro.props;
+---
+
+<div class={`lang-switcher relative ${className}`} data-lang-switcher-id={id}>
+  <button
+    type="button"
+    id={`lang-toggle-${id}`}
+    class="lang-toggle flex items-center gap-1.5 text-xs tracking-[0.14em] text-white/80 uppercase transition-colors hover:text-pink"
+    aria-haspopup="true"
+    aria-expanded="false"
+    aria-controls={`lang-menu-${id}`}
+  >
+    <span aria-hidden="true">🌐</span>
+    <span class="lang-current">ES</span>
+  </button>
+  <ul
+    id={`lang-menu-${id}`}
+    role="menu"
+    aria-label="Seleccionar idioma"
+    hidden
+    class="lang-menu absolute top-full right-0 z-50 mt-2 min-w-[9rem] border border-white/10 bg-black py-2 shadow-xl"
+  >
+    {
+      LANGS.map((l) => (
+        <li role="none">
+          <button
+            type="button"
+            role="menuitem"
+            class="lang-option block w-full px-4 py-2 text-left text-xs tracking-wide text-white/80 uppercase hover:bg-charcoal-2 hover:text-pink aria-[current=true]:text-pink"
+            data-lang={l}
+          >
+            {LANG_LABELS[l]}
+          </button>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<script>
+  import { setLang, getSavedLang, type Lang } from "../lib/i18n";
+
+  document.querySelectorAll<HTMLElement>("[data-lang-switcher-id]").forEach((wrap) => {
+    const toggle = wrap.querySelector<HTMLButtonElement>(".lang-toggle");
+    const menu = wrap.querySelector<HTMLUListElement>(".lang-menu");
+    const currentLabel = wrap.querySelector<HTMLElement>(".lang-current");
+    const options = wrap.querySelectorAll<HTMLButtonElement>(".lang-option");
+    if (!toggle || !menu || !currentLabel) return;
+
+    function syncCurrent(lang: string) {
+      currentLabel!.textContent = lang.toUpperCase();
+      options.forEach((o) => o.setAttribute("aria-current", String(o.dataset.lang === lang)));
+    }
+    syncCurrent(getSavedLang());
+
+    function openMenu() {
+      menu!.hidden = false;
+      toggle!.setAttribute("aria-expanded", "true");
+    }
+    function closeMenu() {
+      menu!.hidden = true;
+      toggle!.setAttribute("aria-expanded", "false");
+    }
+
+    toggle.addEventListener("click", () => {
+      if (menu!.hidden) openMenu();
+      else closeMenu();
+    });
+
+    options.forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const lang = btn.dataset.lang as Lang;
+        await setLang(lang);
+        syncCurrent(lang);
+        closeMenu();
+        toggle!.focus();
+      });
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!wrap.contains(e.target as Node)) closeMenu();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !menu!.hidden) {
+        closeMenu();
+        toggle!.focus();
+      }
+    });
+  });
+</script>
