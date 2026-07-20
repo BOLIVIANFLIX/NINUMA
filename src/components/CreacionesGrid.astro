@@ -34,6 +34,7 @@ const piezas = entries
 
     {piezas.map((p) => (
       <article
+        id={`pieza-${p.num}`}
         class="pieza gs-reveal group relative flex flex-col bg-black"
         data-category={p.categoria}
         aria-label={`Pieza N.º ${p.num} — ${p.nombre}`}
@@ -46,6 +47,15 @@ const piezas = entries
             class="aspect-[4/5] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           />
           <span class="absolute top-3 left-3 text-xs tracking-[0.1em] text-white/70 uppercase">N.º {p.num}</span>
+          <button
+            type="button"
+            data-favorito-toggle={p.num}
+            aria-pressed="false"
+            aria-label={`Añadir "${p.nombre}" a favoritos`}
+            class="favorito-btn absolute top-3 right-3 hidden h-8 w-8 items-center justify-center rounded-full bg-black/60 text-lg text-white/80 transition-colors hover:text-pink"
+          >
+            <span aria-hidden="true">♡</span>
+          </button>
         </div>
         <div class="flex flex-1 flex-col gap-3 p-6">
           <span class="text-xs tracking-[0.14em] text-pink uppercase" data-i18n={p.tipoKey}>{p.tipo}</span>
@@ -62,3 +72,53 @@ const piezas = entries
     ))}
   </div>
 </section>
+
+<script>
+  import { getSessionProfile } from "../lib/auth";
+  import { getMyFavorites, addFavorite, removeFavorite } from "../lib/favorites";
+
+  const buttons = document.querySelectorAll<HTMLButtonElement>("[data-favorito-toggle]");
+
+  function setPressed(btn: HTMLButtonElement, pressed: boolean) {
+    btn.setAttribute("aria-pressed", String(pressed));
+    const glyph = btn.querySelector("span");
+    if (glyph) glyph.textContent = pressed ? "♥" : "♡";
+    btn.classList.toggle("text-pink", pressed);
+  }
+
+  getSessionProfile()
+    .then(async (profile) => {
+      if (!profile) return;
+      buttons.forEach((btn) => {
+        btn.classList.remove("hidden");
+        btn.classList.add("flex");
+      });
+
+      const favoritos = new Set(await getMyFavorites());
+      buttons.forEach((btn) => {
+        const numero = btn.dataset.favoritoToggle;
+        if (numero && favoritos.has(numero)) setPressed(btn, true);
+      });
+
+      buttons.forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const numero = btn.dataset.favoritoToggle;
+          if (!numero) return;
+          const wasPressed = btn.getAttribute("aria-pressed") === "true";
+          setPressed(btn, !wasPressed);
+          btn.disabled = true;
+          try {
+            if (wasPressed) await removeFavorite(numero);
+            else await addFavorite(numero);
+          } catch {
+            setPressed(btn, wasPressed);
+          } finally {
+            btn.disabled = false;
+          }
+        });
+      });
+    })
+    .catch(() => {
+      // Sin sesión o Supabase aún sin configurar: los botones de favorito se quedan ocultos.
+    });
+</script>

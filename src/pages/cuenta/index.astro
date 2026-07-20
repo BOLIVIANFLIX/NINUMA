@@ -13,22 +13,32 @@ import DashboardB2B from "../../components/cuenta/DashboardB2B.astro";
 >
   <main id="main-content" tabindex="-1" class="px-6 pt-36 pb-24 md:px-12 md:pt-44">
     <div class="mx-auto max-w-[1440px]">
-      <p id="cuenta-loading" class="text-sm text-white/60">Cargando tu cuenta…</p>
+      <p id="cuenta-loading" class="text-sm text-white/60" data-i18n="cuenta.cargando">Cargando tu cuenta…</p>
       <p id="cuenta-error" class="hidden text-sm text-pink-deep" role="alert"></p>
 
       <div id="cuenta-content" class="hidden flex-col gap-12">
         <header class="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-8">
           <div>
-            <p class="text-xs tracking-[0.14em] text-white/50 uppercase">Área de clientes</p>
-            <h1 class="mt-1 font-display text-3xl md:text-4xl">Hola, <span id="cuenta-nombre"></span></h1>
+            <p class="text-xs tracking-[0.14em] text-white/50 uppercase" data-i18n="cuenta.areaClientes">Área de clientes</p>
+            <h1 class="mt-1 font-display text-3xl md:text-4xl"><span data-i18n="cuenta.saludo">Hola,</span> <span id="cuenta-nombre"></span></h1>
           </div>
-          <button
-            id="cuenta-logout"
-            type="button"
-            class="rounded-full border border-white/15 px-5 py-2 text-xs tracking-[0.1em] text-white/70 uppercase transition-colors hover:border-pink hover:text-pink"
-          >
-            Cerrar sesión
-          </button>
+          <div class="flex items-center gap-4">
+            <a
+              id="cuenta-admin-link"
+              href="/cuenta/admin/pedidos/"
+              class="hidden rounded-full border border-white/15 px-5 py-2 text-xs tracking-[0.1em] text-white/70 uppercase transition-colors hover:border-pink hover:text-pink"
+            >
+              Administrar pedidos
+            </a>
+            <button
+              id="cuenta-logout"
+              type="button"
+              data-i18n="cuenta.cerrarSesion"
+              class="rounded-full border border-white/15 px-5 py-2 text-xs tracking-[0.1em] text-white/70 uppercase transition-colors hover:border-pink hover:text-pink"
+            >
+              Cerrar sesión
+            </button>
+          </div>
         </header>
 
         <DashboardB2C />
@@ -40,14 +50,19 @@ import DashboardB2B from "../../components/cuenta/DashboardB2B.astro";
 
 <script>
   import { getSessionProfile, getMyOrders, signOut } from "../../lib/auth";
+  import { t, getCurrentLang } from "../../lib/i18n";
   import type { Order } from "../../lib/supabase";
 
-  const STATUS_LABELS: Record<Order["status"], string> = {
-    recibido: "Recibido",
-    en_obrador: "En el obrador",
-    listo: "Listo para recoger",
-    entregado: "Entregado",
-  };
+  function statusLabel(status: Order["status"]): string {
+    const labels: Record<Order["status"], [string, string]> = {
+      recibido: ["cuenta.estadoRecibido", "Recibido"],
+      en_obrador: ["cuenta.estadoEnObrador", "En el obrador"],
+      listo: ["cuenta.estadoListo", "Listo para recoger"],
+      entregado: ["cuenta.estadoEntregado", "Entregado"],
+    };
+    const [key, fallback] = labels[status] ?? [null, status];
+    return key ? t(key, fallback) : fallback;
+  }
 
   const loadingEl = document.getElementById("cuenta-loading");
   const errorEl = document.getElementById("cuenta-error");
@@ -57,17 +72,29 @@ import DashboardB2B from "../../components/cuenta/DashboardB2B.astro";
   const b2cSection = document.getElementById("dashboard-b2c");
   const b2bSection = document.getElementById("dashboard-b2b");
 
-  function renderOrders(section: HTMLElement | null, orders: Order[]) {
+  function renderOrders(section: HTMLElement | null, allOrders: Order[], statusFilter: string) {
     if (!section) return;
     const list = section.querySelector<HTMLElement>("[data-orders-list]");
     const empty = section.querySelector<HTMLElement>("[data-orders-empty]");
+    const emptyFiltro = section.querySelector<HTMLElement>("[data-orders-empty-filtro]");
     if (!list) return;
 
-    if (orders.length === 0) {
+    list.innerHTML = "";
+
+    if (allOrders.length === 0) {
       empty?.classList.remove("hidden");
+      emptyFiltro?.classList.add("hidden");
       return;
     }
     empty?.classList.add("hidden");
+
+    const orders = statusFilter ? allOrders.filter((o) => o.status === statusFilter) : allOrders;
+
+    if (orders.length === 0) {
+      emptyFiltro?.classList.remove("hidden");
+      return;
+    }
+    emptyFiltro?.classList.add("hidden");
 
     for (const order of orders) {
       const li = document.createElement("li");
@@ -81,11 +108,11 @@ import DashboardB2B from "../../components/cuenta/DashboardB2B.astro";
       meta.className = "flex items-center gap-4 text-xs text-white/50";
 
       const date = document.createElement("span");
-      date.textContent = new Date(order.created_at).toLocaleDateString("es-ES", { day: "2-digit", month: "short", year: "numeric" });
+      date.textContent = new Date(order.created_at).toLocaleDateString(getCurrentLang(), { day: "2-digit", month: "short", year: "numeric" });
 
       const status = document.createElement("span");
       status.className = "rounded-full border border-white/15 px-3 py-1 text-pink";
-      status.textContent = STATUS_LABELS[order.status] ?? order.status;
+      status.textContent = statusLabel(order.status);
 
       meta.append(date, status);
       li.append(desc, meta);
@@ -104,28 +131,33 @@ import DashboardB2B from "../../components/cuenta/DashboardB2B.astro";
       const isB2b = profile.account_type === "b2b";
       if (nombreEl) nombreEl.textContent = (isB2b ? profile.company_name : profile.full_name) || profile.full_name;
 
+      const adminLink = document.getElementById("cuenta-admin-link");
+      if (profile.is_admin) adminLink?.classList.remove("hidden");
+
       b2cSection?.classList.toggle("hidden", isB2b);
       b2cSection?.classList.toggle("flex", !isB2b);
       b2bSection?.classList.toggle("hidden", !isB2b);
       b2bSection?.classList.toggle("flex", isB2b);
 
       const activeSection = isB2b ? b2bSection : b2cSection;
-      activeSection?.querySelector('[data-field="full_name"]')?.replaceChildren(document.createTextNode(profile.full_name));
-      const phoneField = activeSection?.querySelector('[data-field="phone"]');
-      if (phoneField) phoneField.textContent = profile.phone || "—";
-      const companyField = activeSection?.querySelector('[data-field="company_name"]');
-      if (companyField) companyField.textContent = profile.company_name || "—";
 
       const orders = await getMyOrders();
-      renderOrders(activeSection as HTMLElement | null, orders);
+      renderOrders(activeSection as HTMLElement | null, orders, "");
+
+      const filterSelect = activeSection?.querySelector<HTMLSelectElement>("[data-orders-filter]");
+      filterSelect?.addEventListener("change", () => {
+        renderOrders(activeSection as HTMLElement | null, orders, filterSelect.value);
+      });
 
       loadingEl?.classList.add("hidden");
       contentEl?.classList.remove("hidden");
       contentEl?.classList.add("flex");
+
+      document.dispatchEvent(new CustomEvent("cuenta:profile-ready", { detail: { profile } }));
     } catch {
       loadingEl?.classList.add("hidden");
       if (errorEl) {
-        errorEl.textContent = "No se ha podido cargar tu cuenta. Recarga la página o contacta con nosotros.";
+        errorEl.textContent = t("cuenta.errorCarga", "No se ha podido cargar tu cuenta. Recarga la página o contacta con nosotros.");
         errorEl.classList.remove("hidden");
       }
     }

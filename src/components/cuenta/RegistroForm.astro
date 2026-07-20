@@ -8,7 +8,7 @@
   </div>
 
   <div class="flex flex-col gap-2">
-    <label class="text-xs tracking-wide text-white/60" for="r-nombre">Nombre completo</label>
+    <label class="text-xs tracking-wide text-white/60" for="r-nombre" data-i18n="cuenta.nombreLabel">Nombre completo</label>
     <input
       class="border border-white/15 bg-transparent px-4 py-3 text-sm text-white outline-none focus:border-pink"
       type="text"
@@ -24,7 +24,7 @@
   </div>
 
   <div class="flex flex-col gap-2">
-    <label class="text-xs tracking-wide text-white/60" for="r-email">Correo electrónico</label>
+    <label class="text-xs tracking-wide text-white/60" for="r-email" data-i18n="cuenta.emailLabel">Correo electrónico</label>
     <input
       class="border border-white/15 bg-transparent px-4 py-3 text-sm text-white outline-none focus:border-pink"
       type="email"
@@ -40,7 +40,7 @@
   </div>
 
   <div class="flex flex-col gap-2">
-    <label class="text-xs tracking-wide text-white/60" for="r-password">Contraseña</label>
+    <label class="text-xs tracking-wide text-white/60" for="r-password" data-i18n="cuenta.passwordLabel">Contraseña</label>
     <input
       class="border border-white/15 bg-transparent px-4 py-3 text-sm text-white outline-none focus:border-pink"
       type="password"
@@ -58,7 +58,7 @@
 
   <div class="flex items-start gap-3">
     <input type="checkbox" id="rgpd-registro" name="rgpd" required aria-required="true" aria-invalid="false" aria-describedby="rgpd-registro-error" class="mt-1" />
-    <label class="text-xs leading-relaxed text-white/60" for="rgpd-registro">
+    <label class="text-xs leading-relaxed text-white/60" for="rgpd-registro" data-i18n="cuenta.rgpdLabel">
       He leído y acepto la <a href="/privacidad/" class="text-pink underline underline-offset-2">política de privacidad</a>.
     </label>
   </div>
@@ -67,6 +67,7 @@
   <button
     type="submit"
     id="r-submit"
+    data-i18n="cuenta.registroSubmit"
     class="mt-2 inline-flex w-fit items-center rounded-full border border-pink px-6 py-3 text-xs tracking-[0.1em] text-pink uppercase transition-colors hover:bg-pink hover:text-black disabled:opacity-50"
   >
     Crear mi cuenta →
@@ -74,15 +75,15 @@
 
   <p id="registro-error-msg" class="hidden text-xs text-pink-deep" role="alert" aria-live="assertive"></p>
 
-  <p class="text-xs text-white/60">
+  <p class="text-xs text-white/60" data-i18n="cuenta.registroB2bNote">
     ¿Vienes de parte de un hotel, restaurante u otro negocio? Las cuentas B2B se dan de alta manualmente — escríbenos desde
     <a href="/contacto/?tipo=b2b" class="text-pink underline underline-offset-2">contacto</a>.
   </p>
 </form>
 
 <div id="registro-success" class="hidden border border-white/10 bg-charcoal p-10" tabindex="-1" aria-live="polite">
-  <h2 class="font-display text-2xl">Revisa tu correo.</h2>
-  <p class="mt-4 text-sm leading-relaxed text-white/60">
+  <h2 class="font-display text-2xl" data-i18n="cuenta.registroSuccessHeading">Revisa tu correo.</h2>
+  <p class="mt-4 text-sm leading-relaxed text-white/60" data-i18n="cuenta.registroSuccessBody">
     Te hemos enviado un enlace de confirmación. Una vez confirmes tu cuenta, ya podrás
     <a href="/cuenta/login/" class="text-pink">iniciar sesión</a>.
   </p>
@@ -90,6 +91,7 @@
 
 <script>
   import { signUp } from "../../lib/auth";
+  import { t } from "../../lib/i18n";
 
   const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -126,18 +128,18 @@
       if (errEl) errEl.textContent = "";
     }
 
-    if (!nombreInput?.value.trim()) setInvalid(nombreInput, "Este campo es obligatorio.");
+    if (!nombreInput?.value.trim()) setInvalid(nombreInput, t("cuenta.validationRequired", "Este campo es obligatorio."));
     else setValid(nombreInput);
 
     if (!emailInput?.value.trim() || !EMAIL_RE.test(emailInput.value.trim()))
-      setInvalid(emailInput, "Introduce un correo electrónico válido.");
+      setInvalid(emailInput, t("cuenta.validationEmail", "Introduce un correo electrónico válido."));
     else setValid(emailInput);
 
     if (!passwordInput?.value || passwordInput.value.length < 8)
-      setInvalid(passwordInput, "La contraseña debe tener al menos 8 caracteres.");
+      setInvalid(passwordInput, t("cuenta.validationPassword", "La contraseña debe tener al menos 8 caracteres."));
     else setValid(passwordInput);
 
-    if (!rgpdInput?.checked) setInvalid(rgpdInput, "Debes aceptar la política de privacidad para continuar.");
+    if (!rgpdInput?.checked) setInvalid(rgpdInput, t("cuenta.validationRgpd", "Debes aceptar la política de privacidad para continuar."));
     else setValid(rgpdInput);
 
     return ok;
@@ -151,7 +153,7 @@
 
     errorMsgEl?.classList.add("hidden");
     btn.disabled = true;
-    btn.textContent = "Creando cuenta…";
+    btn.textContent = t("cuenta.registroSubmitting", "Creando cuenta…");
 
     signUp({ email: emailInput.value.trim(), password: passwordInput.value, fullName: nombreInput.value.trim() })
       .then(({ needsEmailConfirmation }) => {
@@ -174,9 +176,9 @@
           return;
         }
         btn.disabled = false;
-        btn.textContent = "Crear mi cuenta →";
+        btn.textContent = t("cuenta.registroSubmit", "Crear mi cuenta →");
         if (errorMsgEl) {
-          errorMsgEl.textContent = "No se ha podido crear la cuenta. Inténtalo de nuevo.";
+          errorMsgEl.textContent = t("cuenta.registroError", "No se ha podido crear la cuenta. Inténtalo de nuevo.");
           errorMsgEl.classList.remove("hidden");
         }
       });

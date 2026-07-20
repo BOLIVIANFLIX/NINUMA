@@ -190,6 +190,7 @@
   const tipoSelect = document.getElementById("f-tipo") as HTMLSelectElement | null;
   const fieldFecha = document.getElementById("field-fecha");
   const fieldPersonas = document.getElementById("field-personas");
+  const descripcionInput = document.getElementById("f-descripcion") as HTMLTextAreaElement | null;
 
   // ---- Prefill desde ?tipo= (deep-link desde /presencia/) ----
   const urlParams = new URLSearchParams(window.location.search);
@@ -197,6 +198,12 @@
   if (tipoParam && tipoSelect) {
     tipoSelect.value = tipoParam;
     tipoSelect.dispatchEvent(new Event("change"));
+  }
+
+  // ---- Prefill desde ?mensaje= (deep-link desde catálogo/plantillas de /cuenta) ----
+  const mensajeParam = urlParams.get("mensaje");
+  if (mensajeParam && descripcionInput) {
+    descripcionInput.value = mensajeParam;
   }
 
   // ---- Campos condicionales por tipo ----

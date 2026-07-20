@@ -20,6 +20,7 @@ export interface Profile {
   phone: string | null;
   company_name: string | null;
   created_at: string;
+  is_admin: boolean;
 }
 
 export type OrderKind = "encargo" | "b2b";
@@ -31,5 +32,29 @@ export interface Order {
   kind: OrderKind;
   description: string;
   status: OrderStatus;
+  created_at: string;
+}
+
+export interface Favorite {
+  id: string;
+  user_id: string;
+  pieza_numero: string;
+  created_at: string;
+}
+
+export interface OrderTemplate {
+  id: string;
+  user_id: string;
+  label: string;
+  description: string;
+  kind: OrderKind;
+  created_at: string;
+}
+
+export interface B2BPrice {
+  id: string;
+  user_id: string;
+  pieza_numero: string;
+  precio: number;
   created_at: string;
 }

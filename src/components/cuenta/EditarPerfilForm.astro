@@ -1,0 +1,212 @@
+---
+interface Props {
+  accountType: "b2c" | "b2b";
+}
+const { accountType } = Astro.props;
+const isB2b = accountType === "b2b";
+const prefix = `perfil-${accountType}`;
+---
+
+<div class="border border-white/10 p-8" data-perfil-root={accountType}>
+  <div class="flex items-center justify-between gap-4">
+    <h2 class="font-display text-xl" data-i18n={isB2b ? "cuenta.tuEmpresa" : "cuenta.tuPerfil"}>{isB2b ? "Tu empresa" : "Tu perfil"}</h2>
+    <button
+      type="button"
+      data-perfil-editar
+      data-i18n="cuenta.editar"
+      class="text-xs tracking-[0.1em] text-white/60 uppercase transition-colors hover:text-pink"
+    >
+      Editar
+    </button>
+  </div>
+
+  <dl class="mt-4 flex flex-col gap-3 text-sm text-white/70" data-perfil-vista>
+    {
+      isB2b && (
+        <div class="flex justify-between gap-4">
+          <dt class="text-white/50" data-i18n="cuenta.empresaLabel">Empresa</dt>
+          <dd data-perfil-valor="company_name">—</dd>
+        </div>
+      )
+    }
+    <div class="flex justify-between gap-4">
+      <dt class="text-white/50" data-i18n={isB2b ? "cuenta.personaContactoLabel" : "cuenta.nombreSimpleLabel"}>{isB2b ? "Persona de contacto" : "Nombre"}</dt>
+      <dd data-perfil-valor="full_name"></dd>
+    </div>
+    <div class="flex justify-between gap-4">
+      <dt class="text-white/50" data-i18n="cuenta.telefonoLabel">Teléfono</dt>
+      <dd data-perfil-valor="phone">—</dd>
+    </div>
+  </dl>
+
+  <form data-perfil-form class="mt-4 hidden flex-col gap-4" novalidate aria-label={isB2b ? "Editar datos de empresa" : "Editar perfil"}>
+    {
+      isB2b && (
+        <div class="flex flex-col gap-2">
+          <label class="text-xs tracking-wide text-white/60" for={`${prefix}-company_name`} data-i18n="cuenta.empresaLabel">
+            Empresa
+          </label>
+          <input
+            class="border border-white/15 bg-transparent px-4 py-3 text-sm text-white outline-none focus:border-pink"
+            type="text"
+            id={`${prefix}-company_name`}
+            name="company_name"
+            aria-invalid="false"
+          />
+        </div>
+      )
+    }
+    <div class="flex flex-col gap-2">
+      <label class="text-xs tracking-wide text-white/60" for={`${prefix}-full_name`} data-i18n={isB2b ? "cuenta.personaContactoLabel" : "cuenta.nombreSimpleLabel"}>
+        {isB2b ? "Persona de contacto" : "Nombre"}
+      </label>
+      <input
+        class="border border-white/15 bg-transparent px-4 py-3 text-sm text-white outline-none focus:border-pink"
+        type="text"
+        id={`${prefix}-full_name`}
+        name="full_name"
+        required
+        aria-required="true"
+        aria-invalid="false"
+        aria-describedby={`${prefix}-full_name-error`}
+      />
+      <span id={`${prefix}-full_name-error`} class="field-error text-xs text-pink-deep" role="alert"></span>
+    </div>
+    <div class="flex flex-col gap-2">
+      <label class="text-xs tracking-wide text-white/60" for={`${prefix}-phone`} data-i18n="cuenta.telefonoLabel">Teléfono</label>
+      <input
+        class="border border-white/15 bg-transparent px-4 py-3 text-sm text-white outline-none focus:border-pink"
+        type="tel"
+        id={`${prefix}-phone`}
+        name="phone"
+        placeholder="600 000 000"
+        aria-invalid="false"
+        aria-describedby={`${prefix}-phone-error`}
+      />
+      <span id={`${prefix}-phone-error`} class="field-error text-xs text-pink-deep" role="alert"></span>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <button
+        type="submit"
+        data-perfil-guardar
+        data-i18n="cuenta.guardar"
+        class="inline-flex w-fit items-center rounded-full border border-pink px-5 py-2 text-xs tracking-[0.1em] text-pink uppercase transition-colors hover:bg-pink hover:text-black disabled:opacity-50"
+      >
+        Guardar
+      </button>
+      <button type="button" data-perfil-cancelar data-i18n="cuenta.cancelar" class="text-xs tracking-[0.1em] text-white/60 uppercase hover:text-pink">
+        Cancelar
+      </button>
+    </div>
+    <p data-perfil-error class="hidden text-xs text-pink-deep" role="alert" aria-live="assertive"></p>
+  </form>
+</div>
+
+<script>
+  import { updateMyProfile } from "../../lib/auth";
+  import { validateField, type ValidationMessages } from "../../lib/form";
+  import { t } from "../../lib/i18n";
+  import type { Profile } from "../../lib/supabase";
+
+  const MESSAGES: ValidationMessages = {
+    required: ["cuenta.perfilValidationRequired", "Este campo es obligatorio."],
+    email: ["cuenta.perfilValidationEmail", "Introduce un correo electrónico válido."],
+    rgpd: ["cuenta.perfilValidationRgpd", "Debes aceptar la política de privacidad para continuar."],
+  };
+
+  // Teléfono español: 9 dígitos empezando por 6/7/8/9, con o sin prefijo +34.
+  const SPAIN_PHONE_RE = /^(?:\+34|0034|34)?[6789]\d{8}$/;
+
+  function validatePhone(input: HTMLInputElement): boolean {
+    const errEl = document.getElementById(`${input.id}-error`);
+    const raw = input.value.replace(/[\s-]/g, "");
+    const valid = raw === "" || SPAIN_PHONE_RE.test(raw);
+    input.setAttribute("aria-invalid", valid ? "false" : "true");
+    if (errEl) errEl.textContent = valid ? "" : t("cuenta.perfilValidationPhone", "Introduce un teléfono español válido (9 dígitos, empieza por 6, 7, 8 o 9).");
+    return valid;
+  }
+
+  document.querySelectorAll<HTMLElement>("[data-perfil-root]").forEach((root) => {
+    const vista = root.querySelector<HTMLElement>("[data-perfil-vista]");
+    const form = root.querySelector<HTMLFormElement>("[data-perfil-form]");
+    const editarBtn = root.querySelector<HTMLButtonElement>("[data-perfil-editar]");
+    const cancelarBtn = root.querySelector<HTMLButtonElement>("[data-perfil-cancelar]");
+    const guardarBtn = root.querySelector<HTMLButtonElement>("[data-perfil-guardar]");
+    const errorEl = root.querySelector<HTMLElement>("[data-perfil-error]");
+    if (!vista || !form || !editarBtn || !cancelarBtn || !guardarBtn) return;
+
+    function fillValores(profile: Profile) {
+      root!.querySelectorAll<HTMLElement>("[data-perfil-valor]").forEach((el) => {
+        const field = el.dataset.perfilValor as keyof Profile;
+        const value = profile[field];
+        el.textContent = (value as string) || "—";
+      });
+      root!.querySelectorAll<HTMLInputElement>("[data-perfil-form] input").forEach((input) => {
+        const value = profile[input.name as keyof Profile];
+        input.value = (value as string) || "";
+      });
+    }
+
+    function showForm() {
+      vista!.classList.add("hidden");
+      form!.classList.remove("hidden");
+      form!.classList.add("flex");
+    }
+
+    function showVista() {
+      form!.classList.add("hidden");
+      form!.classList.remove("flex");
+      vista!.classList.remove("hidden");
+      errorEl?.classList.add("hidden");
+    }
+
+    editarBtn.addEventListener("click", showForm);
+    cancelarBtn.addEventListener("click", showVista);
+
+    const phoneInputEl = form.querySelector<HTMLInputElement>('[name="phone"]');
+    phoneInputEl?.addEventListener("blur", () => validatePhone(phoneInputEl));
+
+    document.addEventListener("cuenta:profile-ready", ((e: CustomEvent<{ profile: Profile }>) => {
+      fillValores(e.detail.profile);
+    }) as EventListener);
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const fullNameInput = form.querySelector<HTMLInputElement>('[name="full_name"]');
+      if (!fullNameInput || !validateField(fullNameInput, MESSAGES)) return;
+
+      const phoneInput = form.querySelector<HTMLInputElement>('[name="phone"]');
+      if (phoneInput && !validatePhone(phoneInput)) {
+        phoneInput.focus();
+        return;
+      }
+
+      const companyInput = form.querySelector<HTMLInputElement>('[name="company_name"]');
+
+      guardarBtn.disabled = true;
+      guardarBtn.textContent = t("cuenta.guardando", "Guardando…");
+      errorEl?.classList.add("hidden");
+
+      updateMyProfile({
+        full_name: fullNameInput.value.trim(),
+        phone: phoneInput?.value.trim() || null,
+        ...(companyInput ? { company_name: companyInput.value.trim() || null } : {}),
+      })
+        .then((profile) => {
+          fillValores(profile);
+          showVista();
+        })
+        .catch(() => {
+          if (errorEl) {
+            errorEl.textContent = t("cuenta.perfilGuardarError", "No se ha podido guardar. Inténtalo de nuevo.");
+            errorEl.classList.remove("hidden");
+          }
+        })
+        .finally(() => {
+          guardarBtn.disabled = false;
+          guardarBtn.textContent = t("cuenta.guardar", "Guardar");
+        });
+    });
+  });
+</script>

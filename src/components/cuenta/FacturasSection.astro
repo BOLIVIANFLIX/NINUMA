@@ -1,0 +1,60 @@
+---
+---
+
+<div data-facturas-root>
+  <h2 class="font-display text-xl" data-i18n="cuenta.facturacionTitle">Facturación</h2>
+  <p data-facturas-empty class="mt-4 hidden text-sm text-white/60" data-i18n="cuenta.facturasVacio">
+    Todavía no hay facturas disponibles. Ariadna las sube aquí en cuanto se emiten.
+  </p>
+  <ul data-facturas-list class="mt-4 flex flex-col gap-3"></ul>
+</div>
+
+<script>
+  import { listMyInvoices, getInvoiceDownloadUrl } from "../../lib/invoices";
+  import { t } from "../../lib/i18n";
+  import type { Profile } from "../../lib/supabase";
+
+  const root = document.querySelector<HTMLElement>("[data-facturas-root]");
+  if (root) {
+    const list = root.querySelector<HTMLElement>("[data-facturas-list]");
+    const empty = root.querySelector<HTMLElement>("[data-facturas-empty]");
+
+    async function load() {
+      if (!list) return;
+      const facturas = await listMyInvoices();
+      list.innerHTML = "";
+      empty?.classList.toggle("hidden", facturas.length > 0);
+
+      for (const factura of facturas) {
+        const li = document.createElement("li");
+        li.className = "flex flex-wrap items-center justify-between gap-4 border border-white/10 px-6 py-4 text-sm";
+
+        const nombre = document.createElement("span");
+        nombre.className = "text-white/80";
+        nombre.textContent = factura.name;
+
+        const descargarBtn = document.createElement("button");
+        descargarBtn.type = "button";
+        descargarBtn.className = "text-xs tracking-[0.1em] text-pink uppercase hover:underline disabled:opacity-50";
+        descargarBtn.textContent = t("cuenta.descargar", "Descargar");
+        descargarBtn.addEventListener("click", async () => {
+          descargarBtn.disabled = true;
+          try {
+            const url = await getInvoiceDownloadUrl(factura.path);
+            window.open(url, "_blank", "noopener");
+          } finally {
+            descargarBtn.disabled = false;
+          }
+        });
+
+        li.append(nombre, descargarBtn);
+        list.appendChild(li);
+      }
+    }
+
+    document.addEventListener("cuenta:profile-ready", ((e: CustomEvent<{ profile: Profile }>) => {
+      if (e.detail.profile.account_type !== "b2b") return;
+      load();
+    }) as EventListener);
+  }
+</script>

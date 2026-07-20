@@ -25,13 +25,15 @@ alter table orders enable row level security;
 create policy "own profile" on profiles for select using (auth.uid() = id);
 create policy "own orders" on orders for select using (auth.uid() = user_id);
 
--- Sin política de UPDATE en v1 a propósito: el dashboard no ofrece editar el
+-- Sin política de UPDATE en v1 a propósito: el dashboard no ofrecía editar el
 -- perfil todavía, y una política "for update using (auth.uid() = id)" sin
 -- "with check" dejaría que cualquier cliente se autoasignara account_type='b2b'
 -- (o cambiara company_name) llamando directamente a la API de Supabase, sin
--- pasar por ninguna pantalla. Cuando se construya "editar perfil", añadir una
--- política de UPDATE con with check que fije account_type/company_name a su
--- valor anterior (o una función RPC dedicada), nunca un UPDATE abierto.
+-- pasar por ninguna pantalla.
+--
+-- Superado por supabase/migrations/002_editar_perfil.sql: añade un trigger que
+-- fija account_type a su valor anterior en cada UPDATE y, gracias a eso, una
+-- política de UPDATE abierta (auth.uid() = id) que sí permite editar perfil.
 
 -- Auto-crea el perfil (b2c por defecto) al registrarse. Ariadna cambia a
 -- account_type='b2b' + company_name a mano en el Table Editor cuando da de

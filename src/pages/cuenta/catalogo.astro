@@ -1,0 +1,170 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout
+  title="Catálogo B2B · Mi cuenta · NINUMÁ"
+  description="Catálogo con precios B2B para clientes profesionales de NINUMÁ."
+  path="/cuenta/catalogo/"
+  noindex={true}
+  motion={false}
+>
+  <main id="main-content" tabindex="-1" class="px-6 pt-36 pb-24 md:px-12 md:pt-44">
+    <div class="mx-auto max-w-[1100px]">
+      <p id="catalogo-loading" class="text-sm text-white/60" data-i18n="cuenta.cargandoCatalogo">Cargando catálogo…</p>
+      <p id="catalogo-error" class="hidden text-sm text-pink-deep" role="alert"></p>
+
+      <div id="catalogo-content" class="hidden flex-col gap-8">
+        <header class="border-b border-white/10 pb-8">
+          <p class="text-xs tracking-[0.14em] text-white/50 uppercase" data-i18n="cuenta.areaClientesB2b">Área de clientes · B2B</p>
+          <h1 class="mt-1 font-display text-3xl md:text-4xl" data-i18n="cuenta.catalogoConPreciosTitle">Catálogo con precios</h1>
+          <p class="mt-3 text-sm text-white/60" data-i18n="cuenta.catalogoIntro">
+            Precios pactados para tu cuenta. Añade productos al carrito y confirma el pedido sin salir de tu cuenta.
+          </p>
+          <div class="mt-4 flex flex-wrap items-center gap-6">
+            <a href="/cuenta/" class="text-xs tracking-[0.1em] text-pink uppercase hover:underline" data-i18n="cuenta.volverAMiCuenta">← Volver a mi cuenta</a>
+            <a
+              href="/cuenta/carrito/"
+              class="inline-flex items-center gap-2 rounded-full border border-white/15 px-5 py-2 text-xs tracking-[0.1em] text-white/70 uppercase transition-colors hover:border-pink hover:text-pink"
+            >
+              <span data-i18n="cuenta.verCarritoSinFlecha">Ver carrito</span> <span id="carrito-count" class="rounded-full bg-pink px-2 py-0.5 text-black">0</span>
+            </a>
+          </div>
+        </header>
+
+        <p id="catalogo-empty" class="hidden text-sm text-white/60" data-i18n="cuenta.catalogoVacio">
+          Todavía no tienes productos con precio pactado. Contacta con Ariadna para que dé de alta tus precios.
+        </p>
+
+        <div id="catalogo-tabla" class="hidden flex-col">
+          <div
+            class="hidden grid-cols-[56px_1fr_140px_120px_140px] items-center gap-4 border-b border-white/10 px-2 pb-3 text-xs tracking-wide text-white/50 uppercase md:grid"
+          >
+            <span></span>
+            <span data-i18n="cuenta.producto">Producto</span>
+            <span data-i18n="cuenta.cantidad">Cantidad</span>
+            <span data-i18n="cuenta.precioUd">Precio/ud</span>
+            <span></span>
+          </div>
+          <ul id="catalogo-list" class="mt-4 flex flex-col gap-3 md:mt-0"></ul>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  import { getSessionProfile } from "../../lib/auth";
+  import { getPiezasCatalog } from "../../lib/piezas";
+  import { getMyB2BPrices } from "../../lib/b2bPrices";
+  import { addToCart, getCartCount } from "../../lib/cart";
+  import { nombreB2B } from "../../lib/nombresB2B";
+  import { t, getCurrentLang } from "../../lib/i18n";
+
+  const loadingEl = document.getElementById("catalogo-loading");
+  const errorEl = document.getElementById("catalogo-error");
+  const contentEl = document.getElementById("catalogo-content");
+  const emptyEl = document.getElementById("catalogo-empty");
+  const tablaEl = document.getElementById("catalogo-tabla");
+  const listEl = document.getElementById("catalogo-list");
+  const carritoCountEl = document.getElementById("carrito-count");
+
+  const eur = new Intl.NumberFormat(getCurrentLang(), { style: "currency", currency: "EUR" });
+
+  function updateCarritoCount() {
+    if (carritoCountEl) carritoCountEl.textContent = String(getCartCount());
+  }
+
+  async function init() {
+    try {
+      const profile = await getSessionProfile();
+      if (!profile) {
+        window.location.href = "/cuenta/login/";
+        return;
+      }
+      if (profile.account_type !== "b2b") {
+        window.location.href = "/cuenta/";
+        return;
+      }
+
+      const [catalogo, precios] = await Promise.all([getPiezasCatalog(), getMyB2BPrices()]);
+      const preciosPorNumero = new Map(precios.map((p) => [p.pieza_numero, p.precio]));
+      const piezas = catalogo.filter((p) => preciosPorNumero.has(p.numero));
+
+      if (piezas.length === 0) {
+        emptyEl?.classList.remove("hidden");
+      } else if (listEl) {
+        tablaEl?.classList.remove("hidden");
+        tablaEl?.classList.add("flex");
+
+        for (const pieza of piezas) {
+          const precioUnitario = preciosPorNumero.get(pieza.numero)!;
+          const nombreMostrado = nombreB2B(pieza.numero, pieza.nombre);
+
+          const li = document.createElement("li");
+          li.className = "flex flex-wrap items-center gap-4 border border-white/10 px-4 py-3 text-sm md:grid md:grid-cols-[56px_1fr_140px_120px_140px]";
+
+          const img = document.createElement("img");
+          img.src = pieza.imagen;
+          img.alt = nombreMostrado;
+          img.loading = "lazy";
+          img.className = "h-12 w-12 shrink-0 rounded-sm object-cover";
+
+          const nombre = document.createElement("span");
+          nombre.className = "flex-1 text-white/80 md:flex-none";
+          nombre.textContent = nombreMostrado;
+
+          const unidadesSelect = document.createElement("select");
+          unidadesSelect.setAttribute("aria-label", `${t("cuenta.unidadesDe", "Unidades de")} ${nombreMostrado}`);
+          unidadesSelect.className = "border border-white/15 bg-black px-3 py-2 text-sm text-white outline-none focus:border-pink";
+          for (let n = 5; n <= 200; n += 5) {
+            const opt = document.createElement("option");
+            opt.value = String(n);
+            opt.textContent = String(n);
+            unidadesSelect.appendChild(opt);
+          }
+
+          const precio = document.createElement("span");
+          precio.className = "text-white/70";
+          precio.textContent = eur.format(precioUnitario);
+
+          const addBtn = document.createElement("button");
+          addBtn.type = "button";
+          addBtn.className =
+            "inline-flex w-fit items-center rounded-full border border-pink px-4 py-2 text-xs tracking-[0.1em] text-pink uppercase transition-colors hover:bg-pink hover:text-black";
+          addBtn.textContent = t("cuenta.anadir", "Añadir");
+          addBtn.addEventListener("click", () => {
+            addToCart({
+              numero: pieza.numero,
+              nombre: nombreMostrado,
+              precioUnitario,
+              unidades: Number(unidadesSelect.value),
+            });
+            updateCarritoCount();
+            const original = addBtn.textContent;
+            addBtn.textContent = t("cuenta.anadido", "Añadido ✓");
+            setTimeout(() => {
+              addBtn.textContent = original;
+            }, 1200);
+          });
+
+          li.append(img, nombre, unidadesSelect, precio, addBtn);
+          listEl.appendChild(li);
+        }
+      }
+
+      updateCarritoCount();
+      loadingEl?.classList.add("hidden");
+      contentEl?.classList.remove("hidden");
+      contentEl?.classList.add("flex");
+    } catch {
+      loadingEl?.classList.add("hidden");
+      if (errorEl) {
+        errorEl.textContent = t("cuenta.errorCargaCatalogo", "No se ha podido cargar el catálogo. Recarga la página o contacta con nosotros.");
+        errorEl.classList.remove("hidden");
+      }
+    }
+  }
+
+  init();
+</script>

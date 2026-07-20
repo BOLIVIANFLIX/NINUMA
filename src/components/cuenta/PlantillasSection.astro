@@ -1,0 +1,163 @@
+---
+---
+
+<div data-plantillas-root>
+  <h2 class="font-display text-xl" data-i18n="cuenta.plantillasTitle">Plantillas de pedido</h2>
+  <p class="mt-2 text-sm text-white/60" data-i18n="cuenta.plantillasDesc">
+    Guarda descripciones de pedidos habituales para reutilizarlas al contactar con nosotros.
+  </p>
+
+  <p data-plantillas-empty class="mt-4 hidden text-sm text-white/60" data-i18n="cuenta.plantillasVacio">Todavía no tienes plantillas guardadas.</p>
+  <ul data-plantillas-list class="mt-4 flex flex-col gap-3"></ul>
+
+  <form data-plantilla-form class="mt-6 flex flex-col gap-4 border border-white/10 p-6" novalidate aria-label="Guardar nueva plantilla de pedido">
+    <div class="flex flex-col gap-2">
+      <label class="text-xs tracking-wide text-white/60" for="plantilla-label" data-i18n="cuenta.plantillaNombreLabel">Nombre de la plantilla</label>
+      <input
+        class="border border-white/15 bg-transparent px-4 py-3 text-sm text-white outline-none focus:border-pink"
+        type="text"
+        id="plantilla-label"
+        name="label"
+        required
+        aria-required="true"
+        aria-invalid="false"
+        aria-describedby="plantilla-label-error"
+        placeholder="Ej: Pedido semanal cafetería"
+        data-i18n-placeholder="cuenta.plantillaNombrePlaceholder"
+      />
+      <span id="plantilla-label-error" class="field-error text-xs text-pink-deep" role="alert"></span>
+    </div>
+    <div class="flex flex-col gap-2">
+      <label class="text-xs tracking-wide text-white/60" for="plantilla-description" data-i18n="cuenta.plantillaDescLabel">Descripción del pedido</label>
+      <textarea
+        class="border border-white/15 bg-transparent px-4 py-3 text-sm text-white outline-none focus:border-pink"
+        id="plantilla-description"
+        name="description"
+        rows="3"
+        required
+        aria-required="true"
+        aria-invalid="false"
+        aria-describedby="plantilla-description-error"
+      ></textarea>
+      <span id="plantilla-description-error" class="field-error text-xs text-pink-deep" role="alert"></span>
+    </div>
+    <button
+      type="submit"
+      data-plantilla-guardar
+      data-i18n="cuenta.guardarPlantilla"
+      class="inline-flex w-fit items-center rounded-full border border-pink px-5 py-2 text-xs tracking-[0.1em] text-pink uppercase transition-colors hover:bg-pink hover:text-black disabled:opacity-50"
+    >
+      Guardar plantilla
+    </button>
+    <p data-plantilla-error class="hidden text-xs text-pink-deep" role="alert" aria-live="assertive"></p>
+  </form>
+</div>
+
+<script>
+  import { getMyTemplates, createTemplate, deleteTemplate } from "../../lib/templates";
+  import { validateField, type ValidationMessages } from "../../lib/form";
+  import { t } from "../../lib/i18n";
+  import type { Profile, OrderTemplate } from "../../lib/supabase";
+
+  const MESSAGES: ValidationMessages = {
+    required: ["cuenta.plantillaValidationRequired", "Este campo es obligatorio."],
+    email: ["cuenta.plantillaValidationEmail", "Introduce un correo electrónico válido."],
+    rgpd: ["cuenta.plantillaValidationRgpd", "Debes aceptar la política de privacidad para continuar."],
+  };
+
+  const root = document.querySelector<HTMLElement>("[data-plantillas-root]");
+  if (root) {
+    const list = root.querySelector<HTMLElement>("[data-plantillas-list]");
+    const empty = root.querySelector<HTMLElement>("[data-plantillas-empty]");
+    const form = root.querySelector<HTMLFormElement>("[data-plantilla-form]");
+    const guardarBtn = root.querySelector<HTMLButtonElement>("[data-plantilla-guardar]");
+    const errorEl = root.querySelector<HTMLElement>("[data-plantilla-error]");
+
+    function renderList(templates: OrderTemplate[]) {
+      if (!list) return;
+      list.innerHTML = "";
+      empty?.classList.toggle("hidden", templates.length > 0);
+
+      for (const tpl of templates) {
+        const li = document.createElement("li");
+        li.className = "flex flex-wrap items-center justify-between gap-4 border border-white/10 px-6 py-4 text-sm";
+
+        const info = document.createElement("div");
+        const label = document.createElement("p");
+        label.className = "text-white/80";
+        label.textContent = tpl.label;
+        const desc = document.createElement("p");
+        desc.className = "mt-1 text-xs text-white/50";
+        desc.textContent = tpl.description;
+        info.append(label, desc);
+
+        const actions = document.createElement("div");
+        actions.className = "flex items-center gap-4";
+
+        const usarLink = document.createElement("a");
+        usarLink.href = `/contacto/?tipo=b2b&mensaje=${encodeURIComponent(tpl.description)}`;
+        usarLink.className = "text-xs tracking-[0.1em] text-pink uppercase hover:underline";
+        usarLink.textContent = t("cuenta.usarPlantilla", "Usar esta plantilla");
+
+        const eliminarBtn = document.createElement("button");
+        eliminarBtn.type = "button";
+        eliminarBtn.className = "text-xs tracking-[0.1em] text-white/50 uppercase hover:text-pink";
+        eliminarBtn.textContent = t("cuenta.eliminar", "Eliminar");
+        eliminarBtn.addEventListener("click", async () => {
+          eliminarBtn.disabled = true;
+          try {
+            await deleteTemplate(tpl.id);
+            await load();
+          } catch {
+            eliminarBtn.disabled = false;
+          }
+        });
+
+        actions.append(usarLink, eliminarBtn);
+        li.append(info, actions);
+        list.appendChild(li);
+      }
+    }
+
+    async function load() {
+      const templates = await getMyTemplates();
+      renderList(templates);
+    }
+
+    form?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const labelInput = form.querySelector<HTMLInputElement>('[name="label"]');
+      const descInput = form.querySelector<HTMLTextAreaElement>('[name="description"]');
+      if (!labelInput || !descInput || !guardarBtn) return;
+
+      const labelOk = validateField(labelInput, MESSAGES);
+      const descOk = validateField(descInput, MESSAGES);
+      if (!labelOk || !descOk) return;
+
+      guardarBtn.disabled = true;
+      guardarBtn.textContent = t("cuenta.guardando", "Guardando…");
+      errorEl?.classList.add("hidden");
+
+      createTemplate({ label: labelInput.value.trim(), description: descInput.value.trim() })
+        .then(async () => {
+          form.reset();
+          await load();
+        })
+        .catch(() => {
+          if (errorEl) {
+            errorEl.textContent = t("cuenta.plantillaGuardarError", "No se ha podido guardar la plantilla. Inténtalo de nuevo.");
+            errorEl.classList.remove("hidden");
+          }
+        })
+        .finally(() => {
+          guardarBtn.disabled = false;
+          guardarBtn.textContent = t("cuenta.guardarPlantilla", "Guardar plantilla");
+        });
+    });
+
+    document.addEventListener("cuenta:profile-ready", ((e: CustomEvent<{ profile: Profile }>) => {
+      if (e.detail.profile.account_type !== "b2b") return;
+      load();
+    }) as EventListener);
+  }
+</script>

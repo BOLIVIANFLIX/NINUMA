@@ -69,3 +69,18 @@ export async function getMyOrders(): Promise<Order[]> {
   if (error) throw error;
   return data ?? [];
 }
+
+/** account_type nunca cambia por aquí: el trigger pin_account_type_trigger lo fija
+ * a su valor anterior en cada UPDATE (ver supabase/migrations/002_editar_perfil.sql),
+ * así que ni falta ni serviría de nada incluirlo en patch. */
+export async function updateMyProfile(patch: Partial<Pick<Profile, "full_name" | "phone" | "company_name">>): Promise<Profile> {
+  const client = requireClient();
+  const {
+    data: { session },
+  } = await client.auth.getSession();
+  if (!session) throw new Error(NOT_CONFIGURED_MSG);
+
+  const { data, error } = await client.from("profiles").update(patch).eq("id", session.user.id).select().single();
+  if (error) throw error;
+  return data;
+}

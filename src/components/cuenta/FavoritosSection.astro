@@ -1,0 +1,73 @@
+---
+---
+
+<div data-favoritos-root>
+  <h2 class="font-display text-xl" data-i18n="cuenta.tusFavoritos">Tus favoritos</h2>
+  <p data-favoritos-empty class="mt-4 hidden text-sm text-white/60" data-i18n="cuenta.favoritosVacio">
+    Todavía no tienes piezas favoritas. Explora la <a href="/creaciones/" class="text-pink underline underline-offset-2">galería</a>
+    y marca tus preferidas.
+  </p>
+  <ul data-favoritos-list class="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4"></ul>
+</div>
+
+<script>
+  import { getPiezasCatalog } from "../../lib/piezas";
+  import { getMyFavorites, removeFavorite } from "../../lib/favorites";
+  import { t } from "../../lib/i18n";
+
+  const root = document.querySelector<HTMLElement>("[data-favoritos-root]");
+  if (root) {
+    const list = root.querySelector<HTMLElement>("[data-favoritos-list]");
+    const empty = root.querySelector<HTMLElement>("[data-favoritos-empty]");
+
+    async function render() {
+      if (!list) return;
+      const [catalogo, favoritos] = await Promise.all([getPiezasCatalog(), getMyFavorites()]);
+      const favSet = new Set(favoritos);
+      const piezas = catalogo.filter((p) => favSet.has(p.numero));
+
+      list.innerHTML = "";
+      empty?.classList.toggle("hidden", piezas.length > 0);
+
+      for (const pieza of piezas) {
+        const li = document.createElement("li");
+        li.className = "flex flex-col gap-2";
+
+        const link = document.createElement("a");
+        link.href = pieza.href;
+        link.className = "block overflow-hidden bg-charcoal";
+        const img = document.createElement("img");
+        img.src = pieza.imagen;
+        img.alt = pieza.nombre;
+        img.loading = "lazy";
+        img.className = "aspect-[4/5] w-full object-cover";
+        link.appendChild(img);
+
+        const nombre = document.createElement("p");
+        nombre.className = "text-xs text-white/70";
+        nombre.textContent = pieza.nombre;
+
+        const quitarBtn = document.createElement("button");
+        quitarBtn.type = "button";
+        quitarBtn.className = "text-left text-xs text-white/50 uppercase tracking-wide hover:text-pink";
+        quitarBtn.textContent = t("cuenta.quitar", "Quitar");
+        quitarBtn.addEventListener("click", async () => {
+          quitarBtn.disabled = true;
+          try {
+            await removeFavorite(pieza.numero);
+            await render();
+          } catch {
+            quitarBtn.disabled = false;
+          }
+        });
+
+        li.append(link, nombre, quitarBtn);
+        list.appendChild(li);
+      }
+    }
+
+    document.addEventListener("cuenta:profile-ready", (() => {
+      render();
+    }) as EventListener);
+  }
+</script>

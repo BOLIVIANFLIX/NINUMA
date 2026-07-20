@@ -1,0 +1,229 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout
+  title="Carrito · Mi cuenta · NINUMÁ"
+  description="Carrito de pedido B2B para clientes profesionales de NINUMÁ."
+  path="/cuenta/carrito/"
+  noindex={true}
+  motion={false}
+>
+  <main id="main-content" tabindex="-1" class="px-6 pt-36 pb-24 md:px-12 md:pt-44">
+    <div class="mx-auto max-w-[900px]">
+      <p id="carrito-loading" class="text-sm text-white/60" data-i18n="cuenta.cargandoSimple">Cargando…</p>
+      <p id="carrito-error" class="hidden text-sm text-pink-deep" role="alert"></p>
+
+      <div id="carrito-content" class="hidden flex-col gap-8">
+        <header class="border-b border-white/10 pb-8">
+          <p class="text-xs tracking-[0.14em] text-white/50 uppercase" data-i18n="cuenta.areaClientes">Área de clientes</p>
+          <h1 class="mt-1 font-display text-3xl md:text-4xl" data-i18n="cuenta.tuCarrito">Tu carrito</h1>
+          <a id="carrito-volver-catalogo" href="/cuenta/" class="mt-4 inline-block text-xs tracking-[0.1em] text-pink uppercase hover:underline" data-i18n="cuenta.seguirViendoCatalogo">
+            ← Seguir viendo el catálogo
+          </a>
+        </header>
+
+        <p id="carrito-vacio" class="hidden text-sm text-white/60" data-i18n="cuenta.carritoVacio">
+          Tu carrito está vacío. Añade piezas desde el <a id="carrito-vacio-link" href="/cuenta/" class="text-pink underline underline-offset-2">catálogo</a>.
+        </p>
+
+        <div id="carrito-lleno" class="hidden flex-col gap-8">
+          <ul id="carrito-list" class="flex flex-col gap-3"></ul>
+
+          <div class="flex items-center justify-between border-t border-white/10 pt-6 text-lg">
+            <span class="text-white/60" data-i18n="cuenta.total">Total</span>
+            <span id="carrito-total" class="font-display text-2xl"></span>
+          </div>
+          <p id="carrito-total-nota" class="hidden -mt-4 text-xs text-white/50" data-i18n="cuenta.totalNota">
+            Algunas piezas no tienen precio fijo — Ariadna te confirma el presupuesto por email.
+          </p>
+
+          <button
+            type="button"
+            id="carrito-confirmar"
+            data-i18n="cuenta.confirmarPedido"
+            class="inline-flex w-fit items-center rounded-full border border-pink px-6 py-3 text-xs tracking-[0.1em] text-pink uppercase transition-colors hover:bg-pink hover:text-black disabled:opacity-50"
+          >
+            Confirmar pedido →
+          </button>
+          <p id="carrito-confirmar-error" class="hidden text-xs text-pink-deep" role="alert" aria-live="assertive"></p>
+        </div>
+
+        <div id="carrito-confirmado" class="hidden border border-white/10 bg-charcoal p-10" tabindex="-1" aria-live="polite">
+          <h2 class="font-display text-2xl" data-i18n="cuenta.pedidoEnviadoTitle">Pedido enviado.</h2>
+          <p class="mt-4 text-sm leading-relaxed text-white/60" data-i18n="cuenta.pedidoEnviadoBody">
+            Ya tienes el pedido registrado en <a href="/cuenta/" class="text-pink underline underline-offset-2">Tus pedidos</a>. Ariadna lo
+            ha recibido y se pondrá en contacto contigo para confirmarlo.
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  import { getSessionProfile } from "../../lib/auth";
+  import { supabase } from "../../lib/supabase";
+  import { createOrder, notifyOrderByEmail } from "../../lib/orders";
+  import { getCart, updateCartQuantity, removeFromCart, clearCart, type CartItem } from "../../lib/cart";
+  import { t, getCurrentLang } from "../../lib/i18n";
+
+  const loadingEl = document.getElementById("carrito-loading");
+  const errorEl = document.getElementById("carrito-error");
+  const contentEl = document.getElementById("carrito-content");
+  const vacioEl = document.getElementById("carrito-vacio");
+  const llenoEl = document.getElementById("carrito-lleno");
+  const listEl = document.getElementById("carrito-list");
+  const totalEl = document.getElementById("carrito-total");
+  const totalNotaEl = document.getElementById("carrito-total-nota");
+  const confirmarBtn = document.getElementById("carrito-confirmar") as HTMLButtonElement | null;
+  const confirmarErrorEl = document.getElementById("carrito-confirmar-error");
+  const confirmadoEl = document.getElementById("carrito-confirmado");
+
+  const eur = new Intl.NumberFormat(getCurrentLang(), { style: "currency", currency: "EUR" });
+
+  function subtotal(item: CartItem): number {
+    return (item.precioUnitario ?? 0) * item.unidades;
+  }
+
+  function renderCart() {
+    const items = getCart();
+    if (!listEl || !totalEl) return;
+
+    vacioEl?.classList.toggle("hidden", items.length > 0);
+    llenoEl?.classList.toggle("hidden", items.length === 0);
+    llenoEl?.classList.toggle("flex", items.length > 0);
+    if (items.length === 0) return;
+
+    listEl.innerHTML = "";
+    let total = 0;
+    let hayItemsSinPrecio = false;
+
+    for (const item of items) {
+      total += subtotal(item);
+      if (item.precioUnitario == null) hayItemsSinPrecio = true;
+
+      const li = document.createElement("li");
+      li.className = "flex flex-wrap items-center justify-between gap-4 border border-white/10 px-6 py-4 text-sm";
+
+      const nombre = document.createElement("span");
+      nombre.className = "text-white/80";
+      nombre.textContent = `${item.nombre} (N.º ${item.numero})`;
+
+      const controls = document.createElement("div");
+      controls.className = "flex items-center gap-4";
+
+      const cantidadInput = document.createElement("input");
+      cantidadInput.type = "number";
+      cantidadInput.min = "1";
+      cantidadInput.max = "99";
+      cantidadInput.value = String(item.unidades);
+      cantidadInput.className = "w-16 border border-white/15 bg-black px-2 py-1 text-sm text-white outline-none focus:border-pink";
+      cantidadInput.addEventListener("change", () => {
+        const nuevo = Math.max(1, Math.min(99, Number(cantidadInput.value) || 1));
+        updateCartQuantity(item.numero, nuevo);
+        renderCart();
+      });
+
+      const precio = document.createElement("span");
+      precio.className = "w-28 text-right text-white/60";
+      precio.textContent = item.precioUnitario == null ? t("cuenta.aConfirmar", "A confirmar") : eur.format(subtotal(item));
+
+      const quitarBtn = document.createElement("button");
+      quitarBtn.type = "button";
+      quitarBtn.className = "text-xs tracking-[0.1em] text-white/50 uppercase hover:text-pink";
+      quitarBtn.textContent = t("cuenta.quitar", "Quitar");
+      quitarBtn.addEventListener("click", () => {
+        removeFromCart(item.numero);
+        renderCart();
+      });
+
+      controls.append(cantidadInput, precio, quitarBtn);
+      li.append(nombre, controls);
+      listEl.appendChild(li);
+    }
+
+    totalEl.textContent = total > 0 ? eur.format(total) : t("cuenta.aConfirmar", "A confirmar");
+    totalNotaEl?.classList.toggle("hidden", !hayItemsSinPrecio);
+  }
+
+  async function init() {
+    try {
+      const profile = await getSessionProfile();
+      if (!profile) {
+        window.location.href = "/cuenta/login/";
+        return;
+      }
+
+      const catalogoHref = profile.account_type === "b2b" ? "/cuenta/catalogo/" : "/cuenta/tienda/";
+      const volverLink = document.getElementById("carrito-volver-catalogo") as HTMLAnchorElement | null;
+      const vacioLink = document.getElementById("carrito-vacio-link") as HTMLAnchorElement | null;
+      if (volverLink) volverLink.href = catalogoHref;
+      if (vacioLink) vacioLink.href = catalogoHref;
+
+      renderCart();
+
+      confirmarBtn?.addEventListener("click", async () => {
+        const items = getCart();
+        if (items.length === 0 || !confirmarBtn) return;
+
+        confirmarBtn.disabled = true;
+        confirmarBtn.textContent = t("cuenta.enviando", "Enviando…");
+        confirmarErrorEl?.classList.add("hidden");
+
+        const lineas = items.map(
+          (i) => `- N.º ${i.numero} ${i.nombre}: ${i.unidades} uds x ${i.precioUnitario == null ? "a confirmar" : eur.format(i.precioUnitario)}`
+        );
+        const total = items.reduce((sum, i) => sum + subtotal(i), 0);
+        const totalTexto = total > 0 ? eur.format(total) : "a confirmar";
+        const descripcion = `Pedido desde el carrito de ${profile.account_type === "b2b" ? "empresa" : "cliente"}:\n${lineas.join("\n")}\nTotal: ${totalTexto}`;
+
+        try {
+          await createOrder(descripcion);
+
+          if (supabase) {
+            const {
+              data: { session },
+            } = await supabase.auth.getSession();
+            if (session?.user.email) {
+              await notifyOrderByEmail({
+                nombre: profile.company_name || profile.full_name,
+                email: session.user.email,
+                telefono: profile.phone,
+                descripcion,
+              }).catch(() => {
+                // El pedido ya está guardado; si falla el email, no bloqueamos al cliente.
+              });
+            }
+          }
+
+          clearCart();
+          llenoEl?.classList.add("hidden");
+          llenoEl?.classList.remove("flex");
+          confirmadoEl?.classList.remove("hidden");
+          (confirmadoEl as HTMLElement | null)?.focus();
+        } catch {
+          if (confirmarErrorEl) {
+            confirmarErrorEl.textContent = t("cuenta.pedidoEnviarError", "No se ha podido enviar el pedido. Inténtalo de nuevo.");
+            confirmarErrorEl.classList.remove("hidden");
+          }
+        } finally {
+          confirmarBtn.disabled = false;
+          confirmarBtn.textContent = t("cuenta.confirmarPedido", "Confirmar pedido →");
+        }
+      });
+
+      loadingEl?.classList.add("hidden");
+      contentEl?.classList.remove("hidden");
+      contentEl?.classList.add("flex");
+    } catch {
+      loadingEl?.classList.add("hidden");
+      if (errorEl) {
+        errorEl.textContent = t("cuenta.errorCargaCarrito", "No se ha podido cargar tu carrito. Recarga la página o contacta con nosotros.");
+        errorEl.classList.remove("hidden");
+      }
+    }
+  }
+
+  init();
+</script>

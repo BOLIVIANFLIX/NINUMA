@@ -8,7 +8,7 @@
   </div>
 
   <div class="flex flex-col gap-2">
-    <label class="text-xs tracking-wide text-white/60" for="l-email">Correo electrónico</label>
+    <label class="text-xs tracking-wide text-white/60" for="l-email" data-i18n="cuenta.emailLabel">Correo electrónico</label>
     <input
       class="border border-white/15 bg-transparent px-4 py-3 text-sm text-white outline-none focus:border-pink"
       type="email"
@@ -24,7 +24,7 @@
   </div>
 
   <div class="flex flex-col gap-2">
-    <label class="text-xs tracking-wide text-white/60" for="l-password">Contraseña</label>
+    <label class="text-xs tracking-wide text-white/60" for="l-password" data-i18n="cuenta.passwordLabel">Contraseña</label>
     <input
       class="border border-white/15 bg-transparent px-4 py-3 text-sm text-white outline-none focus:border-pink"
       type="password"
@@ -42,6 +42,7 @@
   <button
     type="submit"
     id="l-submit"
+    data-i18n="cuenta.loginSubmit"
     class="mt-2 inline-flex w-fit items-center rounded-full border border-pink px-6 py-3 text-xs tracking-[0.1em] text-pink uppercase transition-colors hover:bg-pink hover:text-black disabled:opacity-50"
   >
     Entrar →
@@ -50,13 +51,14 @@
   <p id="login-error-msg" class="hidden text-xs text-pink-deep" role="alert" aria-live="assertive"></p>
 
   <div class="flex flex-col gap-2 text-xs text-white/60">
-    <a href="/cuenta/recuperar/" class="hover:text-pink">¿Has olvidado tu contraseña?</a>
-    <p>¿Todavía no tienes cuenta? <a href="/cuenta/registro/" class="text-pink underline underline-offset-2">Regístrate</a>.</p>
+    <a href="/cuenta/recuperar/" class="hover:text-pink" data-i18n="cuenta.loginForgot">¿Has olvidado tu contraseña?</a>
+    <p data-i18n="cuenta.loginNoAccount">¿Todavía no tienes cuenta? <a href="/cuenta/registro/" class="text-pink underline underline-offset-2">Regístrate</a>.</p>
   </div>
 </form>
 
 <script>
   import { signIn } from "../../lib/auth";
+  import { t } from "../../lib/i18n";
 
   const form = document.getElementById("login-form") as HTMLFormElement | null;
   const btn = document.getElementById("l-submit") as HTMLButtonElement | null;
@@ -76,7 +78,7 @@
 
     errorMsgEl?.classList.add("hidden");
     btn.disabled = true;
-    btn.textContent = "Entrando…";
+    btn.textContent = t("cuenta.loginSubmitting", "Entrando…");
 
     signIn(emailInput.value.trim(), passwordInput.value)
       .then(() => {
@@ -84,9 +86,9 @@
       })
       .catch(() => {
         btn.disabled = false;
-        btn.textContent = "Entrar →";
+        btn.textContent = t("cuenta.loginSubmit", "Entrar →");
         if (errorMsgEl) {
-          errorMsgEl.textContent = "Correo o contraseña incorrectos.";
+          errorMsgEl.textContent = t("cuenta.loginError", "Correo o contraseña incorrectos.");
           errorMsgEl.classList.remove("hidden");
         }
       });

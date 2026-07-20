@@ -1,37 +1,51 @@
 ---
+import EditarPerfilForm from "./EditarPerfilForm.astro";
+import FavoritosSection from "./FavoritosSection.astro";
 ---
 
 <section id="dashboard-b2c" class="hidden flex-col gap-12">
   <div class="grid gap-8 md:grid-cols-2">
-    <div class="border border-white/10 p-8">
-      <h2 class="font-display text-xl">Tu perfil</h2>
-      <dl class="mt-4 flex flex-col gap-3 text-sm text-white/70">
-        <div class="flex justify-between gap-4">
-          <dt class="text-white/50">Nombre</dt>
-          <dd data-field="full_name"></dd>
-        </div>
-        <div class="flex justify-between gap-4">
-          <dt class="text-white/50">Teléfono</dt>
-          <dd data-field="phone">—</dd>
-        </div>
-      </dl>
-    </div>
+    <EditarPerfilForm accountType="b2c" />
 
     <div class="border border-white/10 bg-charcoal p-8 text-sm text-white/60">
-      <h2 class="font-display text-xl text-white">Próximamente</h2>
-      <p class="mt-4 leading-relaxed">
-        Puntos de fidelidad, recogida programada (click &amp; collect), tus favoritos y el descuento de cumpleaños
-        llegarán en próximas fases.
+      <h2 class="font-display text-xl text-white" data-i18n="cuenta.catalogoTitle">Catálogo</h2>
+      <p class="mt-4 leading-relaxed" data-i18n="cuenta.catalogoB2cDesc">Descubre nuestras creaciones y sus ingredientes.</p>
+      <a
+        href="/cuenta/tienda/"
+        data-i18n="cuenta.verCatalogo"
+        class="mt-4 inline-flex w-fit items-center rounded-full border border-pink px-5 py-2 text-xs tracking-[0.1em] text-pink uppercase transition-colors hover:bg-pink hover:text-black"
+      >
+        Ver catálogo →
+      </a>
+      <p class="mt-4 leading-relaxed" data-i18n="cuenta.proximamenteB2c">
+        Puntos de fidelidad, recogida programada (click &amp; collect) y el descuento de cumpleaños llegarán en
+        próximas fases.
       </p>
     </div>
   </div>
 
   <div>
-    <h2 class="font-display text-xl">Tus pedidos</h2>
-    <p data-orders-empty class="mt-4 hidden text-sm text-white/60">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <h2 class="font-display text-xl" data-i18n="cuenta.tusPedidos">Tus pedidos</h2>
+      <select
+        data-orders-filter
+        aria-label="Filtrar pedidos por estado"
+        class="border border-white/15 bg-black px-3 py-2 text-xs text-white outline-none focus:border-pink"
+      >
+        <option value="" data-i18n="cuenta.todosLosEstados">Todos los estados</option>
+        <option value="recibido" data-i18n="cuenta.estadoRecibido">Recibido</option>
+        <option value="en_obrador" data-i18n="cuenta.estadoEnObrador">En el obrador</option>
+        <option value="listo" data-i18n="cuenta.estadoListo">Listo para recoger</option>
+        <option value="entregado" data-i18n="cuenta.estadoEntregado">Entregado</option>
+      </select>
+    </div>
+    <p data-orders-empty class="mt-4 hidden text-sm text-white/60" data-i18n="cuenta.pedidosVacioB2c">
       Todavía no tienes pedidos registrados. Encárganos tu próxima tarta desde
       <a href="/contacto/" class="text-pink underline underline-offset-2">contacto</a>.
     </p>
+    <p data-orders-empty-filtro class="mt-4 hidden text-sm text-white/60" data-i18n="cuenta.pedidosVacioFiltroB2c">No tienes pedidos con este estado.</p>
     <ul data-orders-list class="mt-4 flex flex-col gap-3"></ul>
   </div>
+
+  <FavoritosSection />
 </section>

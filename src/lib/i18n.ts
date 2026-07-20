@@ -1,17 +1,19 @@
-export const LANGS = ["es", "en", "fr", "de"] as const;
+export const LANGS = ["es", "ca", "en", "de", "fr"] as const;
 export type Lang = (typeof LANGS)[number];
 export const DEFAULT_LANG = "es" satisfies Lang;
 export const LANG_KEY = "ninuma_lang";
 export const LANG_LABELS: Record<Lang, string> = {
   es: "Español",
+  ca: "Català",
   en: "English",
-  fr: "Français",
   de: "Deutsch",
+  fr: "Français",
 };
 
 type Dict = Record<string, string>;
 
 const loaders: Record<Exclude<Lang, "es">, () => Promise<{ default: Dict }>> = {
+  ca: () => import("../i18n/ca.json"),
   en: () => import("../i18n/en.json"),
   fr: () => import("../i18n/fr.json"),
   de: () => import("../i18n/de.json"),

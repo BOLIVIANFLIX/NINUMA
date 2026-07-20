@@ -1,0 +1,129 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+---
+
+<Layout
+  title="Administrar pedidos · NINUMÁ"
+  description="Panel interno para gestionar el estado de los pedidos."
+  path="/cuenta/admin/pedidos/"
+  noindex={true}
+  motion={false}
+>
+  <main id="main-content" tabindex="-1" class="px-6 pt-36 pb-24 md:px-12 md:pt-44">
+    <div class="mx-auto max-w-[1100px]">
+      <p id="admin-loading" class="text-sm text-white/60">Cargando pedidos…</p>
+      <p id="admin-error" class="hidden text-sm text-pink-deep" role="alert"></p>
+
+      <div id="admin-content" class="hidden flex-col gap-8">
+        <header class="border-b border-white/10 pb-8">
+          <p class="text-xs tracking-[0.14em] text-white/50 uppercase">Panel interno</p>
+          <h1 class="mt-1 font-display text-3xl md:text-4xl">Pedidos</h1>
+          <a href="/cuenta/" class="mt-4 inline-block text-xs tracking-[0.1em] text-pink uppercase hover:underline">← Volver a mi cuenta</a>
+        </header>
+
+        <p id="admin-empty" class="hidden text-sm text-white/60">Todavía no hay pedidos.</p>
+        <ul id="admin-list" class="flex flex-col gap-3"></ul>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  import { getSessionProfile } from "../../../lib/auth";
+  import { getAllOrdersForAdmin, updateOrderStatus } from "../../../lib/orders";
+  import type { OrderStatus } from "../../../lib/supabase";
+
+  const ESTADOS: { value: OrderStatus; label: string }[] = [
+    { value: "recibido", label: "Recibido" },
+    { value: "en_obrador", label: "En el obrador" },
+    { value: "listo", label: "Listo para recoger" },
+    { value: "entregado", label: "Entregado" },
+  ];
+
+  const loadingEl = document.getElementById("admin-loading");
+  const errorEl = document.getElementById("admin-error");
+  const contentEl = document.getElementById("admin-content");
+  const emptyEl = document.getElementById("admin-empty");
+  const listEl = document.getElementById("admin-list");
+
+  async function init() {
+    try {
+      const profile = await getSessionProfile();
+      if (!profile) {
+        window.location.href = "/cuenta/login/";
+        return;
+      }
+      if (!profile.is_admin) {
+        window.location.href = "/cuenta/";
+        return;
+      }
+
+      const pedidos = await getAllOrdersForAdmin();
+
+      if (listEl) {
+        emptyEl?.classList.toggle("hidden", pedidos.length > 0);
+
+        for (const pedido of pedidos) {
+          const li = document.createElement("li");
+          li.className = "flex flex-col gap-3 border border-white/10 px-6 py-4 text-sm md:flex-row md:items-center md:justify-between";
+
+          const info = document.createElement("div");
+          const cliente = document.createElement("p");
+          cliente.className = "text-white/80";
+          cliente.textContent = pedido.cliente_nombre;
+          const desc = document.createElement("p");
+          desc.className = "mt-1 max-w-[500px] text-xs whitespace-pre-line text-white/50";
+          desc.textContent = pedido.description;
+          const fecha = document.createElement("p");
+          fecha.className = "mt-1 text-xs text-white/40";
+          fecha.textContent = new Date(pedido.created_at).toLocaleString("es-ES", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+          info.append(cliente, desc, fecha);
+
+          const estadoSelect = document.createElement("select");
+          estadoSelect.setAttribute("aria-label", `Estado del pedido de ${pedido.cliente_nombre}`);
+          estadoSelect.className = "shrink-0 border border-white/15 bg-black px-3 py-2 text-xs text-white outline-none focus:border-pink";
+          for (const estado of ESTADOS) {
+            const opt = document.createElement("option");
+            opt.value = estado.value;
+            opt.textContent = estado.label;
+            if (estado.value === pedido.status) opt.selected = true;
+            estadoSelect.appendChild(opt);
+          }
+          estadoSelect.addEventListener("change", async () => {
+            const nuevoEstado = estadoSelect.value as OrderStatus;
+            estadoSelect.disabled = true;
+            try {
+              await updateOrderStatus(pedido.id, nuevoEstado);
+            } catch {
+              estadoSelect.value = pedido.status;
+              alert("No se ha podido actualizar el estado. Inténtalo de nuevo.");
+            } finally {
+              estadoSelect.disabled = false;
+            }
+          });
+
+          li.append(info, estadoSelect);
+          listEl.appendChild(li);
+        }
+      }
+
+      loadingEl?.classList.add("hidden");
+      contentEl?.classList.remove("hidden");
+      contentEl?.classList.add("flex");
+    } catch {
+      loadingEl?.classList.add("hidden");
+      if (errorEl) {
+        errorEl.textContent = "No se han podido cargar los pedidos. Recarga la página.";
+        errorEl.classList.remove("hidden");
+      }
+    }
+  }
+
+  init();
+</script>
