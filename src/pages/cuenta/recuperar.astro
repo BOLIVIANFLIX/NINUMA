@@ -1,0 +1,101 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout
+  title="Recuperar contraseña · Mi cuenta · NINUMÁ"
+  description="Recupera el acceso a tu cuenta de cliente NINUMÁ."
+  path="/cuenta/recuperar/"
+  noindex={true}
+  motion={false}
+>
+  <main id="main-content" tabindex="-1" class="px-6 pt-36 pb-24 md:px-12 md:pt-44">
+    <div class="mx-auto max-w-md">
+      <h1 class="font-display text-3xl md:text-4xl">Recuperar contraseña</h1>
+      <p class="mt-3 text-sm text-white/60">Te enviaremos un enlace para elegir una nueva contraseña.</p>
+
+      <form id="recuperar-form" novalidate aria-label="Formulario de recuperación de contraseña" class="mt-10 flex flex-col gap-6">
+        <div class="flex flex-col gap-2">
+          <label class="text-xs tracking-wide text-white/60" for="rec-email">Correo electrónico</label>
+          <input
+            class="border border-white/15 bg-transparent px-4 py-3 text-sm text-white outline-none focus:border-pink"
+            type="email"
+            id="rec-email"
+            name="email"
+            autocomplete="email"
+            required
+            aria-required="true"
+            aria-invalid="false"
+            aria-describedby="rec-email-error"
+          />
+          <span id="rec-email-error" class="field-error text-xs text-pink-deep" role="alert"></span>
+        </div>
+
+        <button
+          type="submit"
+          id="rec-submit"
+          class="mt-2 inline-flex w-fit items-center rounded-full border border-pink px-6 py-3 text-xs tracking-[0.1em] text-pink uppercase transition-colors hover:bg-pink hover:text-black disabled:opacity-50"
+        >
+          Enviar enlace →
+        </button>
+
+        <p id="recuperar-error-msg" class="hidden text-xs text-pink-deep" role="alert" aria-live="assertive"></p>
+      </form>
+
+      <div id="recuperar-success" class="mt-10 hidden border border-white/10 bg-charcoal p-10" tabindex="-1" aria-live="polite">
+        <h2 class="font-display text-2xl">Revisa tu correo.</h2>
+        <p class="mt-4 text-sm leading-relaxed text-white/60">
+          Si existe una cuenta con ese correo, te hemos enviado un enlace para elegir una nueva contraseña.
+        </p>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  import { requestPasswordReset } from "../../lib/auth";
+
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  const form = document.getElementById("recuperar-form") as HTMLFormElement | null;
+  const btn = document.getElementById("rec-submit") as HTMLButtonElement | null;
+  const successEl = document.getElementById("recuperar-success");
+  const errorMsgEl = document.getElementById("recuperar-error-msg");
+  const emailInput = document.getElementById("rec-email") as HTMLInputElement | null;
+  const emailError = document.getElementById("rec-email-error");
+
+  form?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (!form || !btn || !emailInput) return;
+
+    const email = emailInput.value.trim();
+    if (!EMAIL_RE.test(email)) {
+      emailInput.setAttribute("aria-invalid", "true");
+      if (emailError) emailError.textContent = "Introduce un correo electrónico válido.";
+      return;
+    }
+    emailInput.setAttribute("aria-invalid", "false");
+    if (emailError) emailError.textContent = "";
+
+    errorMsgEl?.classList.add("hidden");
+    btn.disabled = true;
+    btn.textContent = "Enviando…";
+
+    // No revelamos si el correo existe o no (evita enumeración de cuentas):
+    // el mensaje de éxito se muestra siempre que la petición se complete.
+    requestPasswordReset(email)
+      .then(() => {
+        form.classList.add("hidden");
+        successEl?.classList.remove("hidden");
+        successEl?.focus();
+      })
+      .catch(() => {
+        btn.disabled = false;
+        btn.textContent = "Enviar enlace →";
+        if (errorMsgEl) {
+          errorMsgEl.textContent = "No se ha podido procesar la solicitud. Inténtalo de nuevo.";
+          errorMsgEl.classList.remove("hidden");
+        }
+      });
+  });
+</script>

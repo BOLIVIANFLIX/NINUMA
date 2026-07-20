@@ -1,0 +1,140 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import DashboardB2C from "../../components/cuenta/DashboardB2C.astro";
+import DashboardB2B from "../../components/cuenta/DashboardB2B.astro";
+---
+
+<Layout
+  title="Mi cuenta · NINUMÁ"
+  description="Área privada de clientes NINUMÁ."
+  path="/cuenta/"
+  noindex={true}
+  motion={false}
+>
+  <main id="main-content" tabindex="-1" class="px-6 pt-36 pb-24 md:px-12 md:pt-44">
+    <div class="mx-auto max-w-[1440px]">
+      <p id="cuenta-loading" class="text-sm text-white/60">Cargando tu cuenta…</p>
+      <p id="cuenta-error" class="hidden text-sm text-pink-deep" role="alert"></p>
+
+      <div id="cuenta-content" class="hidden flex-col gap-12">
+        <header class="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-8">
+          <div>
+            <p class="text-xs tracking-[0.14em] text-white/50 uppercase">Área de clientes</p>
+            <h1 class="mt-1 font-display text-3xl md:text-4xl">Hola, <span id="cuenta-nombre"></span></h1>
+          </div>
+          <button
+            id="cuenta-logout"
+            type="button"
+            class="rounded-full border border-white/15 px-5 py-2 text-xs tracking-[0.1em] text-white/70 uppercase transition-colors hover:border-pink hover:text-pink"
+          >
+            Cerrar sesión
+          </button>
+        </header>
+
+        <DashboardB2C />
+        <DashboardB2B />
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  import { getSessionProfile, getMyOrders, signOut } from "../../lib/auth";
+  import type { Order } from "../../lib/supabase";
+
+  const STATUS_LABELS: Record<Order["status"], string> = {
+    recibido: "Recibido",
+    en_obrador: "En el obrador",
+    listo: "Listo para recoger",
+    entregado: "Entregado",
+  };
+
+  const loadingEl = document.getElementById("cuenta-loading");
+  const errorEl = document.getElementById("cuenta-error");
+  const contentEl = document.getElementById("cuenta-content");
+  const nombreEl = document.getElementById("cuenta-nombre");
+  const logoutBtn = document.getElementById("cuenta-logout");
+  const b2cSection = document.getElementById("dashboard-b2c");
+  const b2bSection = document.getElementById("dashboard-b2b");
+
+  function renderOrders(section: HTMLElement | null, orders: Order[]) {
+    if (!section) return;
+    const list = section.querySelector<HTMLElement>("[data-orders-list]");
+    const empty = section.querySelector<HTMLElement>("[data-orders-empty]");
+    if (!list) return;
+
+    if (orders.length === 0) {
+      empty?.classList.remove("hidden");
+      return;
+    }
+    empty?.classList.add("hidden");
+
+    for (const order of orders) {
+      const li = document.createElement("li");
+      li.className = "flex flex-wrap items-center justify-between gap-4 border border-white/10 px-6 py-4 text-sm";
+
+      const desc = document.createElement("span");
+      desc.className = "text-white/80";
+      desc.textContent = order.description;
+
+      const meta = document.createElement("span");
+      meta.className = "flex items-center gap-4 text-xs text-white/50";
+
+      const date = document.createElement("span");
+      date.textContent = new Date(order.created_at).toLocaleDateString("es-ES", { day: "2-digit", month: "short", year: "numeric" });
+
+      const status = document.createElement("span");
+      status.className = "rounded-full border border-white/15 px-3 py-1 text-pink";
+      status.textContent = STATUS_LABELS[order.status] ?? order.status;
+
+      meta.append(date, status);
+      li.append(desc, meta);
+      list.appendChild(li);
+    }
+  }
+
+  async function init() {
+    try {
+      const profile = await getSessionProfile();
+      if (!profile) {
+        window.location.href = "/cuenta/login/";
+        return;
+      }
+
+      const isB2b = profile.account_type === "b2b";
+      if (nombreEl) nombreEl.textContent = (isB2b ? profile.company_name : profile.full_name) || profile.full_name;
+
+      b2cSection?.classList.toggle("hidden", isB2b);
+      b2cSection?.classList.toggle("flex", !isB2b);
+      b2bSection?.classList.toggle("hidden", !isB2b);
+      b2bSection?.classList.toggle("flex", isB2b);
+
+      const activeSection = isB2b ? b2bSection : b2cSection;
+      activeSection?.querySelector('[data-field="full_name"]')?.replaceChildren(document.createTextNode(profile.full_name));
+      const phoneField = activeSection?.querySelector('[data-field="phone"]');
+      if (phoneField) phoneField.textContent = profile.phone || "—";
+      const companyField = activeSection?.querySelector('[data-field="company_name"]');
+      if (companyField) companyField.textContent = profile.company_name || "—";
+
+      const orders = await getMyOrders();
+      renderOrders(activeSection as HTMLElement | null, orders);
+
+      loadingEl?.classList.add("hidden");
+      contentEl?.classList.remove("hidden");
+      contentEl?.classList.add("flex");
+    } catch {
+      loadingEl?.classList.add("hidden");
+      if (errorEl) {
+        errorEl.textContent = "No se ha podido cargar tu cuenta. Recarga la página o contacta con nosotros.";
+        errorEl.classList.remove("hidden");
+      }
+    }
+  }
+
+  logoutBtn?.addEventListener("click", async () => {
+    await signOut();
+    window.location.href = "/";
+  });
+
+  init();
+</script>

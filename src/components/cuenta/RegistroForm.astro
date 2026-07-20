@@ -1,0 +1,184 @@
+---
+---
+
+<form id="registro-form" novalidate aria-label="Formulario de registro de cliente particular" class="flex flex-col gap-6">
+  <div class="absolute -left-[9999px]" aria-hidden="true">
+    <label for="r-website">No rellenar</label>
+    <input type="text" id="r-website" name="website" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <label class="text-xs tracking-wide text-white/60" for="r-nombre">Nombre completo</label>
+    <input
+      class="border border-white/15 bg-transparent px-4 py-3 text-sm text-white outline-none focus:border-pink"
+      type="text"
+      id="r-nombre"
+      name="nombre"
+      autocomplete="name"
+      required
+      aria-required="true"
+      aria-invalid="false"
+      aria-describedby="r-nombre-error"
+    />
+    <span id="r-nombre-error" class="field-error text-xs text-pink-deep" role="alert"></span>
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <label class="text-xs tracking-wide text-white/60" for="r-email">Correo electrónico</label>
+    <input
+      class="border border-white/15 bg-transparent px-4 py-3 text-sm text-white outline-none focus:border-pink"
+      type="email"
+      id="r-email"
+      name="email"
+      autocomplete="email"
+      required
+      aria-required="true"
+      aria-invalid="false"
+      aria-describedby="r-email-error"
+    />
+    <span id="r-email-error" class="field-error text-xs text-pink-deep" role="alert"></span>
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <label class="text-xs tracking-wide text-white/60" for="r-password">Contraseña</label>
+    <input
+      class="border border-white/15 bg-transparent px-4 py-3 text-sm text-white outline-none focus:border-pink"
+      type="password"
+      id="r-password"
+      name="password"
+      autocomplete="new-password"
+      minlength="8"
+      required
+      aria-required="true"
+      aria-invalid="false"
+      aria-describedby="r-password-error"
+    />
+    <span id="r-password-error" class="field-error text-xs text-pink-deep" role="alert"></span>
+  </div>
+
+  <div class="flex items-start gap-3">
+    <input type="checkbox" id="rgpd-registro" name="rgpd" required aria-required="true" aria-invalid="false" aria-describedby="rgpd-registro-error" class="mt-1" />
+    <label class="text-xs leading-relaxed text-white/60" for="rgpd-registro">
+      He leído y acepto la <a href="/privacidad/" class="text-pink underline underline-offset-2">política de privacidad</a>.
+    </label>
+  </div>
+  <span id="rgpd-registro-error" class="field-error -mt-4 text-xs text-pink-deep" role="alert"></span>
+
+  <button
+    type="submit"
+    id="r-submit"
+    class="mt-2 inline-flex w-fit items-center rounded-full border border-pink px-6 py-3 text-xs tracking-[0.1em] text-pink uppercase transition-colors hover:bg-pink hover:text-black disabled:opacity-50"
+  >
+    Crear mi cuenta →
+  </button>
+
+  <p id="registro-error-msg" class="hidden text-xs text-pink-deep" role="alert" aria-live="assertive"></p>
+
+  <p class="text-xs text-white/60">
+    ¿Vienes de parte de un hotel, restaurante u otro negocio? Las cuentas B2B se dan de alta manualmente — escríbenos desde
+    <a href="/contacto/?tipo=b2b" class="text-pink underline underline-offset-2">contacto</a>.
+  </p>
+</form>
+
+<div id="registro-success" class="hidden border border-white/10 bg-charcoal p-10" tabindex="-1" aria-live="polite">
+  <h2 class="font-display text-2xl">Revisa tu correo.</h2>
+  <p class="mt-4 text-sm leading-relaxed text-white/60">
+    Te hemos enviado un enlace de confirmación. Una vez confirmes tu cuenta, ya podrás
+    <a href="/cuenta/login/" class="text-pink">iniciar sesión</a>.
+  </p>
+</div>
+
+<script>
+  import { signUp } from "../../lib/auth";
+
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  const form = document.getElementById("registro-form") as HTMLFormElement | null;
+  const btn = document.getElementById("r-submit") as HTMLButtonElement | null;
+  const successEl = document.getElementById("registro-success");
+  const errorMsgEl = document.getElementById("registro-error-msg");
+
+  const nombreInput = document.getElementById("r-nombre") as HTMLInputElement | null;
+  const emailInput = document.getElementById("r-email") as HTMLInputElement | null;
+  const passwordInput = document.getElementById("r-password") as HTMLInputElement | null;
+  const rgpdInput = document.getElementById("rgpd-registro") as HTMLInputElement | null;
+
+  function isHoneypotFilled(): boolean {
+    const honey = form?.querySelector<HTMLInputElement>('input[name="website"]');
+    return !!(honey && honey.value);
+  }
+
+  function validate(): boolean {
+    let ok = true;
+
+    function setInvalid(input: HTMLInputElement | null, message: string) {
+      if (!input) return;
+      const errEl = document.getElementById(`${input.id}-error`);
+      input.setAttribute("aria-invalid", "true");
+      if (errEl) errEl.textContent = message;
+      ok = false;
+    }
+
+    function setValid(input: HTMLInputElement | null) {
+      if (!input) return;
+      const errEl = document.getElementById(`${input.id}-error`);
+      input.setAttribute("aria-invalid", "false");
+      if (errEl) errEl.textContent = "";
+    }
+
+    if (!nombreInput?.value.trim()) setInvalid(nombreInput, "Este campo es obligatorio.");
+    else setValid(nombreInput);
+
+    if (!emailInput?.value.trim() || !EMAIL_RE.test(emailInput.value.trim()))
+      setInvalid(emailInput, "Introduce un correo electrónico válido.");
+    else setValid(emailInput);
+
+    if (!passwordInput?.value || passwordInput.value.length < 8)
+      setInvalid(passwordInput, "La contraseña debe tener al menos 8 caracteres.");
+    else setValid(passwordInput);
+
+    if (!rgpdInput?.checked) setInvalid(rgpdInput, "Debes aceptar la política de privacidad para continuar.");
+    else setValid(rgpdInput);
+
+    return ok;
+  }
+
+  form?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (!form || !btn || !nombreInput || !emailInput || !passwordInput) return;
+    if (isHoneypotFilled()) return;
+    if (!validate()) return;
+
+    errorMsgEl?.classList.add("hidden");
+    btn.disabled = true;
+    btn.textContent = "Creando cuenta…";
+
+    signUp({ email: emailInput.value.trim(), password: passwordInput.value, fullName: nombreInput.value.trim() })
+      .then(({ needsEmailConfirmation }) => {
+        if (needsEmailConfirmation) {
+          form.classList.add("hidden");
+          successEl?.classList.remove("hidden");
+          successEl?.focus();
+        } else {
+          window.location.href = "/cuenta/";
+        }
+      })
+      .catch((err: unknown) => {
+        const alreadyRegistered = err instanceof Error && err.message.toLowerCase().includes("already");
+        if (alreadyRegistered) {
+          // No revelamos que el correo ya tiene cuenta (evita enumeración de
+          // cuentas): mostramos el mismo mensaje que un registro nuevo.
+          form.classList.add("hidden");
+          successEl?.classList.remove("hidden");
+          successEl?.focus();
+          return;
+        }
+        btn.disabled = false;
+        btn.textContent = "Crear mi cuenta →";
+        if (errorMsgEl) {
+          errorMsgEl.textContent = "No se ha podido crear la cuenta. Inténtalo de nuevo.";
+          errorMsgEl.classList.remove("hidden");
+        }
+      });
+  });
+</script>

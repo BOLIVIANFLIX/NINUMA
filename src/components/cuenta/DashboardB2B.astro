@@ -1,0 +1,37 @@
+---
+---
+
+<section id="dashboard-b2b" class="hidden flex-col gap-12">
+  <div class="grid gap-8 md:grid-cols-2">
+    <div class="border border-white/10 p-8">
+      <h2 class="font-display text-xl">Tu empresa</h2>
+      <dl class="mt-4 flex flex-col gap-3 text-sm text-white/70">
+        <div class="flex justify-between gap-4">
+          <dt class="text-white/50">Empresa</dt>
+          <dd data-field="company_name">—</dd>
+        </div>
+        <div class="flex justify-between gap-4">
+          <dt class="text-white/50">Persona de contacto</dt>
+          <dd data-field="full_name"></dd>
+        </div>
+      </dl>
+    </div>
+
+    <div class="border border-white/10 bg-charcoal p-8 text-sm text-white/60">
+      <h2 class="font-display text-xl text-white">Próximamente</h2>
+      <p class="mt-4 leading-relaxed">
+        Catálogo con precios y pedido rápido, plantillas de pedido recurrente y facturación con descarga de PDFs
+        llegarán en próximas fases. Mientras tanto, gestiona tus encargos directamente con Ariadna.
+      </p>
+    </div>
+  </div>
+
+  <div>
+    <h2 class="font-display text-xl">Tus pedidos</h2>
+    <p data-orders-empty class="mt-4 hidden text-sm text-white/60">
+      Todavía no tenéis pedidos registrados. Contacta con nosotros desde
+      <a href="/contacto/?tipo=b2b" class="text-pink underline underline-offset-2">contacto</a>.
+    </p>
+    <ul data-orders-list class="mt-4 flex flex-col gap-3"></ul>
+  </div>
+</section>

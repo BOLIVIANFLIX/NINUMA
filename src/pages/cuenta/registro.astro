@@ -1,0 +1,22 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import RegistroForm from "../../components/cuenta/RegistroForm.astro";
+---
+
+<Layout
+  title="Crear cuenta · Mi cuenta · NINUMÁ"
+  description="Crea tu cuenta de cliente particular NINUMÁ."
+  path="/cuenta/registro/"
+  noindex={true}
+  motion={false}
+>
+  <main id="main-content" tabindex="-1" class="px-6 pt-36 pb-24 md:px-12 md:pt-44">
+    <div class="mx-auto max-w-md">
+      <h1 class="font-display text-3xl md:text-4xl">Crear cuenta</h1>
+      <p class="mt-3 text-sm text-white/60">Para clientes particulares. Guarda tu historial de pedidos con nosotros.</p>
+      <div class="mt-10">
+        <RegistroForm />
+      </div>
+    </div>
+  </main>
+</Layout>

@@ -25,7 +25,7 @@ export default defineConfig({
   },
   integrations: [
     sitemap({
-      filter: (page) => !page.includes('/confirmacion') && !page.includes('/404'),
+      filter: (page) => !page.includes('/confirmacion') && !page.includes('/404') && !page.includes('/cuenta/'),
       serialize(item) {
         const path = new URL(item.url).pathname;
         const meta = PRIORITY[path];

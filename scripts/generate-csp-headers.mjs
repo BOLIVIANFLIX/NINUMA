@@ -50,6 +50,12 @@ if (scriptHashes.size === 0) {
 const scriptSrcList = ["'self'", ...[...scriptHashes].map((h) => `'sha256-${h}'`), "https://www.googletagmanager.com"].join(" ");
 const scriptSrcAttrList = ["'unsafe-hashes'", ...[...attrHashes].map((h) => `'sha256-${h}'`)].join(" ");
 
+// PUBLIC_SUPABASE_URL debe estar disponible en el entorno de build (Netlify/Cloudflare
+// Pages inyectan las env vars configuradas en su panel al comando `npm run build`).
+// Si falta, la CSP simplemente no abre connect-src a Supabase (el área de clientes
+// fallará en runtime, pero el build no se rompe por esto).
+const SUPABASE_URL = process.env.PUBLIC_SUPABASE_URL;
+
 const csp = [
   "default-src 'self'",
   `script-src ${scriptSrcList}`,
@@ -57,7 +63,12 @@ const csp = [
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com",
   "img-src 'self' data: https://www.google-analytics.com",
-  "connect-src 'self' https://formspree.io https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com",
+  [
+    "connect-src 'self' https://formspree.io https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com",
+    SUPABASE_URL,
+  ]
+    .filter(Boolean)
+    .join(" "),
   "frame-src https://www.google.com https://maps.google.com",
   "form-action 'self' https://formspree.io",
   "base-uri 'self'",

@@ -51,6 +51,13 @@ const links = [
     >
       Empezar
     </a>
+    <a
+      href="/cuenta/login/"
+      id="account-link-desktop"
+      class="text-xs tracking-[0.14em] text-white/80 uppercase transition-colors hover:text-pink"
+    >
+      Acceder
+    </a>
     <LanguageSwitcher id="desktop" />
   </nav>
 
@@ -95,11 +102,30 @@ const links = [
         <li><a href={l.href} data-i18n={l.key} class="mobile-link">{l.label}</a></li>
       ))}
       <li><a href="/contacto/" data-i18n="header.ctaEmpezar" aria-label="Empezar un proyecto — ir a contacto" data-i18n-aria-label="header.ctaEmpezarAria" class="mobile-link text-pink">Empezar</a></li>
+      <li><a href="/cuenta/login/" id="account-link-mobile" class="mobile-link text-xl not-italic">Acceder</a></li>
     </ul>
   </nav>
 </div>
 
 <script>
+  import { getSessionProfile } from "../lib/auth";
+
+  const accountLinks = [document.getElementById("account-link-desktop"), document.getElementById("account-link-mobile")].filter(
+    (el): el is HTMLAnchorElement => el instanceof HTMLAnchorElement
+  );
+
+  getSessionProfile()
+    .then((profile) => {
+      if (!profile) return;
+      accountLinks.forEach((el) => {
+        el.textContent = "Mi cuenta";
+        el.href = "/cuenta/";
+      });
+    })
+    .catch(() => {
+      // Sin sesión o Supabase aún sin configurar: se deja el enlace por defecto a /cuenta/login/.
+    });
+
   const toggle = document.getElementById("menu-toggle");
   const close = document.getElementById("menu-close");
   const menu = document.getElementById("mobile-menu");

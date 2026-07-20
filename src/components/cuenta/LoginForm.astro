@@ -1,0 +1,94 @@
+---
+---
+
+<form id="login-form" novalidate aria-label="Formulario de acceso a mi cuenta" class="flex flex-col gap-6">
+  <div class="absolute -left-[9999px]" aria-hidden="true">
+    <label for="l-website">No rellenar</label>
+    <input type="text" id="l-website" name="website" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <label class="text-xs tracking-wide text-white/60" for="l-email">Correo electrónico</label>
+    <input
+      class="border border-white/15 bg-transparent px-4 py-3 text-sm text-white outline-none focus:border-pink"
+      type="email"
+      id="l-email"
+      name="email"
+      autocomplete="email"
+      required
+      aria-required="true"
+      aria-invalid="false"
+      aria-describedby="l-email-error"
+    />
+    <span id="l-email-error" class="field-error text-xs text-pink-deep" role="alert"></span>
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <label class="text-xs tracking-wide text-white/60" for="l-password">Contraseña</label>
+    <input
+      class="border border-white/15 bg-transparent px-4 py-3 text-sm text-white outline-none focus:border-pink"
+      type="password"
+      id="l-password"
+      name="password"
+      autocomplete="current-password"
+      required
+      aria-required="true"
+      aria-invalid="false"
+      aria-describedby="l-password-error"
+    />
+    <span id="l-password-error" class="field-error text-xs text-pink-deep" role="alert"></span>
+  </div>
+
+  <button
+    type="submit"
+    id="l-submit"
+    class="mt-2 inline-flex w-fit items-center rounded-full border border-pink px-6 py-3 text-xs tracking-[0.1em] text-pink uppercase transition-colors hover:bg-pink hover:text-black disabled:opacity-50"
+  >
+    Entrar →
+  </button>
+
+  <p id="login-error-msg" class="hidden text-xs text-pink-deep" role="alert" aria-live="assertive"></p>
+
+  <div class="flex flex-col gap-2 text-xs text-white/60">
+    <a href="/cuenta/recuperar/" class="hover:text-pink">¿Has olvidado tu contraseña?</a>
+    <p>¿Todavía no tienes cuenta? <a href="/cuenta/registro/" class="text-pink underline underline-offset-2">Regístrate</a>.</p>
+  </div>
+</form>
+
+<script>
+  import { signIn } from "../../lib/auth";
+
+  const form = document.getElementById("login-form") as HTMLFormElement | null;
+  const btn = document.getElementById("l-submit") as HTMLButtonElement | null;
+  const errorMsgEl = document.getElementById("login-error-msg");
+  const emailInput = document.getElementById("l-email") as HTMLInputElement | null;
+  const passwordInput = document.getElementById("l-password") as HTMLInputElement | null;
+
+  function isHoneypotFilled(): boolean {
+    const honey = form?.querySelector<HTMLInputElement>('input[name="website"]');
+    return !!(honey && honey.value);
+  }
+
+  form?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (!form || !btn || !emailInput || !passwordInput) return;
+    if (isHoneypotFilled()) return;
+
+    errorMsgEl?.classList.add("hidden");
+    btn.disabled = true;
+    btn.textContent = "Entrando…";
+
+    signIn(emailInput.value.trim(), passwordInput.value)
+      .then(() => {
+        window.location.href = "/cuenta/";
+      })
+      .catch(() => {
+        btn.disabled = false;
+        btn.textContent = "Entrar →";
+        if (errorMsgEl) {
+          errorMsgEl.textContent = "Correo o contraseña incorrectos.";
+          errorMsgEl.classList.remove("hidden");
+        }
+      });
+  });
+</script>
