@@ -149,6 +149,13 @@ import DashboardB2B from "../../components/cuenta/DashboardB2B.astro";
         renderOrders(activeSection as HTMLElement | null, orders, filterSelect.value);
       });
 
+      // El estado de cada pedido (statusLabel) se traduce con t(), pero eso solo
+      // se aplica en el momento del render — sin esto, cambiar de idioma no
+      // refresca el texto ya pintado en la lista de pedidos.
+      document.addEventListener("ninuma:lang-changed", () => {
+        renderOrders(activeSection as HTMLElement | null, orders, filterSelect?.value ?? "");
+      });
+
       loadingEl?.classList.add("hidden");
       contentEl?.classList.remove("hidden");
       contentEl?.classList.add("flex");
