@@ -20,7 +20,7 @@ export function bakerySchema() {
     "@id": `${SITE}/#bakery`,
     name: "NINUMÁ",
     alternateName: "NINUMA Sweet Design",
-    description: "Atelier de pastelería conceptual y cafetería de especialidad en Palma de Mallorca.",
+    description: "Atelier de pastelería de autor y conceptual, y cafetería de especialidad en Palma de Mallorca.",
     url: SITE,
     image: `${SITE}/assets/img/og-image.png`,
     founder: { "@type": "Person", name: "Ariadna Salvador", jobTitle: "Fundadora y directora creativa" },
