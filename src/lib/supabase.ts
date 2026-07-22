@@ -41,6 +41,10 @@ export interface Order {
   payment_status: PaymentStatus;
   stripe_checkout_session_id: string | null;
   stripe_payment_intent_id: string | null;
+  // Solo presentes cuando el pedido viene de Stripe (tienda/edicion) y se pidió
+  // el embed "order_items(*)" — permite reconstruir la descripción traducida al
+  // idioma activo en vez de usar `description`, que se guarda ya en español.
+  order_items?: OrderItem[];
 }
 
 export interface OrderItem {

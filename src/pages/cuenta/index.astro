@@ -64,6 +64,24 @@ import DashboardB2B from "../../components/cuenta/DashboardB2B.astro";
     return key ? t(key, fallback) : fallback;
   }
 
+  /** `order.description` se genera y guarda ya redactado en español en el
+   * momento del pago (webhook-stripe.ts) — no se puede traducir después. Los
+   * pedidos de tienda/edición sí traen `order_items` (líneas estructuradas),
+   * así que reconstruimos el texto en el idioma activo a partir de esos datos.
+   * Los pedidos antiguos tipo "encargo"/"b2b" (dados de alta a mano, sin
+   * Stripe) no tienen order_items — para esos se mantiene `description` tal cual. */
+  function orderDescription(order: Order): string {
+    if (!order.order_items || order.order_items.length === 0) return order.description;
+
+    const eur = new Intl.NumberFormat(getCurrentLang(), { style: "currency", currency: "EUR" });
+    const prefixKey = order.kind === "edicion" ? "cuenta.pedidoDeEdicion" : "cuenta.pedidoDeTienda";
+    const prefixFallback = order.kind === "edicion" ? "Pedido de edición especial" : "Pedido de tienda online";
+    const lineas = order.order_items.map((i) => `${i.unidades}× ${i.nombre} (${eur.format((i.precio_unitario_cents * i.unidades) / 100)})`);
+    const total = eur.format((order.total_cents ?? 0) / 100);
+
+    return `${t(prefixKey, prefixFallback)}: ${lineas.join(", ")} — ${t("tienda.total", "Total")}: ${total} — ${t("cuenta.recogidaObrador", "Recogida en el obrador")}`;
+  }
+
   const loadingEl = document.getElementById("cuenta-loading");
   const errorEl = document.getElementById("cuenta-error");
   const contentEl = document.getElementById("cuenta-content");
@@ -102,7 +120,7 @@ import DashboardB2B from "../../components/cuenta/DashboardB2B.astro";
 
       const desc = document.createElement("span");
       desc.className = "text-white/80";
-      desc.textContent = order.description;
+      desc.textContent = orderDescription(order);
 
       const meta = document.createElement("span");
       meta.className = "flex items-center gap-4 text-xs text-white/50";

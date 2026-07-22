@@ -65,7 +65,10 @@ export async function getSessionProfile(): Promise<Profile | null> {
 /** RLS limita el resultado a los pedidos del usuario autenticado. */
 export async function getMyOrders(): Promise<Order[]> {
   const client = requireClient();
-  const { data, error } = await client.from("orders").select("*").order("created_at", { ascending: false });
+  const { data, error } = await client
+    .from("orders")
+    .select("*, order_items(*)")
+    .order("created_at", { ascending: false });
   if (error) throw error;
   return data ?? [];
 }
