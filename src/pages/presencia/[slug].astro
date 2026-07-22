@@ -1,0 +1,83 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { SECTORES_PRESENCIA } from "../../lib/presenciaSectores";
+import { serviceSchema, breadcrumbSchema } from "../../lib/schema";
+
+export async function getStaticPaths() {
+  return SECTORES_PRESENCIA.map((sector) => ({
+    params: { slug: sector.slug },
+    props: { sector },
+  }));
+}
+
+const { sector } = Astro.props;
+---
+
+<Layout
+  title={sector.metaTitle}
+  description={sector.metaDescription}
+  path={`/presencia/${sector.slug}/`}
+  schema={[
+    serviceSchema(sector.items),
+    breadcrumbSchema([
+      { name: "Inicio", item: "/" },
+      { name: "Presencia", item: "/presencia/" },
+      { name: sector.title, item: `/presencia/${sector.slug}/` },
+    ]),
+  ]}
+>
+  <main id="main-content" tabindex="-1">
+    <section class="relative overflow-hidden border-b border-white/10 bg-charcoal px-6 pt-20 pb-16 md:px-12 md:pt-40 md:pb-24">
+      <nav aria-label="Ruta de navegación" class="flex flex-wrap items-center gap-2 text-xs tracking-[0.1em] text-white/50 uppercase">
+        <a href="/" class="hover:text-pink">Inicio</a>
+        <span aria-hidden="true">/</span>
+        <a href="/presencia/" class="hover:text-pink">Presencia</a>
+        <span aria-hidden="true">/</span>
+        <strong aria-current="page" class="text-white/80">{sector.title}</strong>
+      </nav>
+
+      <span class="mt-6 block text-xs tracking-[0.14em] text-pink uppercase">Pastelería B2B</span>
+
+      <div class="mt-6 grid items-end gap-8 md:grid-cols-2 md:gap-20">
+        <h1 class="font-display text-5xl leading-[0.95] md:text-7xl" data-i18n={`presencia.sector${sector.n}Title`}>{sector.title}</h1>
+        <p class="max-w-[46ch] text-white/70" data-i18n={`presencia.sector${sector.n}Text`}>{sector.text}</p>
+      </div>
+    </section>
+
+    <section class="border-b border-white/10 px-6 py-16 md:px-12 md:py-24">
+      <div class="mx-auto max-w-[1440px]">
+        <ul class="grid grid-cols-1 gap-px overflow-hidden border border-white/10 bg-white/10 sm:grid-cols-2" aria-label={`Servicios para ${sector.title}`}>
+          {sector.items.map((it, i) => (
+            <li class="bg-black p-8 text-sm text-white/80" data-i18n={`presencia.sector${sector.n}Item${i + 1}`}>
+              {it}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <section class="border-b border-white/10 bg-charcoal px-6 py-24 md:px-12 md:py-36">
+      <div class="mx-auto grid max-w-[1440px] items-center gap-10 md:grid-cols-[1fr_auto] md:gap-20">
+        <div class="flex flex-col gap-6">
+          <span class="text-xs tracking-[0.14em] text-pink uppercase" data-i18n="presencia.ctaEyebrow">Empezamos</span>
+          <h2 class="h2-fluid" data-i18n="presencia.ctaHeading">¿Tiene sentido<br />hablar?</h2>
+          <p class="max-w-[48ch] text-sm text-white/70" data-i18n="presencia.ctaParagraph">
+            Cuéntame brevemente tu espacio y lo que necesitas. Si encajamos, lo sabremos enseguida.
+          </p>
+          <div class="flex flex-wrap items-center gap-6">
+            <a
+              href="/contacto/?tipo=b2b"
+              class="rounded-full border border-pink px-6 py-3 text-xs tracking-[0.1em] text-pink uppercase transition-colors hover:bg-pink hover:text-black"
+              data-i18n="presencia.ctaSolicitar"
+            >
+              Solicitar propuesta
+            </a>
+            <a href="/presencia/" class="text-xs tracking-[0.18em] text-white/60 uppercase hover:text-pink">
+              ← Ver todos los sectores
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>
