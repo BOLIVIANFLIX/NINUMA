@@ -24,6 +24,15 @@ html {
   --banner-h: 0px; /* JS la fija al alto real cuando hay edición activa */
 }
 
+/* `color-scheme: dark` no basta en Chrome/Windows para que el popup nativo del
+   <select> (los <option>) se pinte oscuro cuando el propio <select> usa
+   bg-transparent — sin esto, el texto claro queda casi invisible sobre un
+   fondo blanco por defecto del sistema. */
+select option {
+  background-color: var(--color-charcoal);
+  color: var(--color-white);
+}
+
 body {
   background: var(--color-black);
   color: var(--color-white);
