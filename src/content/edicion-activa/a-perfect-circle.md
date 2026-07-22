@@ -34,4 +34,21 @@ especificaciones:
     etiquetaKey: ediciones.spec6Label
     valor: "Obrador · Guillem Massot, 48 · Palma de Mallorca"
     valorKey: ediciones.spec6Value
+# TODO: precios de ejemplo — confirma los precios reales de esta edición antes de publicar.
+cajas:
+  - id: caja-3
+    label: "Caja de 3 bombones"
+    labelKey: ediciones.optCaja3
+    unidades: 3
+    precio: 12
+  - id: caja-6
+    label: "Caja de 6 bombones"
+    labelKey: ediciones.optCaja6
+    unidades: 6
+    precio: 22
+  - id: caja-12
+    label: "Caja de 12 bombones"
+    labelKey: ediciones.optCaja12
+    unidades: 12
+    precio: 40
 ---

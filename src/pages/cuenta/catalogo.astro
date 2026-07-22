@@ -38,12 +38,13 @@ import Layout from "../../layouts/Layout.astro";
 
         <div id="catalogo-tabla" class="hidden flex-col">
           <div
-            class="hidden grid-cols-[56px_1fr_140px_120px_140px] items-center gap-4 border-b border-white/10 px-2 pb-3 text-xs tracking-wide text-white/50 uppercase md:grid"
+            class="hidden grid-cols-[56px_1fr_140px_120px_140px_44px] items-center gap-4 border-b border-white/10 px-2 pb-3 text-xs tracking-wide text-white/50 uppercase md:grid"
           >
             <span></span>
             <span data-i18n="cuenta.producto">Producto</span>
             <span data-i18n="cuenta.cantidad">Cantidad</span>
             <span data-i18n="cuenta.precioUd">Precio/ud</span>
+            <span></span>
             <span></span>
           </div>
           <ul id="catalogo-list" class="mt-4 flex flex-col gap-3 md:mt-0"></ul>
@@ -59,6 +60,7 @@ import Layout from "../../layouts/Layout.astro";
   import { getMyB2BPrices } from "../../lib/b2bPrices";
   import { addToCart, getCartCount } from "../../lib/cart";
   import { nombreB2B } from "../../lib/nombresB2B";
+  import { alergenoInfo, type AlergenoId } from "../../lib/alergenos";
   import { t, getCurrentLang } from "../../lib/i18n";
 
   const loadingEl = document.getElementById("catalogo-loading");
@@ -102,7 +104,10 @@ import Layout from "../../layouts/Layout.astro";
           const nombreMostrado = nombreB2B(pieza.numero, pieza.nombre);
 
           const li = document.createElement("li");
-          li.className = "flex flex-wrap items-center gap-4 border border-white/10 px-4 py-3 text-sm md:grid md:grid-cols-[56px_1fr_140px_120px_140px]";
+          li.className = "flex flex-col border border-white/10 px-4 py-3 text-sm";
+
+          const fila = document.createElement("div");
+          fila.className = "flex flex-wrap items-center gap-4 md:grid md:grid-cols-[56px_1fr_140px_120px_140px_44px]";
 
           const img = document.createElement("img");
           img.src = pieza.imagen;
@@ -148,7 +153,68 @@ import Layout from "../../layouts/Layout.astro";
             }, 1200);
           });
 
-          li.append(img, nombre, unidadesSelect, precio, addBtn);
+          const fichaBtn = document.createElement("button");
+          fichaBtn.type = "button";
+          fichaBtn.className = "text-xs tracking-[0.1em] text-white/50 uppercase hover:text-pink";
+          fichaBtn.textContent = t("cuenta.verFicha", "Ficha ↓");
+          fichaBtn.setAttribute("aria-expanded", "false");
+
+          fila.append(img, nombre, unidadesSelect, precio, addBtn, fichaBtn);
+
+          const detalle = document.createElement("div");
+          detalle.className = "hidden mt-4 flex-col gap-3 border-t border-white/10 pt-4 text-xs text-white/60";
+
+          if (pieza.materiales) {
+            const ingredientesRow = document.createElement("p");
+            ingredientesRow.innerHTML = `<strong class="text-white/80">${t("cuenta.fichaIngredientes", "Ingredientes")}:</strong> `;
+            ingredientesRow.append(pieza.materiales);
+            detalle.appendChild(ingredientesRow);
+          }
+
+          if (pieza.alergenos && pieza.alergenos.length > 0) {
+            const alergenosRow = document.createElement("p");
+            const labels = (pieza.alergenos as AlergenoId[]).map((id) => alergenoInfo(id).label);
+            alergenosRow.innerHTML = `<strong class="text-white/80">${t("cuenta.fichaAlergenos", "Alérgenos")}:</strong> `;
+            alergenosRow.append(labels.join(", "));
+            detalle.appendChild(alergenosRow);
+          }
+
+          if (pieza.caloriasAprox != null) {
+            const kcalRow = document.createElement("p");
+            kcalRow.innerHTML = `<strong class="text-white/80">${t("cuenta.fichaCalorias", "Calorías aprox.")}:</strong> `;
+            kcalRow.append(`${pieza.caloriasAprox} kcal`);
+            detalle.appendChild(kcalRow);
+          }
+
+          if (pieza.caducidadDias != null) {
+            const caducidadRow = document.createElement("p");
+            caducidadRow.innerHTML = `<strong class="text-white/80">${t("cuenta.fichaCaducidad", "Caducidad")}:</strong> `;
+            caducidadRow.append(`${pieza.caducidadDias} ${t("cuenta.dias", "días")}`);
+            detalle.appendChild(caducidadRow);
+          }
+
+          if (pieza.notasTecnicas) {
+            const notasRow = document.createElement("p");
+            notasRow.innerHTML = `<strong class="text-white/80">${t("cuenta.fichaNotas", "Notas")}:</strong> `;
+            notasRow.append(pieza.notasTecnicas);
+            detalle.appendChild(notasRow);
+          }
+
+          if (!detalle.hasChildNodes()) {
+            const sinDatos = document.createElement("p");
+            sinDatos.textContent = t("cuenta.fichaSinDatos", "Todavía no hay ficha técnica cargada para este producto.");
+            detalle.appendChild(sinDatos);
+          }
+
+          fichaBtn.addEventListener("click", () => {
+            const abierta = fichaBtn.getAttribute("aria-expanded") === "true";
+            fichaBtn.setAttribute("aria-expanded", String(!abierta));
+            fichaBtn.textContent = !abierta ? t("cuenta.ocultarFicha", "Ficha ↑") : t("cuenta.verFicha", "Ficha ↓");
+            detalle.classList.toggle("hidden", abierta);
+            detalle.classList.toggle("flex", !abierta);
+          });
+
+          li.append(fila, detalle);
           listEl.appendChild(li);
         }
       }

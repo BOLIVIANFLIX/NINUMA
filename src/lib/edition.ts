@@ -1,10 +1,11 @@
 import { getCollection, type CollectionEntry } from "astro:content";
 
-export type ActiveEdition = CollectionEntry<"edicionActiva">["data"];
+export type ActiveEdition = CollectionEntry<"edicionActiva">["data"] & { slug: string };
 
 export async function getActiveEdition(): Promise<ActiveEdition | null> {
   const entries = await getCollection("edicionActiva", (e) => e.data.activa);
-  return entries[0]?.data ?? null;
+  const entry = entries[0];
+  return entry ? { ...entry.data, slug: entry.id } : null;
 }
 
 export async function getArchivedEditions() {

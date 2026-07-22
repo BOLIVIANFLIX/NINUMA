@@ -154,12 +154,17 @@ import Layout from "../../layouts/Layout.astro";
         window.location.href = "/cuenta/login/";
         return;
       }
+      // Este carrito (pedido sin pago, presupuesto por email) es exclusivo de B2B —
+      // los clientes B2C compran con pago real en /tienda/, sin catálogo privado.
+      if (profile.account_type !== "b2b") {
+        window.location.href = "/cuenta/";
+        return;
+      }
 
-      const catalogoHref = profile.account_type === "b2b" ? "/cuenta/catalogo/" : "/cuenta/tienda/";
       const volverLink = document.getElementById("carrito-volver-catalogo") as HTMLAnchorElement | null;
       const vacioLink = document.getElementById("carrito-vacio-link") as HTMLAnchorElement | null;
-      if (volverLink) volverLink.href = catalogoHref;
-      if (vacioLink) vacioLink.href = catalogoHref;
+      if (volverLink) volverLink.href = "/cuenta/catalogo/";
+      if (vacioLink) vacioLink.href = "/cuenta/catalogo/";
 
       renderCart();
 

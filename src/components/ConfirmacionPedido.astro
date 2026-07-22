@@ -1,0 +1,132 @@
+---
+interface Props {
+  volverHref: string;
+}
+const { volverHref } = Astro.props;
+---
+
+<div class="mx-auto max-w-[700px]">
+  <p id="conf-cargando" class="text-sm text-white/60" data-i18n="confirmacion.cargando">Confirmando tu pedido…</p>
+  <p id="conf-error" class="hidden text-sm text-pink-deep" role="alert"></p>
+
+  <div id="conf-pagado" class="hidden flex-col gap-8">
+    <header class="border-b border-white/10 pb-8">
+      <p class="text-xs tracking-[0.14em] text-pink uppercase" data-i18n="confirmacion.eyebrow">Pedido confirmado</p>
+      <h1 class="mt-1 font-display text-3xl md:text-4xl" data-i18n="confirmacion.titulo">Gracias por tu pedido.</h1>
+      <p class="mt-3 text-sm leading-relaxed text-white/60" data-i18n="confirmacion.intro">
+        En breve recibirás un correo de confirmación con los detalles de tu pedido.
+      </p>
+    </header>
+
+    <ul id="conf-items" class="flex flex-col gap-3"></ul>
+
+    <div class="flex items-center justify-between border-t border-white/10 pt-6 text-lg">
+      <span class="text-white/60" data-i18n="tienda.total">Total</span>
+      <span id="conf-total" class="font-display text-2xl"></span>
+    </div>
+
+    <div class="border-l-2 border-pink bg-charcoal p-5">
+      <p class="text-xs leading-relaxed text-white/60" data-i18n="confirmacion.recogidaInfo">
+        <strong class="font-medium text-pink">Recogida en el obrador.</strong> Carrer de Guillem Massot, 48, 07003 Palma de Mallorca.<br />
+        Lun–Jue 10:00–13:30 · Vie 10:30–13:30 · Sáb 10:00–13:30. Domingos cerrado.
+      </p>
+    </div>
+
+    <a href={volverHref} class="w-fit text-xs tracking-[0.1em] text-pink uppercase hover:underline" data-i18n="confirmacion.seguirComprando">
+      ← Seguir explorando
+    </a>
+  </div>
+
+  <div id="conf-pendiente" class="hidden flex-col gap-4" tabindex="-1">
+    <h1 class="font-display text-2xl text-pink" data-i18n="confirmacion.pendienteTitulo">Pago no completado.</h1>
+    <p class="text-sm text-white/60" data-i18n="confirmacion.pendienteTexto">
+      No hemos podido confirmar el pago de este pedido. Si has introducido los datos de tu tarjeta, espera unos minutos y recarga esta
+      página; si el problema persiste, escríbenos a <a href="mailto:ariadna@ninuma.es" class="text-pink underline">ariadna@ninuma.es</a>.
+    </p>
+  </div>
+</div>
+
+<script>
+  import { clearCart as clearCartTienda } from "../lib/cartTienda";
+  import { clearCart as clearCartEdicion } from "../lib/cartEdicion";
+  import { t, getCurrentLang } from "../lib/i18n";
+
+  interface PedidoItem {
+    nombre: string;
+    unidades: number;
+    precioUnitarioCents: number;
+  }
+  interface PedidoRespuesta {
+    pagado: boolean;
+    kind: "tienda" | "edicion";
+    totalCents: number;
+    email: string | null;
+    items: PedidoItem[];
+  }
+
+  const cargandoEl = document.getElementById("conf-cargando");
+  const errorEl = document.getElementById("conf-error");
+  const pagadoEl = document.getElementById("conf-pagado");
+  const pendienteEl = document.getElementById("conf-pendiente");
+  const itemsEl = document.getElementById("conf-items");
+  const totalEl = document.getElementById("conf-total");
+
+  const eur = new Intl.NumberFormat(getCurrentLang(), { style: "currency", currency: "EUR" });
+
+  async function init() {
+    const sessionId = new URLSearchParams(window.location.search).get("session_id");
+    if (!sessionId) {
+      cargandoEl?.classList.add("hidden");
+      if (errorEl) {
+        errorEl.textContent = t("confirmacion.sinPedido", "No se ha encontrado ningún pedido.");
+        errorEl.classList.remove("hidden");
+      }
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/pedido/${encodeURIComponent(sessionId)}.json`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data: PedidoRespuesta = await res.json();
+
+      cargandoEl?.classList.add("hidden");
+
+      if (!data.pagado) {
+        pendienteEl?.classList.remove("hidden");
+        pendienteEl?.classList.add("flex");
+        (pendienteEl as HTMLElement | null)?.focus();
+        return;
+      }
+
+      if (data.kind === "tienda") clearCartTienda();
+      else clearCartEdicion();
+
+      if (itemsEl) {
+        for (const item of data.items) {
+          const li = document.createElement("li");
+          li.className = "flex flex-wrap items-center justify-between gap-4 border border-white/10 px-5 py-3 text-sm";
+          const nombre = document.createElement("span");
+          nombre.className = "text-white/80";
+          nombre.textContent = `${item.unidades}× ${item.nombre}`;
+          const precio = document.createElement("span");
+          precio.className = "text-white/60";
+          precio.textContent = eur.format((item.precioUnitarioCents * item.unidades) / 100);
+          li.append(nombre, precio);
+          itemsEl.appendChild(li);
+        }
+      }
+      if (totalEl) totalEl.textContent = eur.format(data.totalCents / 100);
+
+      pagadoEl?.classList.remove("hidden");
+      pagadoEl?.classList.add("flex");
+    } catch {
+      cargandoEl?.classList.add("hidden");
+      if (errorEl) {
+        errorEl.textContent = t("confirmacion.error", "No se ha podido cargar tu pedido. Escríbenos si el cargo se ha realizado.");
+        errorEl.classList.remove("hidden");
+      }
+    }
+  }
+
+  init();
+</script>

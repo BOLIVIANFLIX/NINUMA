@@ -23,15 +23,33 @@ export interface Profile {
   is_admin: boolean;
 }
 
-export type OrderKind = "encargo" | "b2b";
+export type OrderKind = "encargo" | "b2b" | "tienda" | "edicion";
 export type OrderStatus = "recibido" | "en_obrador" | "listo" | "entregado";
+export type PaymentStatus = "pendiente" | "pagado" | "fallido" | "reembolsado";
 
 export interface Order {
   id: string;
-  user_id: string;
+  user_id: string | null;
   kind: OrderKind;
   description: string;
   status: OrderStatus;
+  created_at: string;
+  guest_nombre: string | null;
+  guest_email: string | null;
+  guest_telefono: string | null;
+  total_cents: number | null;
+  payment_status: PaymentStatus;
+  stripe_checkout_session_id: string | null;
+  stripe_payment_intent_id: string | null;
+}
+
+export interface OrderItem {
+  id: string;
+  order_id: string;
+  referencia: string;
+  nombre: string;
+  precio_unitario_cents: number;
+  unidades: number;
   created_at: string;
 }
 

@@ -28,7 +28,7 @@ const EDITION = await getActiveEdition();
           <EdicionHeroActiva edition={EDITION} />
           <EdicionDetalle edition={EDITION} />
           <EdicionComoFunciona />
-          <EdicionReservaForm />
+          <EdicionReservaForm edition={EDITION} />
         </>
       ) : (
         <EdicionEstadoEspera />

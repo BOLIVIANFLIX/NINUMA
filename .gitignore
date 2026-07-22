@@ -17,6 +17,9 @@ pnpm-debug.log*
 .env
 .env.production
 
+# claves/secretos locales (Supabase service role, etc.) — nunca al repo
+.claude/secrets/
+
 # macOS-specific files
 .DS_Store
 

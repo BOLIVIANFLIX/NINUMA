@@ -1,0 +1,16 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import ConfirmacionPedido from "../../components/ConfirmacionPedido.astro";
+---
+
+<Layout
+  title="Pedido confirmado · Tienda · NINUMÁ"
+  description="Confirmación de tu pedido en la tienda online NINUMÁ."
+  path="/tienda/confirmacion/"
+  noindex={true}
+  motion={false}
+>
+  <main id="main-content" tabindex="-1" class="px-6 pt-36 pb-24 md:px-12 md:pt-44">
+    <ConfirmacionPedido volverHref="/tienda/" />
+  </main>
+</Layout>

@@ -1,9 +1,9 @@
 export type TiendaCategoria = "tartas" | "bombones" | "postres";
 
-/** Reclasificación SOLO para /cuenta/tienda (área privada de clientes B2C) — no toca
- * /creaciones ni la categoría pública de cada pieza. Mientras no haya piezas reales de
- * "postres", algunas se muestran aquí bajo esa pestaña con su foto y descripción actuales.
- * Sustituir por contenido real cuando esté listo. */
+/** Reclasificación SOLO para /tienda (tienda pública) — no toca /creaciones ni la
+ * categoría pública de cada pieza en el resto del sitio. Mientras no haya piezas reales
+ * de "postres", algunas se muestran aquí bajo esa pestaña con su foto y descripción
+ * actuales. Sustituir por contenido real cuando esté listo. */
 const CATEGORIA_TIENDA: Record<string, TiendaCategoria> = {
   "001": "tartas",
   "002": "tartas",

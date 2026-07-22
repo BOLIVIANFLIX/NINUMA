@@ -3,6 +3,8 @@ import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import sitemap, { ChangeFreqEnum } from '@astrojs/sitemap';
 
+import netlify from '@astrojs/netlify';
+
 /** @type {Record<string, { priority: number; changefreq: ChangeFreqEnum }>} */
 const PRIORITY = {
   '/': { priority: 1.0, changefreq: ChangeFreqEnum.MONTHLY },
@@ -20,9 +22,11 @@ const PRIORITY = {
 // https://astro.build/config
 export default defineConfig({
   site: 'https://www.ninuma.es',
+
   vite: {
     plugins: [tailwindcss()],
   },
+
   integrations: [
     sitemap({
       filter: (page) => !page.includes('/confirmacion') && !page.includes('/404') && !page.includes('/cuenta/'),
@@ -33,4 +37,6 @@ export default defineConfig({
       },
     }),
   ],
+
+  adapter: netlify(),
 });

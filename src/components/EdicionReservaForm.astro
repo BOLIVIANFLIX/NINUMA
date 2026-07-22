@@ -1,15 +1,21 @@
 ---
+import type { ActiveEdition } from "../lib/edition";
+
+interface Props {
+  edition: ActiveEdition;
+}
+const { edition: EDITION } = Astro.props;
 ---
 
-<section id="reserva" class="gs-reveal border-t border-white/10 bg-black px-6 py-24 md:px-12 md:py-36" aria-labelledby="reserva-heading">
+<section id="comprar" class="gs-reveal border-t border-white/10 bg-black px-6 py-24 md:px-12 md:py-36" aria-labelledby="comprar-heading">
   <div class="mx-auto grid max-w-[1440px] gap-12 md:grid-cols-2 md:gap-20">
     <div class="flex flex-col gap-6">
       <div>
-        <span class="text-xs tracking-[0.14em] text-pink uppercase" data-i18n="ediciones.reservaEyebrow">Reservar unidades</span>
-        <h2 id="reserva-heading" class="mt-4 h2-fluid" data-i18n="ediciones.reservaHeading">Asegura<br />tu pieza.</h2>
+        <span class="text-xs tracking-[0.14em] text-pink uppercase" data-i18n="ediciones.comprarEyebrow">Compra tu caja</span>
+        <h2 id="comprar-heading" class="mt-4 h2-fluid" data-i18n="ediciones.comprarHeading">Asegura<br />tu pieza.</h2>
       </div>
-      <p class="text-sm leading-relaxed text-white/60" data-i18n="ediciones.reservaIntro">
-        Rellena el formulario antes del cierre indicado. Las unidades se asignan por orden de solicitud.
+      <p class="text-sm leading-relaxed text-white/60" data-i18n="ediciones.comprarIntro">
+        Elige el tamaño de caja, añádela al carrito y paga online. Las unidades se reservan por orden de compra.
       </p>
       <div class="border-l-2 border-pink bg-charcoal p-5">
         <p class="text-xs leading-relaxed text-white/60" data-i18n="ediciones.reservaNota">
@@ -19,114 +25,61 @@
     </div>
 
     <div>
-      <form
-        id="reserva-form"
-        action="https://formspree.io/f/xjgqwdye"
-        method="POST"
-        novalidate
-        aria-label="Formulario de reserva de edición especial"
-        data-i18n-aria-label="ediciones.formAria"
-        class="flex flex-col gap-5"
-      >
-        <div class="absolute -left-[9999px]" aria-hidden="true">
-          <label for="website-reserva">No rellenar</label>
-          <input type="text" id="website-reserva" name="website" tabindex="-1" autocomplete="off" />
-        </div>
-
+      <div id="edicion-selector" data-edicion-slug={EDITION.slug} data-edicion-nombre={EDITION.nombre} class="flex flex-col gap-5">
         <div class="flex flex-col gap-1.5">
-          <label class="text-xs tracking-wide text-white/60" for="r-nombre" data-i18n="ediciones.labelNombre">Nombre completo *</label>
-          <input
-            class="border-b border-white/20 bg-transparent py-2 text-sm outline-none focus:border-pink"
-            type="text"
-            id="r-nombre"
-            name="nombre"
-            autocomplete="name"
-            required
-            aria-required="true"
-            aria-invalid="false"
-            aria-describedby="r-nombre-error"
-          />
-          <span id="r-nombre-error" class="field-error text-xs text-pink" role="alert"></span>
-        </div>
-
-        <div class="flex flex-col gap-1.5">
-          <label class="text-xs tracking-wide text-white/60" for="r-email" data-i18n="ediciones.labelEmail">Correo electrónico *</label>
-          <input
-            class="border-b border-white/20 bg-transparent py-2 text-sm outline-none focus:border-pink"
-            type="email"
-            id="r-email"
-            name="email"
-            autocomplete="email"
-            required
-            aria-required="true"
-            aria-invalid="false"
-            aria-describedby="r-email-error"
-          />
-          <span id="r-email-error" class="field-error text-xs text-pink" role="alert"></span>
-        </div>
-
-        <div class="flex flex-col gap-1.5">
-          <label class="text-xs tracking-wide text-white/60" for="r-unidades" data-i18n="ediciones.labelUnidades">Tamaño de caja *</label>
-          <select
-            class="border-b border-white/20 bg-transparent py-2 text-sm outline-none focus:border-pink"
-            id="r-unidades"
-            name="unidades"
-            required
-            aria-required="true"
-            aria-invalid="false"
-            aria-describedby="r-unidades-error"
-          >
-            <option value="" data-i18n="ediciones.optSelecciona">Selecciona una opción</option>
-            <option value="caja-3" data-i18n="ediciones.optCaja3">Caja de 3 bombones</option>
-            <option value="caja-6" data-i18n="ediciones.optCaja6">Caja de 6 bombones</option>
-            <option value="caja-12" data-i18n="ediciones.optCaja12">Caja de 12 bombones</option>
+          <label class="text-xs tracking-wide text-white/60" for="e-caja" data-i18n="ediciones.labelUnidades">Tamaño de caja *</label>
+          <select id="e-caja" class="border-b border-white/20 bg-transparent py-2 text-sm outline-none focus:border-pink">
+            {
+              EDITION.cajas.map((caja) => (
+                <option value={caja.id} data-precio={caja.precio} data-label={caja.label}>
+                  {caja.label} — {caja.precio.toFixed(2)} €
+                </option>
+              ))
+            }
           </select>
-          <span id="r-unidades-error" class="field-error text-xs text-pink" role="alert"></span>
         </div>
 
         <div class="flex flex-col gap-1.5">
-          <label class="text-xs tracking-wide text-white/60" for="r-nota" data-i18n="ediciones.labelNota">Nota (opcional)</label>
-          <textarea
-            class="border-b border-white/20 bg-transparent py-2 text-sm outline-none focus:border-pink"
-            id="r-nota"
-            name="nota"
-            rows="3"
-            placeholder="Alergias, peticiones especiales..."
-            data-i18n-placeholder="ediciones.placeholderNota"></textarea>
+          <label class="text-xs tracking-wide text-white/60" for="e-unidades" data-i18n="ediciones.labelCantidadCajas">Cuántas cajas *</label>
+          <select id="e-unidades" class="w-24 border-b border-white/20 bg-transparent py-2 text-sm outline-none focus:border-pink">
+            {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => <option value={n}>{n}</option>)}
+          </select>
         </div>
-
-        <div class="flex items-start gap-3">
-          <input type="checkbox" id="rgpd-reserva" name="rgpd" required aria-required="true" aria-invalid="false" aria-describedby="rgpd-reserva-error" class="mt-1" />
-          <label class="text-xs leading-relaxed text-white/60" for="rgpd-reserva" data-i18n="ediciones.rgpdLabel">
-            He leído y acepto la <a href="/privacidad/" class="text-pink underline">política de privacidad</a>. Mis datos se usarán únicamente para gestionar esta reserva.
-          </label>
-        </div>
-        <span id="rgpd-reserva-error" class="field-error text-xs text-pink" role="alert"></span>
 
         <button
-          type="submit"
-          id="btn-reserva"
-          data-i18n="ediciones.btnReservar"
-          class="mt-2 rounded-full border border-pink px-6 py-3 text-xs tracking-[0.1em] text-pink uppercase transition-colors hover:bg-pink hover:text-black disabled:opacity-50"
+          type="button"
+          id="btn-anadir"
+          data-i18n="ediciones.btnAnadir"
+          class="mt-2 w-fit rounded-full border border-pink px-6 py-3 text-xs tracking-[0.1em] text-pink uppercase transition-colors hover:bg-pink hover:text-black"
         >
-          Reservar →
+          Añadir al carrito
         </button>
-      </form>
+      </div>
 
-      <div id="reserva-success" class="hidden py-8" tabindex="-1" aria-live="polite">
-        <h3 class="font-display text-2xl" data-i18n="ediciones.successHeading">Reserva recibida.</h3>
-        <p class="mt-2 text-sm text-white/60" data-i18n="ediciones.successText">Confirmaremos tu reserva por correo en las próximas horas. Hasta pronto en el obrador.</p>
-      </div>
-      <div id="reserva-error" class="hidden py-6" tabindex="-1" aria-live="assertive">
-        <h3 class="font-display text-xl text-pink" data-i18n="ediciones.errorHeading">Algo no ha ido bien.</h3>
-        <p class="mt-2 text-sm text-white/60" data-i18n="ediciones.errorText">
-          Escríbenos directamente a <a href="mailto:ariadna@ninuma.es" class="text-pink underline">ariadna@ninuma.es</a> y te confirmamos la reserva a mano.
+      <div id="edicion-carrito" class="mt-10 hidden flex-col gap-4 border-t border-white/10 pt-8">
+        <ul id="edicion-carrito-list" class="flex flex-col gap-3"></ul>
+        <div class="flex items-center justify-between text-lg">
+          <span class="text-white/60" data-i18n="tienda.total">Total</span>
+          <span id="edicion-carrito-total" class="font-display text-2xl"></span>
+        </div>
+        <p id="edicion-minimo-aviso" class="hidden text-xs text-pink-deep" role="alert" data-i18n="tienda.minimoAviso">
+          El pedido mínimo para pagar online es de 20 €. Añade alguna caja más para poder pagar.
         </p>
+        <button
+          type="button"
+          id="btn-comprar"
+          data-i18n="ediciones.btnComprarAhora"
+          class="w-fit rounded-full border border-pink px-6 py-3 text-xs tracking-[0.1em] text-pink uppercase transition-colors hover:bg-pink hover:text-black disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          Comprar ahora →
+        </button>
+        <p id="edicion-comprar-error" class="hidden text-xs text-pink-deep" role="alert" aria-live="assertive"></p>
       </div>
+
       <div id="reserva-cerrada" class="hidden py-8" tabindex="-1" aria-live="polite">
         <h3 class="font-display text-xl text-pink" data-i18n="ediciones.cerradaHeading">Encargos cerrados.</h3>
-        <p class="mt-2 text-sm text-white/60" data-i18n="ediciones.cerradaText">
-          El período de reserva para esta edición ha finalizado. Escríbenos a <a href="mailto:ariadna@ninuma.es" class="text-pink underline">ariadna@ninuma.es</a> si quieres que te avisemos de la próxima.
+        <p class="mt-2 text-sm text-white/60" data-i18n="ediciones.cerradaTextCompra">
+          El período de compra para esta edición ha finalizado. Escríbenos a <a href="mailto:ariadna@ninuma.es" class="text-pink underline">ariadna@ninuma.es</a> si quieres que te avisemos de la próxima.
         </p>
       </div>
     </div>
@@ -134,76 +87,161 @@
 </section>
 
 <script>
-  import { t } from "../lib/i18n";
-  import { validateField, isHoneypotFilled, submitForm, type ValidationMessages } from "../lib/form";
+  import { addToCart, getCart, updateCartQuantity, removeFromCart, type CartEdicionItem } from "../lib/cartEdicion";
+  import { getSessionProfile } from "../lib/auth";
+  import { t, getCurrentLang } from "../lib/i18n";
 
-  const MESSAGES: ValidationMessages = {
-    required: ["ediciones.validationRequired", "Este campo es obligatorio."],
-    email: ["ediciones.validationEmailFormat", "Introduce un correo electrónico válido."],
-    rgpd: ["ediciones.validationRgpdRequired", "Debes aceptar la política de privacidad para continuar."],
-  };
+  const MINIMO_CENTS = 2000;
 
-  const form = document.getElementById("reserva-form") as HTMLFormElement | null;
-  const btn = document.getElementById("btn-reserva") as HTMLButtonElement | null;
-  const successEl = document.getElementById("reserva-success");
-  const errorEl = document.getElementById("reserva-error");
+  const selectorWrap = document.getElementById("edicion-selector");
+  const edicionSlug = selectorWrap?.dataset.edicionSlug ?? "";
+  const edicionNombre = selectorWrap?.dataset.edicionNombre ?? "";
+  const cajaSelect = document.getElementById("e-caja") as HTMLSelectElement | null;
+  const unidadesSelect = document.getElementById("e-unidades") as HTMLSelectElement | null;
+  const btnAnadir = document.getElementById("btn-anadir") as HTMLButtonElement | null;
+  const carritoWrap = document.getElementById("edicion-carrito");
+  const listEl = document.getElementById("edicion-carrito-list");
+  const totalEl = document.getElementById("edicion-carrito-total");
+  const minimoAvisoEl = document.getElementById("edicion-minimo-aviso");
+  const btnComprar = document.getElementById("btn-comprar") as HTMLButtonElement | null;
+  const comprarErrorEl = document.getElementById("edicion-comprar-error");
   const cerradaEl = document.getElementById("reserva-cerrada");
 
-  function cerrarReserva() {
-    if (btn) btn.disabled = true;
-    if (form) form.style.display = "none";
-    errorEl?.classList.add("hidden");
+  const eur = new Intl.NumberFormat(getCurrentLang(), { style: "currency", currency: "EUR" });
+
+  function cerrarCompra() {
+    selectorWrap?.classList.add("hidden");
+    carritoWrap?.classList.add("hidden");
+    carritoWrap?.classList.remove("flex");
     cerradaEl?.classList.remove("hidden");
   }
 
   // El countdown de EdicionHeroActiva puede correr (y expirar) antes de que este
   // script registre el listener, así que también comprobamos el flag directamente.
   if (document.documentElement.dataset.edicionCerrada === "true") {
-    cerrarReserva();
+    cerrarCompra();
   } else {
-    document.addEventListener("ninuma:edicion-cerrada", cerrarReserva);
+    document.addEventListener("ninuma:edicion-cerrada", cerrarCompra);
   }
 
-  if (form && btn) {
-    const requiredFields = form.querySelectorAll<HTMLInputElement | HTMLSelectElement>("[required]");
-    requiredFields.forEach((input) => {
-      input.addEventListener("blur", () => validateField(input, MESSAGES));
-      if (input.type === "checkbox") input.addEventListener("change", () => validateField(input, MESSAGES));
-    });
+  function renderCarrito() {
+    const items = getCart().filter((i) => i.edicionSlug === edicionSlug);
+    if (!listEl || !totalEl || !btnComprar) return;
 
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
+    const hayItems = items.length > 0;
+    carritoWrap?.classList.toggle("hidden", !hayItems);
+    carritoWrap?.classList.toggle("flex", hayItems);
+    if (!hayItems) return;
 
-      if (isHoneypotFilled(form)) return;
+    listEl.innerHTML = "";
+    for (const item of items) {
+      const li = document.createElement("li");
+      li.className = "flex flex-wrap items-center justify-between gap-4 border border-white/10 px-5 py-3 text-sm";
 
-      let allOk = true;
-      requiredFields.forEach((f) => {
-        if (!validateField(f, MESSAGES)) allOk = false;
+      const nombre = document.createElement("span");
+      nombre.className = "text-white/80";
+      nombre.textContent = item.nombre;
+
+      const controls = document.createElement("div");
+      controls.className = "flex items-center gap-4";
+
+      const cantidadInput = document.createElement("input");
+      cantidadInput.type = "number";
+      cantidadInput.min = "1";
+      cantidadInput.max = "10";
+      cantidadInput.value = String(item.unidades);
+      cantidadInput.className = "w-16 border border-white/15 bg-black px-2 py-1 text-sm text-white outline-none focus:border-pink";
+      cantidadInput.addEventListener("change", () => {
+        const nuevo = Math.max(1, Math.min(10, Number(cantidadInput.value) || 1));
+        updateCartQuantity(item.edicionSlug, item.cajaId, nuevo);
+        renderCarrito();
       });
-      if (!allOk) {
-        form.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
-        return;
-      }
 
-      btn.disabled = true;
-      btn.textContent = t("ediciones.btnEnviando", "Enviando…");
-      errorEl?.classList.add("hidden");
+      const precio = document.createElement("span");
+      precio.className = "w-28 text-right text-white/60";
+      precio.textContent = eur.format((item.precioUnitarioCents * item.unidades) / 100);
 
-      submitForm(form)
-        .then((res) => {
-          if (res.ok) {
-            form.style.display = "none";
-            successEl?.classList.remove("hidden");
-            successEl?.focus();
-          } else {
-            throw new Error(`HTTP ${res.status}`);
-          }
-        })
-        .catch(() => {
-          btn.disabled = false;
-          btn.textContent = t("ediciones.btnReservar", "Reservar →");
-          errorEl?.classList.remove("hidden");
-        });
-    });
+      const quitarBtn = document.createElement("button");
+      quitarBtn.type = "button";
+      quitarBtn.className = "text-xs tracking-[0.1em] text-white/50 uppercase hover:text-pink";
+      quitarBtn.textContent = t("tienda.quitar", "Quitar");
+      quitarBtn.addEventListener("click", () => {
+        removeFromCart(item.edicionSlug, item.cajaId);
+        renderCarrito();
+      });
+
+      controls.append(cantidadInput, precio, quitarBtn);
+      li.append(nombre, controls);
+      listEl.appendChild(li);
+    }
+
+    const totalCents = items.reduce((sum, i) => sum + i.precioUnitarioCents * i.unidades, 0);
+    totalEl.textContent = eur.format(totalCents / 100);
+
+    const cumpleMinimo = totalCents >= MINIMO_CENTS;
+    minimoAvisoEl?.classList.toggle("hidden", cumpleMinimo);
+    btnComprar.disabled = !cumpleMinimo;
   }
+
+  btnAnadir?.addEventListener("click", () => {
+    if (!cajaSelect || !unidadesSelect || !edicionSlug) return;
+    const opt = cajaSelect.selectedOptions[0];
+    const precio = Number(opt?.dataset.precio ?? 0);
+    if (!opt || !precio) return;
+
+    addToCart({
+      edicionSlug,
+      cajaId: cajaSelect.value,
+      nombre: `${edicionNombre} — ${opt.dataset.label ?? opt.value}`,
+      precioUnitarioCents: Math.round(precio * 100),
+      unidades: Number(unidadesSelect.value),
+    });
+
+    const original = btnAnadir.textContent;
+    btnAnadir.textContent = t("tienda.anadido", "Añadido ✓");
+    setTimeout(() => {
+      btnAnadir.textContent = original;
+    }, 1200);
+
+    renderCarrito();
+  });
+
+  btnComprar?.addEventListener("click", async () => {
+    if (!btnComprar) return;
+    const items = getCart().filter((i) => i.edicionSlug === edicionSlug);
+    if (items.length === 0) return;
+
+    btnComprar.disabled = true;
+    btnComprar.textContent = t("tienda.redirigiendo", "Redirigiendo a pago…");
+    comprarErrorEl?.classList.add("hidden");
+
+    try {
+      const profile = await getSessionProfile().catch(() => null);
+      const lineas = items.map((i: CartEdicionItem) => ({
+        tipo: "edicion",
+        edicionSlug: i.edicionSlug,
+        cajaId: i.cajaId,
+        unidades: i.unidades,
+      }));
+
+      const res = await fetch("/api/crear-sesion-pago", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lineas, userId: profile?.id ?? null, origen: "edicion" }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.url) throw new Error(data.error || "No se pudo iniciar el pago");
+      window.location.href = data.url;
+    } catch (err) {
+      btnComprar.disabled = false;
+      btnComprar.textContent = t("ediciones.btnComprarAhora", "Comprar ahora →");
+      if (comprarErrorEl) {
+        comprarErrorEl.textContent =
+          err instanceof Error && err.message ? err.message : t("tienda.pagarError", "No se ha podido iniciar el pago. Inténtalo de nuevo.");
+        comprarErrorEl.classList.remove("hidden");
+      }
+    }
+  });
+
+  renderCarrito();
 </script>

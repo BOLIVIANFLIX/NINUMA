@@ -1,0 +1,244 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { breadcrumbSchema } from "../../lib/schema";
+---
+
+<Layout
+  title="Tienda · NINUMÁ · Palma de Mallorca"
+  description="Compra online las creaciones de NINUMÁ y recógelas en el obrador de Palma de Mallorca."
+  path="/tienda/"
+  schema={breadcrumbSchema([
+    { name: "Inicio", item: "/" },
+    { name: "Tienda", item: "/tienda/" },
+  ])}
+>
+  <main id="main-content" tabindex="-1" class="px-6 pt-36 pb-24 md:px-12 md:pt-44">
+    <div class="mx-auto max-w-[1440px]">
+      <p id="tienda-loading" class="text-sm text-white/60" data-i18n="tienda.cargando">Cargando tienda…</p>
+      <p id="tienda-error" class="hidden text-sm text-pink-deep" role="alert"></p>
+      <p id="tienda-vacia" class="hidden text-sm text-white/60" data-i18n="tienda.vacia">
+        Ahora mismo no hay piezas disponibles para comprar online. Escríbenos si quieres hacer un encargo.
+      </p>
+
+      <div id="tienda-content" class="hidden flex-col gap-8">
+        <header class="border-b border-white/10 pb-8">
+          <p class="text-xs tracking-[0.14em] text-white/50 uppercase" data-i18n="tienda.eyebrow">Tienda online</p>
+          <h1 class="mt-1 font-display text-3xl md:text-4xl" data-i18n="tienda.titulo">Tienda</h1>
+          <p class="mt-3 max-w-[52ch] text-sm text-white/60" data-i18n="tienda.intro">
+            Recogida únicamente en el obrador. Pasa el ratón (o toca en móvil) sobre cada pieza para ver su descripción y alérgenos.
+          </p>
+          <div class="mt-4 flex flex-wrap items-center gap-6">
+            <a
+              href="/tienda/carrito/"
+              class="inline-flex items-center gap-2 rounded-full border border-white/15 px-5 py-2 text-xs tracking-[0.1em] text-white/70 uppercase transition-colors hover:border-pink hover:text-pink"
+            >
+              <span data-i18n="tienda.verCarrito">Ver carrito</span> <span id="carrito-count" class="rounded-full bg-pink px-2 py-0.5 text-black">0</span>
+            </a>
+          </div>
+        </header>
+
+        <div role="group" aria-label="Filtrar por categoría" class="flex flex-wrap gap-2">
+          <button type="button" class="tienda-filtro-btn rounded-full border border-pink bg-pink px-4 py-1.5 text-xs tracking-[0.08em] text-black uppercase transition-colors" data-filter="all" aria-pressed="true" data-i18n="tienda.filtroTodo">Todo</button>
+          <button type="button" class="tienda-filtro-btn rounded-full border border-white/20 px-4 py-1.5 text-xs tracking-[0.08em] text-white/70 uppercase transition-colors hover:border-pink hover:text-pink" data-filter="tartas" aria-pressed="false" data-i18n="tienda.filtroTartas">Tartas</button>
+          <button type="button" class="tienda-filtro-btn rounded-full border border-white/20 px-4 py-1.5 text-xs tracking-[0.08em] text-white/70 uppercase transition-colors hover:border-pink hover:text-pink" data-filter="bombones" aria-pressed="false" data-i18n="tienda.filtroBombones">Bombones</button>
+          <button type="button" class="tienda-filtro-btn rounded-full border border-white/20 px-4 py-1.5 text-xs tracking-[0.08em] text-white/70 uppercase transition-colors hover:border-pink hover:text-pink" data-filter="postres" aria-pressed="false" data-i18n="tienda.filtroPostres">Postres</button>
+        </div>
+
+        <ul id="tienda-grid" class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3"></ul>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  import { getTiendaPublicaCatalog } from "../../lib/tiendaPublica";
+  import { categoriaTienda } from "../../lib/tiendaB2C";
+  import { alergenoInfo, type AlergenoId } from "../../lib/alergenos";
+  import { addToCart, getCartCount } from "../../lib/cartTienda";
+  import { t, getCurrentLang } from "../../lib/i18n";
+
+  const loadingEl = document.getElementById("tienda-loading");
+  const errorEl = document.getElementById("tienda-error");
+  const vaciaEl = document.getElementById("tienda-vacia");
+  const contentEl = document.getElementById("tienda-content");
+  const gridEl = document.getElementById("tienda-grid");
+  const carritoCountEl = document.getElementById("carrito-count");
+  const esTactil = window.matchMedia("(hover: none), (pointer: coarse)").matches;
+
+  const eur = new Intl.NumberFormat(getCurrentLang(), { style: "currency", currency: "EUR" });
+
+  function updateCarritoCount() {
+    if (carritoCountEl) carritoCountEl.textContent = String(getCartCount());
+  }
+
+  async function init() {
+    try {
+      const piezas = await getTiendaPublicaCatalog();
+
+      if (piezas.length === 0) {
+        loadingEl?.classList.add("hidden");
+        vaciaEl?.classList.remove("hidden");
+        return;
+      }
+
+      if (gridEl) {
+        for (const pieza of piezas) {
+          const categoria = categoriaTienda(pieza.numero);
+
+          const li = document.createElement("li");
+          li.dataset.categoria = categoria;
+          li.className = "flex flex-col gap-3";
+
+          const perspectiveWrap = document.createElement("div");
+          perspectiveWrap.className = "cursor-pointer [perspective:1200px]";
+          perspectiveWrap.tabIndex = 0;
+          perspectiveWrap.setAttribute("role", "button");
+          perspectiveWrap.setAttribute("aria-label", `${t("tienda.verDescripcionDe", "Ver descripción de")} ${pieza.nombre}`);
+
+          const card = document.createElement("div");
+          card.className = "relative aspect-[4/5] w-full transition-transform duration-[1600ms] ease-in-out [transform-style:preserve-3d]";
+
+          function girar(activo: boolean) {
+            card.style.transform = activo ? "rotateY(180deg)" : "";
+          }
+
+          if (esTactil) {
+            perspectiveWrap.addEventListener("click", () => girar(card.style.transform !== "rotateY(180deg)"));
+          } else {
+            perspectiveWrap.addEventListener("mouseenter", () => girar(true));
+            perspectiveWrap.addEventListener("mouseleave", () => girar(false));
+          }
+          perspectiveWrap.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              girar(card.style.transform !== "rotateY(180deg)");
+            }
+          });
+
+          const front = document.createElement("div");
+          front.className = "absolute inset-0 overflow-hidden bg-black [backface-visibility:hidden]";
+          const img = document.createElement("img");
+          img.src = pieza.imagen;
+          img.alt = pieza.nombre;
+          img.loading = "lazy";
+          img.className = "h-full w-full object-cover";
+          const overlay = document.createElement("div");
+          overlay.className = "absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 bg-gradient-to-t from-black/90 to-transparent p-5";
+          const nombreFront = document.createElement("h2");
+          nombreFront.className = "font-display text-xl text-white";
+          nombreFront.textContent = pieza.nombre;
+          const precioFront = document.createElement("span");
+          precioFront.className = "shrink-0 font-display text-lg text-pink";
+          precioFront.textContent = eur.format(pieza.precioPublico);
+          overlay.append(nombreFront, precioFront);
+          front.append(img, overlay);
+
+          const back = document.createElement("div");
+          back.className =
+            "absolute inset-0 flex flex-col justify-center gap-5 border border-white/10 bg-charcoal p-6 [backface-visibility:hidden] [transform:rotateY(180deg)]";
+          const nombreBack = document.createElement("h2");
+          nombreBack.className = "font-display text-xl text-white";
+          nombreBack.textContent = pieza.nombre;
+          back.appendChild(nombreBack);
+
+          if (pieza.descripcionPublica) {
+            const desc = document.createElement("p");
+            desc.className = "text-sm leading-relaxed text-white/70 italic";
+            desc.textContent = pieza.descripcionPublica;
+            back.appendChild(desc);
+          }
+
+          if (pieza.alergenos.length > 0) {
+            const alergenosWrap = document.createElement("div");
+            alergenosWrap.className = "flex flex-wrap gap-2";
+            alergenosWrap.setAttribute("aria-label", t("tienda.alergenosAria", "Alérgenos"));
+            for (const id of pieza.alergenos as AlergenoId[]) {
+              const info = alergenoInfo(id);
+              const span = document.createElement("span");
+              span.className = "flex h-8 w-8 items-center justify-center rounded-full border border-white/15 text-base";
+              span.title = info.label;
+              span.setAttribute("aria-label", info.label);
+              span.textContent = info.icono;
+              alergenosWrap.appendChild(span);
+            }
+            back.appendChild(alergenosWrap);
+          }
+
+          card.append(front, back);
+          perspectiveWrap.appendChild(card);
+
+          const carritoRow = document.createElement("div");
+          carritoRow.className = "flex items-center gap-3";
+
+          const unidadesSelect = document.createElement("select");
+          unidadesSelect.setAttribute("aria-label", `${t("tienda.unidadesDe", "Unidades de")} ${pieza.nombre}`);
+          unidadesSelect.className = "border border-white/20 bg-black/80 px-2 py-1.5 text-xs text-white outline-none focus:border-pink";
+          for (let n = 1; n <= 10; n++) {
+            const opt = document.createElement("option");
+            opt.value = String(n);
+            opt.textContent = String(n);
+            unidadesSelect.appendChild(opt);
+          }
+
+          const addBtn = document.createElement("button");
+          addBtn.type = "button";
+          addBtn.className =
+            "inline-flex flex-1 items-center justify-center rounded-full border border-pink px-4 py-1.5 text-xs tracking-[0.1em] text-pink uppercase transition-colors hover:bg-pink hover:text-black";
+          addBtn.textContent = t("tienda.anadirAlCarrito", "Añadir al carrito");
+          addBtn.addEventListener("click", () => {
+            addToCart({
+              numero: pieza.numero,
+              nombre: pieza.nombre,
+              precioUnitarioCents: Math.round(pieza.precioPublico * 100),
+              unidades: Number(unidadesSelect.value),
+            });
+            updateCarritoCount();
+            const original = addBtn.textContent;
+            addBtn.textContent = t("tienda.anadido", "Añadido ✓");
+            setTimeout(() => {
+              addBtn.textContent = original;
+            }, 1200);
+          });
+          carritoRow.append(unidadesSelect, addBtn);
+
+          li.append(perspectiveWrap, carritoRow);
+          gridEl.appendChild(li);
+        }
+      }
+
+      const filtroBtns = document.querySelectorAll<HTMLButtonElement>(".tienda-filtro-btn");
+      const cards = document.querySelectorAll<HTMLElement>("#tienda-grid > li");
+      filtroBtns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          filtroBtns.forEach((b) => {
+            b.classList.remove("border-pink", "bg-pink", "text-black");
+            b.classList.add("border-white/20", "text-white/70");
+            b.setAttribute("aria-pressed", "false");
+          });
+          btn.classList.add("border-pink", "bg-pink", "text-black");
+          btn.classList.remove("border-white/20", "text-white/70");
+          btn.setAttribute("aria-pressed", "true");
+
+          const filter = btn.dataset.filter;
+          cards.forEach((card) => {
+            const show = filter === "all" || card.dataset.categoria === filter;
+            card.classList.toggle("hidden", !show);
+          });
+        });
+      });
+
+      updateCarritoCount();
+      loadingEl?.classList.add("hidden");
+      contentEl?.classList.remove("hidden");
+      contentEl?.classList.add("flex");
+    } catch {
+      loadingEl?.classList.add("hidden");
+      if (errorEl) {
+        errorEl.textContent = t("tienda.errorCarga", "No se ha podido cargar la tienda. Recarga la página o contacta con nosotros.");
+        errorEl.classList.remove("hidden");
+      }
+    }
+  }
+
+  init();
+</script>

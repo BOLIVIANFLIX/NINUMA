@@ -1,3 +1,5 @@
+import type { AlergenoId } from "./alergenos";
+
 export interface PiezaCatalogItem {
   numero: string;
   nombre: string;
@@ -5,6 +7,11 @@ export interface PiezaCatalogItem {
   href: string;
   materiales: string;
   categoria: string;
+  // Ficha técnica B2B — ver src/pages/cuenta/catalogo.astro.
+  alergenos: AlergenoId[];
+  caloriasAprox: number | null;
+  caducidadDias: number | null;
+  notasTecnicas: string | null;
 }
 
 let cache: Promise<PiezaCatalogItem[]> | null = null;

@@ -2,8 +2,12 @@ import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
 import { getImage } from "astro:assets";
 
+/** Endpoint deliberadamente más pobre que /api/piezas.json: solo piezas en venta
+ * (precioPublico !== null) y sin materiales/calorías/caducidad — la tienda pública
+ * nunca debe filtrar la ficha técnica interna. Ver src/lib/alergenos.ts para el
+ * significado de "alergenos" aquí (se renderiza como iconos, no como texto). */
 export const GET: APIRoute = async () => {
-  const entries = await getCollection("piezas");
+  const entries = await getCollection("piezas", (e) => e.data.precioPublico !== null);
 
   const piezas = await Promise.all(
     entries.map(async (e) => {
@@ -13,13 +17,10 @@ export const GET: APIRoute = async () => {
         nombre: e.data.nombre,
         imagen: optimized.src,
         href: `/creaciones/#pieza-${e.data.numero}`,
-        materiales: e.data.materiales,
         categoria: e.data.categoria,
-        // Ficha técnica B2B — solo se consume desde /cuenta/catalogo.astro.
+        precioPublico: e.data.precioPublico,
         alergenos: e.data.alergenos,
-        caloriasAprox: e.data.caloriasAprox,
-        caducidadDias: e.data.caducidadDias,
-        notasTecnicas: e.data.notasTecnicas ?? null,
+        descripcionPublica: e.data.descripcionPublica ?? null,
       };
     })
   );
