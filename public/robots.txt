@@ -1,9 +1,8 @@
 User-agent: *
 Disallow: /confirmacion/
 
-# Bloquear crawlers de IA que no respetan llms.txt
 User-agent: GPTBot
-Disallow: /
+Disallow:
 
 User-agent: ClaudeBot
 Disallow:
