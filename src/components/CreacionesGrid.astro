@@ -24,7 +24,7 @@ const piezas = entries
 ---
 
 <section aria-label="Portfolio de creaciones NINUMÁ" class="px-6 py-16 md:px-12">
-  <div id="creaciones-grid" class="mx-auto grid max-w-[1440px] grid-cols-1 gap-px bg-white/10 sm:grid-cols-2 lg:grid-cols-3">
+  <div id="creaciones-grid" class="mx-auto grid max-w-[1440px] grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
     <div id="grid-empty" hidden role="status" aria-live="polite" class="col-span-full flex flex-col items-center gap-4 bg-black py-24 text-center">
       <p class="text-white/60" data-i18n="creaciones.emptyMessage">Ninguna pieza en esta categoría.</p>
       <button type="button" id="reset-filter-btn" data-i18n="creaciones.emptyReset" class="rounded-full border border-pink px-5 py-2 text-xs tracking-[0.1em] text-pink uppercase hover:bg-pink hover:text-black">
@@ -35,7 +35,7 @@ const piezas = entries
     {piezas.map((p) => (
       <article
         id={`pieza-${p.num}`}
-        class="pieza gs-reveal group relative flex flex-col bg-black"
+        class="pieza gs-reveal group relative flex flex-col border border-white/10 bg-black"
         data-category={p.categoria}
         aria-label={`Pieza N.º ${p.num} — ${p.nombre}`}
       >
