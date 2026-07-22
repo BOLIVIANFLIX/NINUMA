@@ -165,12 +165,24 @@ import { breadcrumbSchema } from "../../lib/schema";
             alergenosWrap.setAttribute("aria-label", t("tienda.alergenosAria", "Alérgenos"));
             for (const id of pieza.alergenos as AlergenoId[]) {
               const info = alergenoInfo(id);
+
+              const wrap = document.createElement("span");
+              wrap.className = "group relative inline-flex";
+
               const span = document.createElement("span");
               span.className = "flex h-8 w-8 items-center justify-center rounded-full border border-white/15 text-base";
               span.title = info.label;
               span.setAttribute("aria-label", info.label);
               span.textContent = info.icono;
-              alergenosWrap.appendChild(span);
+
+              const tooltip = document.createElement("span");
+              tooltip.className =
+                "pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 -translate-x-1/2 rounded-full border border-pink bg-black px-3 py-1 text-[0.65rem] whitespace-nowrap text-pink opacity-0 transition-opacity duration-150 group-hover:opacity-100";
+              tooltip.textContent = info.label;
+              tooltip.setAttribute("aria-hidden", "true");
+
+              wrap.append(span, tooltip);
+              alergenosWrap.appendChild(wrap);
             }
             back.appendChild(alergenosWrap);
           }
