@@ -45,13 +45,10 @@ const links = [
     </ul>
     <a
       href="/contacto/"
-      data-i18n="header.ctaEmpezar"
       aria-label="Empezar un proyecto — ir a contacto"
       data-i18n-aria-label="header.ctaEmpezarAria"
       class="rounded-full border border-pink px-5 py-2 text-xs tracking-[0.1em] text-pink uppercase transition-colors hover:bg-pink hover:text-black"
-    >
-      Empezar
-    </a>
+    ><span data-i18n="header.ctaEmpezar">Empezar</span><span class="sr-only"> un proyecto — ir a contacto</span></a>
     <a
       href="/cuenta/login/"
       id="account-link-desktop"
@@ -102,7 +99,7 @@ const links = [
       {links.map((l) => (
         <li><a href={l.href} data-i18n={l.key} class="mobile-link">{l.label}</a></li>
       ))}
-      <li><a href="/contacto/" data-i18n="header.ctaEmpezar" aria-label="Empezar un proyecto — ir a contacto" data-i18n-aria-label="header.ctaEmpezarAria" class="mobile-link text-pink">Empezar</a></li>
+      <li><a href="/contacto/" aria-label="Empezar un proyecto — ir a contacto" data-i18n-aria-label="header.ctaEmpezarAria" class="mobile-link text-pink"><span data-i18n="header.ctaEmpezar">Empezar</span><span class="sr-only"> un proyecto — ir a contacto</span></a></li>
       <li><a href="/cuenta/login/" id="account-link-mobile" class="mobile-link text-xl not-italic">Acceder</a></li>
     </ul>
   </nav>

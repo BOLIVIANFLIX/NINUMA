@@ -384,7 +384,7 @@
   "faq.q11": "Com puc contactar-vos?",
   "faq.a11": "A través del formulari de contacte, per correu (ariadna@ninuma.es), per telèfon (+34 666 13 84 65), o a Instagram (@ninuma_concept).",
   "cookies.ariaLabel": "Consentiment de cookies",
-  "cookies.message": "Utilitzem cookies pròpies i de tercers (Google Analytics) per analitzar l'ús del lloc i millorar la teva experiència. Pots acceptar-les totes o utilitzar només les necessàries. <a href=\"/cookies/\" class=\"text-pink underline underline-offset-2\" aria-label=\"Més informació sobre la nostra política de cookies\">Més informació</a>",
+  "cookies.message": "Utilitzem cookies pròpies i de tercers (Google Analytics) per analitzar l'ús del lloc i millorar la teva experiència. Pots acceptar-les totes o utilitzar només les necessàries. <a href=\"/cookies/\" class=\"text-pink underline underline-offset-2\" aria-label=\"Més informació sobre la nostra política de cookies\">Més informació<span class=\"sr-only\"> sobre la nostra política de cookies</span></a>",
   "cookies.accept": "Acceptar totes",
   "cookies.reject": "Només necessàries",
   "obrador.breadcrumbInicio": "Inici",
