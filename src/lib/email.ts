@@ -21,7 +21,7 @@ function escapeHtml(text: string): string {
 }
 
 function buildOrderConfirmationHtml({ kind, items, totalCents }: Omit<SendOrderConfirmationParams, "to">): string {
-  const logoUrl = `${import.meta.env.SITE_URL}/images/tunga-logo.png`;
+  const logoUrl = `${import.meta.env.SITE_URL}/images/ninuma-logo-email.png`;
   const filas = items
     .map(
       (item) => `
@@ -42,8 +42,8 @@ function buildOrderConfirmationHtml({ kind, items, totalCents }: Omit<SendOrderC
         <td align="center">
           <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="background-color:#111111;border:1px solid #2a2a2a;">
             <tr>
-              <td style="padding:32px 40px 20px 40px;text-align:center;border-bottom:1px solid #2a2a2a;">
-                <img src="${logoUrl}" alt="NINUMÁ" width="56" style="display:inline-block;width:56px;height:auto;" />
+              <td style="padding:24px 40px;text-align:center;background-color:#f7f2f2;border-bottom:1px solid #2a2a2a;">
+                <img src="${logoUrl}" alt="NINUMÁ — Ariadna Salvador" width="192" style="display:inline-block;width:192px;height:auto;" />
               </td>
             </tr>
             <tr>
