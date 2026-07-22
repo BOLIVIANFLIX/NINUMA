@@ -1,16 +1,38 @@
 ---
+import { getCollection } from "astro:content";
+import { getImage } from "astro:assets";
 import Layout from "../../layouts/Layout.astro";
-import { breadcrumbSchema } from "../../lib/schema";
+import { breadcrumbSchema, productListSchema } from "../../lib/schema";
+
+// Mismo filtro que /api/tienda-publica.json.ts: solo piezas en venta online.
+// Se genera aquí, en build, para que el JSON-LD lleve nombre/precio/imagen
+// aunque la grid de abajo se rellene luego por JS (ver script al final).
+const piezasEnVenta = await getCollection("piezas", (e) => e.data.precioPublico !== null);
+const productos = await Promise.all(
+  piezasEnVenta.map(async (e) => {
+    const optimized = await getImage({ src: e.data.imagen, width: 480 });
+    return {
+      nombre: e.data.nombre,
+      imagen: optimized.src,
+      precio: e.data.precioPublico as number,
+      descripcion: e.data.descripcionPublica,
+      url: `/creaciones/#pieza-${e.data.numero}`,
+    };
+  })
+);
 ---
 
 <Layout
   title="Tienda · NINUMÁ · Palma de Mallorca"
   description="Compra online las creaciones de NINUMÁ y recógelas en el obrador de Palma de Mallorca."
   path="/tienda/"
-  schema={breadcrumbSchema([
-    { name: "Inicio", item: "/" },
-    { name: "Tienda", item: "/tienda/" },
-  ])}
+  schema={[
+    breadcrumbSchema([
+      { name: "Inicio", item: "/" },
+      { name: "Tienda", item: "/tienda/" },
+    ]),
+    ...(productos.length > 0 ? [productListSchema(productos)] : []),
+  ]}
 >
   <main id="main-content" tabindex="-1" class="px-6 pt-36 pb-24 md:px-12 md:pt-44">
     <div class="mx-auto max-w-[1440px]">

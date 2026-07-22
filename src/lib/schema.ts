@@ -110,6 +110,36 @@ export function faqSchema(faqs: { question: string; answer: string }[]) {
   };
 }
 
+/** Product/Offer en JSON-LD para catálogos renderizados por JS (p.ej. /tienda/),
+ * cuyo HTML inicial no lleva nombre/precio — así los rastreadores que no
+ * ejecutan JavaScript (GPTBot y similares) también ven los productos. */
+export function productListSchema(
+  products: { nombre: string; imagen: string; precio: number; descripcion?: string | null; url: string }[]
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListElement: products.map((p, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      item: {
+        "@type": "Product",
+        name: p.nombre,
+        image: `${SITE}${p.imagen}`,
+        description: p.descripcion || undefined,
+        url: `${SITE}${p.url}`,
+        offers: {
+          "@type": "Offer",
+          price: p.precio,
+          priceCurrency: "EUR",
+          availability: "https://schema.org/InStock",
+          url: `${SITE}${p.url}`,
+        },
+      },
+    })),
+  };
+}
+
 export function serviceSchema(serviceTypes: string[]) {
   return {
     "@context": "https://schema.org",
