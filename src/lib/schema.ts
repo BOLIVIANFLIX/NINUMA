@@ -46,9 +46,12 @@ export function cafeSchema() {
     "@id": `${SITE}/#cafe`,
     name: "NINUMÁ",
     url: SITE,
+    image: `${SITE}/assets/img/og-image.png`,
     address: { "@type": "PostalAddress", ...NAP },
     telephone: TEL,
     openingHours: HOURS,
+    servesCuisine: "Café de especialidad",
+    priceRange: "€€€",
   };
 }
 
