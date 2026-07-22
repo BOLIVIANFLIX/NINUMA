@@ -13,6 +13,21 @@ const CATEGORIA_TIENDA: Record<string, TiendaCategoria> = {
   "004": "postres",
   "005": "postres",
   "008": "postres",
+  "009": "postres",
+  "012": "postres",
+  "013": "postres",
+  "014": "postres",
+  "015": "postres",
+  "016": "postres",
+  "017": "bombones",
+  "018": "bombones",
+  "019": "bombones",
+  "020": "bombones",
+  "021": "bombones",
+  "022": "tartas",
+  "023": "tartas",
+  "024": "tartas",
+  "025": "tartas",
 };
 
 export function categoriaTienda(numero: string): TiendaCategoria {

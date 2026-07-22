@@ -90,11 +90,11 @@ import Layout from "../../layouts/Layout.astro";
       const cantidadInput = document.createElement("input");
       cantidadInput.type = "number";
       cantidadInput.min = "1";
-      cantidadInput.max = "10";
+      cantidadInput.max = "12";
       cantidadInput.value = String(item.unidades);
       cantidadInput.className = "w-16 border border-white/15 bg-black px-2 py-1 text-sm text-white outline-none focus:border-pink";
       cantidadInput.addEventListener("change", () => {
-        const nuevo = Math.max(1, Math.min(10, Number(cantidadInput.value) || 1));
+        const nuevo = Math.max(1, Math.min(12, Number(cantidadInput.value) || 1));
         updateCartQuantity(item.numero, nuevo);
         renderCart();
       });

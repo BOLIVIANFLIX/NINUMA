@@ -171,6 +171,13 @@ import Layout from "../../layouts/Layout.astro";
             detalle.appendChild(ingredientesRow);
           }
 
+          if (pieza.vegano) {
+            const veganoRow = document.createElement("p");
+            veganoRow.innerHTML = `<strong class="text-white/80">${t("cuenta.fichaVegano", "Dieta")}:</strong> `;
+            veganoRow.append(t("cuenta.vegano", "Vegano"));
+            detalle.appendChild(veganoRow);
+          }
+
           if (pieza.alergenos && pieza.alergenos.length > 0) {
             const alergenosRow = document.createElement("p");
             const labels = (pieza.alergenos as AlergenoId[]).map((id) => alergenoInfo(id).label);

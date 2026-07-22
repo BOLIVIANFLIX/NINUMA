@@ -9,7 +9,7 @@ const piezas = defineCollection({
       numero: z.string(),
       imagen: image(),
       alt: z.string(),
-      categoria: z.enum(["tartas", "bombones", "ediciones", "b2b"]),
+      categoria: z.enum(["tartas", "bombones", "postres", "ediciones", "b2b"]),
       tipo: z.string(),
       tipoKey: z.string(),
       nombre: z.string(),
@@ -29,6 +29,9 @@ const piezas = defineCollection({
       // Alérgenos UE — dato compartido, cada vista lo renderiza distinto (iconos en
       // público, lista técnica en la ficha B2B). Ver src/lib/alergenos.ts.
       alergenos: z.array(z.enum(ALERGENOS_IDS)).default([]),
+
+      // Distintivo dietético — se muestra igual (icono/texto) en público y en B2B.
+      vegano: z.boolean().default(false),
 
       // Tono literario para la tienda pública — nunca una lista técnica de ingredientes.
       descripcionPublica: z.string().optional(),

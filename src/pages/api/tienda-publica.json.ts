@@ -20,6 +20,7 @@ export const GET: APIRoute = async () => {
         categoria: e.data.categoria,
         precioPublico: e.data.precioPublico,
         alergenos: e.data.alergenos,
+        vegano: e.data.vegano,
         descripcionPublica: e.data.descripcionPublica ?? null,
       };
     })

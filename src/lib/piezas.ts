@@ -9,6 +9,7 @@ export interface PiezaCatalogItem {
   categoria: string;
   // Ficha técnica B2B — ver src/pages/cuenta/catalogo.astro.
   alergenos: AlergenoId[];
+  vegano: boolean;
   caloriasAprox: number | null;
   caducidadDias: number | null;
   notasTecnicas: string | null;

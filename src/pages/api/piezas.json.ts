@@ -17,6 +17,7 @@ export const GET: APIRoute = async () => {
         categoria: e.data.categoria,
         // Ficha técnica B2B — solo se consume desde /cuenta/catalogo.astro.
         alergenos: e.data.alergenos,
+        vegano: e.data.vegano,
         caloriasAprox: e.data.caloriasAprox,
         caducidadDias: e.data.caducidadDias,
         notasTecnicas: e.data.notasTecnicas ?? null,

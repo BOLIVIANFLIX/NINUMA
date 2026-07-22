@@ -122,6 +122,17 @@ import { breadcrumbSchema } from "../../lib/schema";
           img.alt = pieza.nombre;
           img.loading = "lazy";
           img.className = "h-full w-full object-cover";
+
+          if (pieza.vegano) {
+            const veganoBadge = document.createElement("span");
+            veganoBadge.className =
+              "absolute top-4 left-4 flex h-8 w-8 items-center justify-center rounded-full border border-pink bg-black/70 text-base";
+            veganoBadge.title = t("tienda.vegano", "Vegano");
+            veganoBadge.setAttribute("aria-label", t("tienda.vegano", "Vegano"));
+            veganoBadge.textContent = "🌱";
+            front.appendChild(veganoBadge);
+          }
+
           const overlay = document.createElement("div");
           overlay.className = "absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 bg-gradient-to-t from-black/90 to-transparent p-5";
           const nombreFront = document.createElement("h2");
@@ -173,7 +184,7 @@ import { breadcrumbSchema } from "../../lib/schema";
           const unidadesSelect = document.createElement("select");
           unidadesSelect.setAttribute("aria-label", `${t("tienda.unidadesDe", "Unidades de")} ${pieza.nombre}`);
           unidadesSelect.className = "border border-white/20 bg-black/80 px-2 py-1.5 text-xs text-white outline-none focus:border-pink";
-          for (let n = 1; n <= 10; n++) {
+          for (let n = 1; n <= 12; n++) {
             const opt = document.createElement("option");
             opt.value = String(n);
             opt.textContent = String(n);

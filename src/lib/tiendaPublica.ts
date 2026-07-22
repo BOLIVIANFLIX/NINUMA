@@ -8,6 +8,7 @@ export interface TiendaPublicaItem {
   categoria: string;
   precioPublico: number;
   alergenos: AlergenoId[];
+  vegano: boolean;
   descripcionPublica: string | null;
 }
 

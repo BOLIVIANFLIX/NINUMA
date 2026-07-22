@@ -37,7 +37,7 @@ function jsonError(message: string, status = 400): Response {
 }
 
 function esUnidadesValida(unidades: unknown): unidades is number {
-  return typeof unidades === "number" && Number.isInteger(unidades) && unidades > 0 && unidades <= 10;
+  return typeof unidades === "number" && Number.isInteger(unidades) && unidades > 0 && unidades <= 12;
 }
 
 export const POST: APIRoute = async ({ request }) => {
