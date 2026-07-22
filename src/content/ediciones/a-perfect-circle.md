@@ -1,6 +1,12 @@
 ---
-activa: true
+estado: activa
 nombre: "A Perfect Circle"
+anio: "2026"
+orden: 100
+imagen: ../../assets/img/edicion-apc-detalle.jpg
+alt: "Bombones A Perfect Circle — edición especial NINUMÁ"
+meta: "Tres bombones inspirados en la banda de Los Ángeles"
+metaKey: ediciones.archivoMetaApc
 plazoLabel: "Hasta el 31 de agosto · Unidades limitadas"
 plazoLabelKey: ediciones.plazoLabel
 fechaLimiteISO: "2026-08-31T13:30:00"
@@ -34,7 +40,7 @@ especificaciones:
     etiquetaKey: ediciones.spec6Label
     valor: "Obrador · Guillem Massot, 48 · Palma de Mallorca"
     valorKey: ediciones.spec6Value
-# TODO: precios de ejemplo — confirma los precios reales de esta edición antes de publicar.
+# TODO: edición de ejemplo — sustituir por la tirada real (posible promo de estreno de web) antes de publicar. Precios de ejemplo.
 cajas:
   - id: caja-3
     label: "Caja de 3 bombones"

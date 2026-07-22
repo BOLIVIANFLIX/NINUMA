@@ -17,19 +17,19 @@ const ARCHIVO_EDICIONES = await getArchivedEditions();
 
     <div class="gs-stagger grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3" role="list" aria-label="Archivo de ediciones especiales" data-i18n-aria-label="ediciones.archivoListaAria">
       {ARCHIVO_EDICIONES.map((e) => (
-        <article class="gs-item flex flex-col gap-3 border-b border-white/10 pb-5" role="listitem" aria-label={`${e.nombre} — ${e.estado}`}>
+        <a href={`/ediciones-especiales/${e.slug}/`} role="listitem" class="gs-item group flex flex-col gap-3 border-b border-white/10 pb-5" aria-label={`${e.nombre} — ver ficha completa`}>
           <div class="relative aspect-[3/4] overflow-hidden bg-charcoal-2">
             {e.imagen ? (
-              <Image src={e.imagen} alt={e.alt} loading="lazy" class="h-full w-full object-cover" />
+              <Image src={e.imagen} alt={e.alt} loading="lazy" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
             ) : (
               <span class="flex h-full w-full items-center justify-center font-display text-6xl font-light text-white/10">?</span>
             )}
           </div>
           <span class="text-[0.6rem] tracking-[0.18em] text-white/50 uppercase">{e.anio}</span>
-          <h3 class="font-display text-2xl leading-tight">{e.nombre}</h3>
+          <h3 class="font-display text-2xl leading-tight group-hover:text-pink">{e.nombre}</h3>
           <p class="text-xs leading-relaxed text-white/50" data-i18n={e.metaKey}>{e.meta}</p>
-          <span class="text-[0.6rem] tracking-[0.2em] text-white/50 uppercase" data-i18n={e.estadoKey}>{e.estado}</span>
-        </article>
+          <span class="text-[0.6rem] tracking-[0.2em] text-white/50 uppercase" data-i18n="ediciones.estadoAgotada">Edición agotada</span>
+        </a>
       ))}
     </div>
 

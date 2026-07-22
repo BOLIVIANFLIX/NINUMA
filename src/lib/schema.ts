@@ -140,6 +140,39 @@ export function productListSchema(
   };
 }
 
+/** Product para una edición especial ya cerrada (página propia permanente en
+ * /ediciones-especiales/[slug]/) — availability siempre Discontinued porque la
+ * tirada ya terminó y no se repite. Si la edición no llegó a tener cajas con
+ * precio (fichas de archivo antiguas, sin ese detalle), se omiten las offers. */
+export function editionSchema(edicion: {
+  nombre: string;
+  descripcion?: string;
+  imagen: string;
+  slug: string;
+  cajas: { label: string; precio: number }[];
+}) {
+  const url = `${SITE}/ediciones-especiales/${edicion.slug}/`;
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: edicion.nombre,
+    description: edicion.descripcion || undefined,
+    image: `${SITE}${edicion.imagen}`,
+    url,
+    offers:
+      edicion.cajas.length > 0
+        ? edicion.cajas.map((c) => ({
+            "@type": "Offer",
+            name: c.label,
+            price: c.precio,
+            priceCurrency: "EUR",
+            availability: "https://schema.org/Discontinued",
+            url,
+          }))
+        : undefined,
+  };
+}
+
 export function serviceSchema(serviceTypes: string[]) {
   return {
     "@context": "https://schema.org",
