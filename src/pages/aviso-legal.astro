@@ -7,6 +7,7 @@ const sections = [
   { id: "propiedad", label: "Propiedad intelectual", i18nKey: "legal.avisoLegalSec3Label" },
   { id: "responsabilidad", label: "Responsabilidad", i18nKey: "legal.avisoLegalSec4Label" },
   { id: "enlaces", label: "Enlaces externos", i18nKey: "legal.avisoLegalSec5Label" },
+  { id: "condiciones-venta", label: "Condiciones de venta online", i18nKey: "legal.avisoLegalSecVentaLabel" },
   { id: "legislacion", label: "Legislación aplicable", i18nKey: "legal.avisoLegalSec6Label" },
 ];
 ---
@@ -17,7 +18,7 @@ const sections = [
   path="/aviso-legal/"
   pageTitle="Aviso Legal"
   breadcrumbLabel="Aviso Legal"
-  dateLabel="Última actualización: junio de 2025"
+  dateLabel="Última actualización: julio de 2026"
   sections={sections}
   titleKey="legal.avisoLegalTitle"
   breadcrumbKey="legal.avisoLegalBreadcrumb"
@@ -55,10 +56,10 @@ const sections = [
       implica la aceptación plena de todas las disposiciones incluidas en este Aviso Legal.
     </p>
     <p class="text-[0.85rem] leading-[1.85] text-white/60" data-i18n="legal.avisoLegalS2Body2">
-      El sitio web tiene carácter informativo y actúa como escaparate para los productos y servicios de NINUMÁ. Los
-      encargos o reservas realizados a través de los medios de contacto de la web no conllevan pago electrónico a
-      través de la misma. Todas las transacciones económicas se formalizan directamente en el obrador (efectivo,
-      datáfono o transferencia bancaria).
+      El sitio web incluye una tienda online (/tienda/) y la venta de Ediciones Especiales, ambas con pago
+      electrónico real mediante tarjeta y otros medios de pago gestionados por Stripe. Los encargos personalizados y
+      las solicitudes de clientes profesionales (B2B) no conllevan pago a través de la web: se gestionan
+      directamente con Ariadna Salvador y se formalizan en el obrador (efectivo, datáfono o transferencia bancaria).
     </p>
   </div>
 
@@ -100,8 +101,40 @@ const sections = [
     </p>
   </div>
 
-  <div id="legislacion" class="flex scroll-mt-32 flex-col gap-3">
+  <div id="condiciones-venta" class="flex scroll-mt-32 flex-col gap-3">
     <span class="text-[0.6rem] font-medium tracking-[0.2em] text-pink uppercase">06</span>
+    <h2 class="font-display text-2xl leading-tight font-light md:text-3xl" data-i18n="legal.avisoLegalSVentaHeading">Condiciones de venta online</h2>
+    <p class="text-[0.85rem] leading-[1.85] text-white/60" data-i18n="legal.avisoLegalSVentaBody1">
+      <strong class="font-medium text-white">Precios y pago:</strong> Los precios mostrados en la tienda online y en
+      Ediciones Especiales incluyen el IVA legalmente aplicable. El pago se realiza mediante tarjeta y los demás
+      medios de pago habilitados, procesados por Stripe Payments Europe, Ltd. NINUMÁ nunca recibe ni almacena los
+      datos completos de tu tarjeta. El pedido mínimo para pagar online es de 20 €.
+    </p>
+    <p class="text-[0.85rem] leading-[1.85] text-white/60" data-i18n="legal.avisoLegalSVentaBody2">
+      <strong class="font-medium text-white">Entrega:</strong> Todos los pedidos de la tienda online y de Ediciones
+      Especiales son de recogida exclusiva en el obrador (Carrer de Guillem Massot, 48, 07003 Palma de Mallorca), en
+      el horario indicado en la web. No se realizan envíos.
+    </p>
+    <p class="text-[0.85rem] leading-[1.85] text-white/60" data-i18n="legal.avisoLegalSVentaBody3">
+      <strong class="font-medium text-white">Derecho de desistimiento:</strong> De acuerdo con el artículo 103.d) del
+      Real Decreto Legislativo 1/2007 (Texto Refundido de la Ley General para la Defensa de los Consumidores y
+      Usuarios), el derecho de desistimiento no es aplicable al suministro de productos de alimentación que puedan
+      deteriorarse o caducar con rapidez, como las piezas de pastelería vendidas en este sitio. Si tu pedido llega
+      con un defecto de calidad o un error respecto a lo solicitado, escríbenos a{" "}
+      <a href="mailto:ariadna@ninuma.es" class="text-pink hover:text-white">ariadna@ninuma.es</a> dentro de las 24
+      horas siguientes a la recogida y lo resolveremos.
+    </p>
+    <p class="text-[0.85rem] leading-[1.85] text-white/60" data-i18n="legal.avisoLegalSVentaBody4">
+      <strong class="font-medium text-white">Reclamaciones:</strong> Puedes presentar cualquier reclamación relativa
+      a tu pedido escribiendo a <a href="mailto:ariadna@ninuma.es" class="text-pink hover:text-white">ariadna@ninuma.es</a>.
+      Como consumidor residente en la Unión Europea, también puedes acceder a la plataforma europea de resolución de
+      litigios en línea:{" "}
+      <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener noreferrer" class="text-pink hover:text-white">ec.europa.eu/consumers/odr</a>.
+    </p>
+  </div>
+
+  <div id="legislacion" class="flex scroll-mt-32 flex-col gap-3">
+    <span class="text-[0.6rem] font-medium tracking-[0.2em] text-pink uppercase">07</span>
     <h2 class="font-display text-2xl leading-tight font-light md:text-3xl" data-i18n="legal.avisoLegalS6Heading">Legislación aplicable y jurisdicción</h2>
     <p class="text-[0.85rem] leading-[1.85] text-white/60" data-i18n="legal.avisoLegalS6Body">
       Para la resolución de controversias relacionadas con este sitio web será de aplicación la legislación
