@@ -261,6 +261,19 @@
           form.classList.add("hidden");
           successEl?.classList.remove("hidden");
           successEl?.focus();
+
+          // Email de cortesía con marca NINUMÁ vía Resend — independiente del envío
+          // real a Formspree de arriba (ya completado). Si esto falla, no afecta a
+          // que el formulario ya se haya enviado correctamente.
+          const nombreInput = form.querySelector<HTMLInputElement>('[name="nombre"]');
+          const emailInput = form.querySelector<HTMLInputElement>('[name="email"]');
+          if (nombreInput?.value.trim() && emailInput?.value.trim()) {
+            fetch("/api/contacto-confirmacion", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ nombre: nombreInput.value.trim(), email: emailInput.value.trim() }),
+            }).catch(() => {});
+          }
         } else {
           throw new Error(`HTTP ${res.status}`);
         }

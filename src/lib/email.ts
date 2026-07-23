@@ -94,6 +94,84 @@ function buildOrderConfirmationHtml({ kind, items, totalCents }: Omit<SendOrderC
 </html>`;
 }
 
+export interface SendContactoConfirmationParams {
+  to: string;
+  nombre: string;
+}
+
+function buildContactoConfirmationHtml({ nombre }: Omit<SendContactoConfirmationParams, "to">): string {
+  const logoUrl = `${import.meta.env.SITE_URL}/images/ninuma-logo-email.png`;
+
+  return `<!doctype html>
+<html lang="es">
+  <body style="margin:0;padding:0;background-color:#0a0a0a;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0a0a0a;padding:40px 0;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="background-color:#111111;border:1px solid #2a2a2a;">
+            <tr>
+              <td style="padding:24px 40px;text-align:center;background-color:#f7f2f2;border-bottom:1px solid #2a2a2a;">
+                <img src="${logoUrl}" alt="NINUMÁ — Ariadna Salvador" width="192" style="display:inline-block;width:192px;height:auto;" />
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:32px 40px 8px 40px;">
+                <p style="margin:0 0 4px 0;font-family:Arial,sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#f0b4c4;">Mensaje recibido</p>
+                <h1 style="margin:0;font-family:Georgia,serif;font-size:26px;font-weight:400;color:#f5f5f5;">Gracias, ${escapeHtml(nombre)}.</h1>
+                <p style="margin:16px 0 0 0;font-family:Arial,sans-serif;font-size:14px;line-height:1.6;color:#aaaaaa;">
+                  Hemos recibido tu mensaje. Respondo en menos de 48 horas en días laborables. Si tienes una fecha muy próxima o una urgencia, lo más rápido es llamar o escribir por Instagram.
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:8px 40px 40px 40px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-left:2px solid #f0b4c4;background-color:#191919;">
+                  <tr>
+                    <td style="padding:16px 20px;font-family:Arial,sans-serif;font-size:13px;line-height:1.7;color:#aaaaaa;">
+                      <strong style="color:#f0b4c4;">¿Urgente?</strong><br />
+                      Llámame al <a href="tel:+34666138465" style="color:#f0b4c4;">+34 666 13 84 65</a> o escríbeme por Instagram a <a href="https://instagram.com/ninuma_concept" style="color:#f0b4c4;">@ninuma_concept</a>.
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:0 40px 40px 40px;text-align:center;border-top:1px solid #2a2a2a;">
+                <p style="margin:0;padding-top:24px;font-family:Arial,sans-serif;font-size:12px;color:#666666;">
+                  Este es un email automático de confirmación — responde directamente a este correo o escribe a <a href="mailto:ariadna@ninuma.es" style="color:#f0b4c4;">ariadna@ninuma.es</a>
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`;
+}
+
+/** No lanza si Resend no está configurado o falla el envío: el mensaje ya llegó por
+ * Formspree antes de llegar aquí — un fallo en este email de cortesía no debe romper
+ * la experiencia de haber contactado correctamente. */
+export async function sendContactoConfirmationEmail(params: SendContactoConfirmationParams): Promise<void> {
+  const apiKey = import.meta.env.RESEND_API_KEY;
+  const from = import.meta.env.RESEND_FROM;
+  if (!apiKey || !from) return;
+
+  const resend = new Resend(apiKey);
+
+  try {
+    await resend.emails.send({
+      from,
+      to: params.to,
+      subject: "Hemos recibido tu mensaje — NINUMÁ",
+      html: buildContactoConfirmationHtml(params),
+    });
+  } catch {
+    // Silencioso a propósito — ver comentario de la función.
+  }
+}
+
 /** No lanza si Resend no está configurado o falla el envío: el pedido ya está guardado
  * en Supabase antes de llegar aquí, un email fallido no debe tumbar el webhook ni
  * provocar que Stripe lo reintente sin necesidad. */
