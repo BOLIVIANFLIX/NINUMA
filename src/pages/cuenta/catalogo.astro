@@ -186,7 +186,10 @@ import Layout from "../../layouts/Layout.astro";
 
           if (pieza.alergenos && pieza.alergenos.length > 0) {
             const alergenosRow = document.createElement("p");
-            const labels = (pieza.alergenos as AlergenoId[]).map((id) => alergenoInfo(id).label);
+            const labels = (pieza.alergenos as AlergenoId[]).map((id) => {
+              const info = alergenoInfo(id);
+              return t(info.labelKey, info.label);
+            });
             alergenosRow.innerHTML = `<strong class="text-white/80">${t("cuenta.fichaAlergenos", "Alérgenos")}:</strong> `;
             alergenosRow.append(labels.join(", "));
             textCol.appendChild(alergenosRow);
@@ -235,19 +238,20 @@ import Layout from "../../layouts/Layout.astro";
 
             for (const id of pieza.alergenos as AlergenoId[]) {
               const info = alergenoInfo(id);
+              const labelTraducido = t(info.labelKey, info.label);
               const wrap = document.createElement("span");
               wrap.className = "group relative inline-flex";
 
               const icon = document.createElement("span");
               icon.className = "flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-black text-base";
-              icon.title = info.label;
-              icon.setAttribute("aria-label", info.label);
+              icon.title = labelTraducido;
+              icon.setAttribute("aria-label", labelTraducido);
               icon.textContent = info.icono;
 
               const tooltip = document.createElement("span");
               tooltip.className =
                 "pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 -translate-x-1/2 rounded-full border border-pink bg-black px-3 py-1 text-[0.65rem] whitespace-nowrap text-pink opacity-0 transition-opacity duration-150 group-hover:opacity-100";
-              tooltip.textContent = info.label;
+              tooltip.textContent = labelTraducido;
               tooltip.setAttribute("aria-hidden", "true");
 
               wrap.append(icon, tooltip);
