@@ -1,7 +1,7 @@
 import { supabase, type Order, type OrderStatus } from "./supabase";
 
 const NOT_CONFIGURED_MSG = "El área de clientes no está disponible todavía. Inténtalo más tarde.";
-const FORMSPREE_ENDPOINT = "https://formspree.io/f/xjgqwdye";
+const FORMSPREE_ENDPOINT = "https://formspree.io/f/xvzewzya";
 
 function requireClient() {
   if (!supabase) throw new Error(NOT_CONFIGURED_MSG);
