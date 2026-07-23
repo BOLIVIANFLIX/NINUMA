@@ -56,5 +56,9 @@
       if (e.detail.profile.account_type !== "b2b") return;
       load();
     }) as EventListener);
+    // Este componente solo se monta en el dashboard B2B (DashboardB2B.astro), así
+    // que aquí siempre es seguro recargar: reconstruye la lista con el idioma
+    // vigente si el usuario lo cambia después de la carga inicial.
+    document.addEventListener("ninuma:lang-changed", load);
   }
 </script>

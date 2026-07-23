@@ -31,17 +31,10 @@
     gsap.set(".gs-reveal, .gs-item, .split-target", { opacity: 1, y: 0 });
   });
 
-  // ---- Header: solid backdrop once the hero has scrolled past. ----
-  const header = document.getElementById("site-header");
-  if (header) {
-    ScrollTrigger.create({
-      start: "top -80",
-      onUpdate: (self) => {
-        header.classList.toggle("bg-black/85", self.progress > 0 || self.direction === 1);
-        header.classList.toggle("backdrop-blur-sm", self.scroll() > 80);
-      },
-    });
-  }
+  // El fondo sólido de la cabecera al hacer scroll vive ahora en Header.astro,
+  // sin depender de GSAP — antes solo pasaba en páginas con motion={true}, así
+  // que en /cuenta/* (motion={false}) la cabecera se quedaba transparente para
+  // siempre y el contenido se veía solapado debajo de ella al hacer scroll.
 
   // ---- Hero: split headline reveal on load. ----
   const heroSplitEl = document.querySelector("#top h1");

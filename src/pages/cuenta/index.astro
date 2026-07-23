@@ -56,7 +56,7 @@ import DashboardB2B from "../../components/cuenta/DashboardB2B.astro";
   function statusLabel(status: Order["status"]): string {
     const labels: Record<Order["status"], [string, string]> = {
       recibido: ["cuenta.estadoRecibido", "Recibido"],
-      en_obrador: ["cuenta.estadoEnObrador", "En el obrador"],
+      en_obrador: ["cuenta.estadoEnObrador", "En preparación"],
       listo: ["cuenta.estadoListo", "Listo para recoger"],
       entregado: ["cuenta.estadoEntregado", "Entregado"],
     };

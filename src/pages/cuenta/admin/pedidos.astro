@@ -15,18 +15,93 @@ import Layout from "../../../layouts/Layout.astro";
       <p id="admin-error" class="hidden text-sm text-pink-deep" role="alert"></p>
 
       <div id="admin-content" class="hidden flex-col gap-8">
-        <header class="border-b border-white/10 pb-8">
+        <header class="print:hidden border-b border-white/10 pb-8">
           <p class="text-xs tracking-[0.14em] text-white/50 uppercase">Panel interno</p>
           <h1 class="mt-1 font-display text-3xl md:text-4xl">Pedidos</h1>
           <a href="/cuenta/" class="mt-4 inline-block text-xs tracking-[0.1em] text-pink uppercase hover:underline">← Volver a mi cuenta</a>
         </header>
 
-        <p id="admin-empty" class="hidden text-sm text-white/60">Todavía no hay pedidos.</p>
-        <ul id="admin-list" class="flex flex-col gap-3"></ul>
+        <div class="print:hidden flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-6">
+          <label class="flex items-center gap-2 text-xs tracking-wide text-white/70 uppercase">
+            <input type="checkbox" id="admin-select-all" checked class="h-4 w-4 accent-pink" />
+            Seleccionar todo
+          </label>
+          <button
+            id="admin-print-btn"
+            type="button"
+            class="inline-flex items-center gap-2 rounded-full border border-pink px-5 py-2 text-xs tracking-[0.1em] text-pink uppercase transition-colors hover:bg-pink hover:text-black"
+          >
+            Imprimir selección →
+          </button>
+        </div>
+
+        <div id="admin-print-area">
+          <div class="hidden print:flex mb-8 items-center gap-4 border-b border-black pb-4">
+            <img src="/images/ninuma-logo-email.png" alt="NINUMÁ" class="h-16 w-auto" />
+            <div>
+              <h1 class="text-xl font-bold">Pedidos</h1>
+              <p id="admin-print-meta" class="text-xs"></p>
+            </div>
+          </div>
+
+          <p id="admin-empty" class="hidden text-sm text-white/60">Todavía no hay pedidos.</p>
+          <ul id="admin-list" class="flex flex-col gap-3"></ul>
+
+          <div class="hidden print:block mt-10 border-t border-black pt-4 text-[0.65rem] leading-relaxed">
+            <p class="font-bold">NINUMÁ · Ariadna Salvador</p>
+            <p>NIF 43173933N · Carrer de Guillem Massot, 48, 07003 Palma de Mallorca (Illes Balears)</p>
+            <p>ariadna@ninuma.es · +34 666 13 84 65 · www.ninuma.es</p>
+          </div>
+        </div>
       </div>
     </div>
   </main>
 </Layout>
+
+<style is:global>
+  @media print {
+    /* Nada de la web salvo el propio pedido: banner de edición, cabecera, pie de
+       página del sitio, cursor personalizado y botón de WhatsApp. display:none (no
+       visibility:hidden) para que no dejen hueco vacío ni se superpongan con el
+       contenido impreso. */
+    #edition-banner,
+    #site-header,
+    footer,
+    #cookie-panel,
+    #cursor,
+    a[aria-label="Escribir por WhatsApp"] {
+      display: none !important;
+    }
+    body {
+      padding-top: 0 !important;
+    }
+    main#main-content {
+      padding: 0 !important;
+    }
+    #admin-list li[data-selected="false"] {
+      display: none !important;
+    }
+    #admin-content,
+    #admin-content * {
+      background: #fff !important;
+      color: #000 !important;
+      border-color: #999 !important;
+    }
+    #admin-list li {
+      break-inside: avoid;
+      align-items: flex-start !important;
+    }
+    .print-check {
+      display: inline-block;
+      width: 0.9rem;
+      height: 0.9rem;
+      border: 1.5px solid #000;
+      border-radius: 3px;
+      margin-right: 0.6rem;
+      flex: none;
+    }
+  }
+</style>
 
 <script>
   import { getSessionProfile } from "../../../lib/auth";
@@ -35,7 +110,7 @@ import Layout from "../../../layouts/Layout.astro";
 
   const ESTADOS: { value: OrderStatus; label: string }[] = [
     { value: "recibido", label: "Recibido" },
-    { value: "en_obrador", label: "En el obrador" },
+    { value: "en_obrador", label: "En preparación" },
     { value: "listo", label: "Listo para recoger" },
     { value: "entregado", label: "Entregado" },
   ];
@@ -45,6 +120,34 @@ import Layout from "../../../layouts/Layout.astro";
   const contentEl = document.getElementById("admin-content");
   const emptyEl = document.getElementById("admin-empty");
   const listEl = document.getElementById("admin-list");
+  const selectAllEl = document.getElementById("admin-select-all") as HTMLInputElement | null;
+  const printBtn = document.getElementById("admin-print-btn");
+  const printMetaEl = document.getElementById("admin-print-meta");
+
+  /** Código corto y estable por cliente, para agrupar pedidos cuando dos clientes
+   * comparten nombre. C- + primeros 8 caracteres del user_id (clientes con cuenta,
+   * ya únicos por diseño) o G- + hash del email para invitados (mismo email →
+   * siempre el mismo código, sin necesidad de cuenta). */
+  function hashCorto(texto: string): string {
+    let hash = 0;
+    for (let i = 0; i < texto.length; i++) {
+      hash = (hash << 5) - hash + texto.charCodeAt(i);
+      hash |= 0;
+    }
+    return Math.abs(hash).toString(36).toUpperCase().padStart(6, "0");
+  }
+
+  function codigoCliente(pedido: { user_id: string | null; guest_email: string | null }): string {
+    if (pedido.user_id) return `C-${pedido.user_id.slice(0, 8).toUpperCase()}`;
+    if (pedido.guest_email) return `G-${hashCorto(pedido.guest_email.trim().toLowerCase())}`;
+    return "—";
+  }
+
+  function syncSelectAllState() {
+    if (!listEl || !selectAllEl) return;
+    const checkboxes = Array.from(listEl.querySelectorAll<HTMLInputElement>("[data-order-select]"));
+    selectAllEl.checked = checkboxes.length > 0 && checkboxes.every((c) => c.checked);
+  }
 
   async function init() {
     try {
@@ -66,16 +169,38 @@ import Layout from "../../../layouts/Layout.astro";
         for (const pedido of pedidos) {
           const li = document.createElement("li");
           li.className = "flex flex-col gap-3 border border-white/10 px-6 py-4 text-sm md:flex-row md:items-center md:justify-between";
+          li.dataset.selected = "true";
+
+          const checkboxWrap = document.createElement("label");
+          checkboxWrap.className = "print:hidden flex shrink-0 items-center";
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.checked = true;
+          checkbox.className = "h-4 w-4 accent-pink";
+          checkbox.dataset.orderSelect = "true";
+          checkbox.setAttribute("aria-label", `Incluir en la impresión el pedido de ${pedido.cliente_nombre}`);
+          checkbox.addEventListener("change", () => {
+            li.dataset.selected = checkbox.checked ? "true" : "false";
+            syncSelectAllState();
+          });
+          checkboxWrap.appendChild(checkbox);
+
+          const printCheck = document.createElement("span");
+          printCheck.className = "print-check hidden print:inline-block";
 
           const info = document.createElement("div");
+          info.className = "flex flex-1 flex-col";
           const cliente = document.createElement("p");
           cliente.className = "text-white/80";
           cliente.textContent = pedido.cliente_nombre;
+          const codigo = document.createElement("p");
+          codigo.className = "text-xs text-white/70";
+          codigo.textContent = `Código cliente: ${codigoCliente(pedido)}`;
           const desc = document.createElement("p");
           desc.className = "mt-1 max-w-[500px] text-xs whitespace-pre-line text-white/50";
           desc.textContent = pedido.description;
           const fecha = document.createElement("p");
-          fecha.className = "mt-1 text-xs text-white/40";
+          fecha.className = "mt-1 text-xs text-white/70";
           fecha.textContent = new Date(pedido.created_at).toLocaleString("es-ES", {
             day: "2-digit",
             month: "short",
@@ -83,11 +208,16 @@ import Layout from "../../../layouts/Layout.astro";
             hour: "2-digit",
             minute: "2-digit",
           });
-          info.append(cliente, desc, fecha);
+          info.append(cliente, codigo, desc, fecha);
+
+          const estadoActualTexto = document.createElement("p");
+          estadoActualTexto.className = "hidden print:block mt-1 text-xs font-medium";
+          estadoActualTexto.textContent = `Estado: ${ESTADOS.find((e) => e.value === pedido.status)?.label ?? pedido.status}`;
+          info.append(estadoActualTexto);
 
           const estadoSelect = document.createElement("select");
           estadoSelect.setAttribute("aria-label", `Estado del pedido de ${pedido.cliente_nombre}`);
-          estadoSelect.className = "shrink-0 border border-white/15 bg-black px-3 py-2 text-xs text-white outline-none focus:border-pink";
+          estadoSelect.className = "print:hidden shrink-0 border border-white/15 bg-black px-3 py-2 text-xs text-white outline-none focus:border-pink";
           for (const estado of ESTADOS) {
             const opt = document.createElement("option");
             opt.value = estado.value;
@@ -100,6 +230,7 @@ import Layout from "../../../layouts/Layout.astro";
             estadoSelect.disabled = true;
             try {
               await updateOrderStatus(pedido.id, nuevoEstado);
+              estadoActualTexto.textContent = `Estado: ${ESTADOS.find((e) => e.value === nuevoEstado)?.label ?? nuevoEstado}`;
             } catch {
               estadoSelect.value = pedido.status;
               alert("No se ha podido actualizar el estado. Inténtalo de nuevo.");
@@ -108,10 +239,34 @@ import Layout from "../../../layouts/Layout.astro";
             }
           });
 
-          li.append(info, estadoSelect);
+          li.append(checkboxWrap, printCheck, info, estadoSelect);
           listEl.appendChild(li);
         }
       }
+
+      selectAllEl?.addEventListener("change", () => {
+        if (!listEl || !selectAllEl) return;
+        const checked = selectAllEl.checked;
+        listEl.querySelectorAll<HTMLInputElement>("[data-order-select]").forEach((cb) => {
+          cb.checked = checked;
+          const li = cb.closest("li");
+          if (li) (li as HTMLElement).dataset.selected = checked ? "true" : "false";
+        });
+      });
+
+      printBtn?.addEventListener("click", () => {
+        if (!listEl) return;
+        const total = listEl.querySelectorAll('li[data-selected="true"]').length;
+        if (total === 0) {
+          alert("No has seleccionado ningún pedido para imprimir.");
+          return;
+        }
+        if (printMetaEl) {
+          const ahora = new Date().toLocaleString("es-ES", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+          printMetaEl.textContent = `${total} pedido${total === 1 ? "" : "s"} · generado el ${ahora}`;
+        }
+        window.print();
+      });
 
       loadingEl?.classList.add("hidden");
       contentEl?.classList.remove("hidden");

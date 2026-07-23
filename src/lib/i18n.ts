@@ -1,4 +1,4 @@
-export const LANGS = ["es", "ca", "en", "de", "fr"] as const;
+export const LANGS = ["es", "ca", "en", "ru", "de", "fr"] as const;
 export type Lang = (typeof LANGS)[number];
 export const DEFAULT_LANG = "es" satisfies Lang;
 export const LANG_KEY = "ninuma_lang";
@@ -6,8 +6,21 @@ export const LANG_LABELS: Record<Lang, string> = {
   es: "Español",
   ca: "Català",
   en: "English",
+  ru: "Русский",
   de: "Deutsch",
   fr: "Français",
+};
+
+/** Català no tiene bandera propia con soporte de emoji fiable multiplataforma —
+ * se usa la de España, como para el castellano, en vez de arriesgar un
+ * carácter que no se renderiza en algunos sistemas. */
+export const LANG_FLAGS: Record<Lang, string> = {
+  es: "🇪🇸",
+  ca: "🇪🇸",
+  en: "🇬🇧",
+  ru: "🇷🇺",
+  de: "🇩🇪",
+  fr: "🇫🇷",
 };
 
 type Dict = Record<string, string>;
@@ -15,6 +28,7 @@ type Dict = Record<string, string>;
 const loaders: Record<Exclude<Lang, "es">, () => Promise<{ default: Dict }>> = {
   ca: () => import("../i18n/ca.json"),
   en: () => import("../i18n/en.json"),
+  ru: () => import("../i18n/ru.json"),
   fr: () => import("../i18n/fr.json"),
   de: () => import("../i18n/de.json"),
 };
@@ -99,11 +113,17 @@ async function applyLang(lang: Lang) {
   document.documentElement.lang = lang;
   snapshotOriginals();
 
-  if (lang === DEFAULT_LANG) {
+  try {
+    if (lang === DEFAULT_LANG) {
+      currentDict = null;
+    } else {
+      const mod = await loaders[lang]();
+      currentDict = mod.default;
+    }
+  } catch {
+    // El chunk de traducción no cargó (red, bloqueador, deploy con chunk caducado).
+    // Nos quedamos en español antes que dejar el <body> oculto para siempre.
     currentDict = null;
-  } else {
-    const mod = await loaders[lang]();
-    currentDict = mod.default;
   }
 
   translateDom();

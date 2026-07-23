@@ -87,13 +87,17 @@ const productos = await Promise.all(
   const carritoCountEl = document.getElementById("carrito-count");
   const esTactil = window.matchMedia("(hover: none), (pointer: coarse)").matches;
 
-  const eur = new Intl.NumberFormat(getCurrentLang(), { style: "currency", currency: "EUR" });
-
   function updateCarritoCount() {
     if (carritoCountEl) carritoCountEl.textContent = String(getCartCount());
   }
 
+  let filtrosAttached = false;
+
   async function init() {
+    // Recalculado en cada llamada (no una sola vez al cargar el script) para que
+    // el formato de precio siga el idioma vigente aunque el usuario lo cambie
+    // después de la carga inicial.
+    const eur = new Intl.NumberFormat(getCurrentLang(), { style: "currency", currency: "EUR" });
     try {
       const piezas = await getTiendaPublicaCatalog();
 
@@ -104,6 +108,7 @@ const productos = await Promise.all(
       }
 
       if (gridEl) {
+        gridEl.innerHTML = "";
         for (const pieza of piezas) {
           const categoria = categoriaTienda(pieza.numero);
 
@@ -251,26 +256,29 @@ const productos = await Promise.all(
         }
       }
 
-      const filtroBtns = document.querySelectorAll<HTMLButtonElement>(".tienda-filtro-btn");
-      const cards = document.querySelectorAll<HTMLElement>("#tienda-grid > li");
-      filtroBtns.forEach((btn) => {
-        btn.addEventListener("click", () => {
-          filtroBtns.forEach((b) => {
-            b.classList.remove("border-pink", "bg-pink", "text-black");
-            b.classList.add("border-white/20", "text-white/70");
-            b.setAttribute("aria-pressed", "false");
-          });
-          btn.classList.add("border-pink", "bg-pink", "text-black");
-          btn.classList.remove("border-white/20", "text-white/70");
-          btn.setAttribute("aria-pressed", "true");
+      if (!filtrosAttached) {
+        filtrosAttached = true;
+        const filtroBtns = document.querySelectorAll<HTMLButtonElement>(".tienda-filtro-btn");
+        filtroBtns.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            filtroBtns.forEach((b) => {
+              b.classList.remove("border-pink", "bg-pink", "text-black");
+              b.classList.add("border-white/20", "text-white/70");
+              b.setAttribute("aria-pressed", "false");
+            });
+            btn.classList.add("border-pink", "bg-pink", "text-black");
+            btn.classList.remove("border-white/20", "text-white/70");
+            btn.setAttribute("aria-pressed", "true");
 
-          const filter = btn.dataset.filter;
-          cards.forEach((card) => {
-            const show = filter === "all" || card.dataset.categoria === filter;
-            card.classList.toggle("hidden", !show);
+            const filter = btn.dataset.filter;
+            const cards = document.querySelectorAll<HTMLElement>("#tienda-grid > li");
+            cards.forEach((card) => {
+              const show = filter === "all" || card.dataset.categoria === filter;
+              card.classList.toggle("hidden", !show);
+            });
           });
         });
-      });
+      }
 
       updateCarritoCount();
       loadingEl?.classList.add("hidden");
@@ -285,5 +293,10 @@ const productos = await Promise.all(
     }
   }
 
+  // Los productos se generan por JS con el idioma vigente en ese momento — si el
+  // usuario cambia de idioma después de cargar la página, hay que reconstruir la
+  // rejilla entera para que no se quede en el idioma anterior (bug real detectado
+  // en producción: texto de la tienda a medio traducir tras cambiar de idioma).
+  document.addEventListener("ninuma:lang-changed", init);
   init();
 </script>

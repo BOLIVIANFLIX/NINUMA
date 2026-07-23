@@ -1,3 +1,4 @@
+import { supabase } from "./supabase";
 import type { AlergenoId } from "./alergenos";
 
 export interface PiezaCatalogItem {
@@ -17,10 +18,20 @@ export interface PiezaCatalogItem {
 
 let cache: Promise<PiezaCatalogItem[]> | null = null;
 
-/** Un único fetch por carga de página, reutilizado por favoritos y catálogo. */
+/** Un único fetch por carga de página, reutilizado por favoritos y catálogo.
+ * La ficha técnica (calorías, caducidad, notas) solo es para clientes con sesión
+ * iniciada — el endpoint exige el token de acceso de Supabase en Authorization. */
 export function getPiezasCatalog(): Promise<PiezaCatalogItem[]> {
   if (!cache) {
-    cache = fetch("/api/piezas.json").then((res) => res.json());
+    cache = (async () => {
+      const session = supabase ? (await supabase.auth.getSession()).data.session : null;
+      if (!session) return [];
+      const res = await fetch("/api/piezas.json", {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      if (!res.ok) return [];
+      return res.json();
+    })();
   }
   return cache;
 }

@@ -14,4 +14,6 @@ estado: "Carta exclusiva"
 estadoKey: creaciones.estadoExclusiva
 anio: "2024"
 orden: 5
+alergenos: [lacteos, huevos, gluten]
+caloriasAprox: 440
 ---

@@ -14,4 +14,6 @@ estado: "Edición agotada"
 estadoKey: creaciones.estadoAgotada
 anio: "2025"
 orden: 8
+alergenos: [lacteos, soja]
+caloriasAprox: 400
 ---

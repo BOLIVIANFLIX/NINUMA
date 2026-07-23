@@ -26,13 +26,22 @@ const year = edition ? new Date(edition.fechaLimiteISO).getFullYear() : null;
   )
 }
 
-<script>
-  const banner = document.getElementById("edition-banner");
-  if (banner) {
-    const syncHeight = () => {
-      document.documentElement.style.setProperty("--banner-h", `${banner.offsetHeight}px`);
-    };
-    syncHeight();
-    window.addEventListener("resize", syncHeight);
-  }
+{
+  /* is:inline (no módulo, no diferido): se ejecuta en cuanto el parser llega aquí,
+     justo después del propio banner en el HTML — antes de que el resto de la página
+     se pinte. Así --banner-h ya tiene su valor real antes del primer layout, en vez
+     de corregirse después y provocar un salto visible (CLS) en cada carga con una
+     edición activa. */
+}
+<script is:inline>
+  (function () {
+    const banner = document.getElementById("edition-banner");
+    if (banner) {
+      const syncHeight = () => {
+        document.documentElement.style.setProperty("--banner-h", `${banner.offsetHeight}px`);
+      };
+      syncHeight();
+      window.addEventListener("resize", syncHeight);
+    }
+  })();
 </script>

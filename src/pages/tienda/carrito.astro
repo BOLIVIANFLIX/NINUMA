@@ -43,7 +43,7 @@ import Layout from "../../layouts/Layout.astro";
           Pagar con tarjeta →
         </button>
         <p id="carrito-pagar-error" class="hidden text-xs text-pink-deep" role="alert" aria-live="assertive"></p>
-        <p class="text-xs text-white/40" data-i18n="tienda.recogidaNota">Recogida únicamente en el obrador. Sin envíos.</p>
+        <p class="text-xs text-white/70" data-i18n="tienda.recogidaNota">Recogida únicamente en el obrador. Sin envíos.</p>
       </div>
     </div>
   </main>
@@ -64,9 +64,10 @@ import Layout from "../../layouts/Layout.astro";
   const pagarBtn = document.getElementById("carrito-pagar") as HTMLButtonElement | null;
   const pagarErrorEl = document.getElementById("carrito-pagar-error");
 
-  const eur = new Intl.NumberFormat(getCurrentLang(), { style: "currency", currency: "EUR" });
-
   function renderCart() {
+    // Recalculado en cada llamada para que el formato de precio siga el idioma
+    // vigente aunque el usuario lo cambie después de la carga inicial.
+    const eur = new Intl.NumberFormat(getCurrentLang(), { style: "currency", currency: "EUR" });
     const items = getCart();
     if (!listEl || !totalEl || !pagarBtn) return;
 
@@ -157,5 +158,8 @@ import Layout from "../../layouts/Layout.astro";
     }
   });
 
+  // El carrito se genera por JS con el idioma vigente en ese momento — hay que
+  // reconstruirlo si el usuario cambia de idioma después de la carga inicial.
+  document.addEventListener("ninuma:lang-changed", renderCart);
   renderCart();
 </script>

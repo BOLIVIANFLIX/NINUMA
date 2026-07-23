@@ -14,4 +14,6 @@ estado: "Edición agotada"
 estadoKey: creaciones.estadoAgotada
 anio: "2024"
 orden: 4
+alergenos: [lacteos, soja, sulfitos]
+caloriasAprox: 380
 ---

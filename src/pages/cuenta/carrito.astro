@@ -80,7 +80,11 @@ import Layout from "../../layouts/Layout.astro";
   const confirmarErrorEl = document.getElementById("carrito-confirmar-error");
   const confirmadoEl = document.getElementById("carrito-confirmado");
 
-  const eur = new Intl.NumberFormat(getCurrentLang(), { style: "currency", currency: "EUR" });
+  /** Recalcula el formato en cada llamada (no una sola vez al cargar el script)
+   * para que siga el idioma vigente aunque el usuario lo cambie después. */
+  function eurFormat(n: number): string {
+    return new Intl.NumberFormat(getCurrentLang(), { style: "currency", currency: "EUR" }).format(n);
+  }
 
   function subtotal(item: CartItem): number {
     return (item.precioUnitario ?? 0) * item.unidades;
@@ -127,7 +131,7 @@ import Layout from "../../layouts/Layout.astro";
 
       const precio = document.createElement("span");
       precio.className = "w-28 text-right text-white/60";
-      precio.textContent = item.precioUnitario == null ? t("cuenta.aConfirmar", "A confirmar") : eur.format(subtotal(item));
+      precio.textContent = item.precioUnitario == null ? t("cuenta.aConfirmar", "A confirmar") : eurFormat(subtotal(item));
 
       const quitarBtn = document.createElement("button");
       quitarBtn.type = "button";
@@ -143,7 +147,7 @@ import Layout from "../../layouts/Layout.astro";
       listEl.appendChild(li);
     }
 
-    totalEl.textContent = total > 0 ? eur.format(total) : t("cuenta.aConfirmar", "A confirmar");
+    totalEl.textContent = total > 0 ? eurFormat(total) : t("cuenta.aConfirmar", "A confirmar");
     totalNotaEl?.classList.toggle("hidden", !hayItemsSinPrecio);
   }
 
@@ -172,15 +176,26 @@ import Layout from "../../layouts/Layout.astro";
         const items = getCart();
         if (items.length === 0 || !confirmarBtn) return;
 
+        if (!profile.phone?.trim()) {
+          if (confirmarErrorEl) {
+            confirmarErrorEl.textContent = t(
+              "cuenta.pedidoTelefonoRequerido",
+              "Añade un teléfono de contacto en 'Mi cuenta' antes de confirmar el pedido — lo necesitamos para poder localizarte."
+            );
+            confirmarErrorEl.classList.remove("hidden");
+          }
+          return;
+        }
+
         confirmarBtn.disabled = true;
         confirmarBtn.textContent = t("cuenta.enviando", "Enviando…");
         confirmarErrorEl?.classList.add("hidden");
 
         const lineas = items.map(
-          (i) => `- N.º ${i.numero} ${i.nombre}: ${i.unidades} uds x ${i.precioUnitario == null ? "a confirmar" : eur.format(i.precioUnitario)}`
+          (i) => `- N.º ${i.numero} ${i.nombre}: ${i.unidades} uds x ${i.precioUnitario == null ? "a confirmar" : eurFormat(i.precioUnitario)}`
         );
         const total = items.reduce((sum, i) => sum + subtotal(i), 0);
-        const totalTexto = total > 0 ? eur.format(total) : "a confirmar";
+        const totalTexto = total > 0 ? eurFormat(total) : "a confirmar";
         const descripcion = `Pedido desde el carrito de ${profile.account_type === "b2b" ? "empresa" : "cliente"}:\n${lineas.join("\n")}\nTotal: ${totalTexto}`;
 
         try {
@@ -230,5 +245,8 @@ import Layout from "../../layouts/Layout.astro";
     }
   }
 
+  // El carrito se genera por JS con el idioma vigente en ese momento — hay que
+  // reconstruirlo si el usuario cambia de idioma después de la carga inicial.
+  document.addEventListener("ninuma:lang-changed", renderCart);
   init();
 </script>

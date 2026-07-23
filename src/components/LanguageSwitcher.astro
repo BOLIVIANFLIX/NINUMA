@@ -1,5 +1,5 @@
 ---
-import { LANGS, LANG_LABELS } from "../lib/i18n";
+import { LANGS, LANG_LABELS, LANG_FLAGS } from "../lib/i18n";
 
 interface Props {
   id: string;
@@ -33,9 +33,10 @@ const { id, class: className = "" } = Astro.props;
           <button
             type="button"
             role="menuitem"
-            class="lang-option block w-full px-4 py-2 text-left text-xs tracking-wide text-white/80 uppercase hover:bg-charcoal-2 hover:text-pink aria-[current=true]:text-pink"
+            class="lang-option flex w-full items-center gap-2 px-4 py-2 text-left text-xs tracking-wide text-white/80 uppercase hover:bg-charcoal-2 hover:text-pink aria-[current=true]:text-pink"
             data-lang={l}
           >
+            <span aria-hidden="true">{LANG_FLAGS[l]}</span>
             {LANG_LABELS[l]}
           </button>
         </li>

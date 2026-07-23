@@ -9,7 +9,27 @@
       "Bash(git config *)",
       "Bash(git init *)",
       "Bash(git branch *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git remote *)",
+      "Bash(git push *)",
+      "Bash(curl -s https://api.github.com/repos/BOLIVIANFLIX/NINUMA/contents/)",
+      "WebSearch",
+      "Skill(run)",
+      "Bash(npx astro *)",
+      "Bash(chromium-cli --help)",
+      "Bash(npm ls *)",
+      "Bash(node -e \"require\\('playwright'\\)\")",
+      "Bash(curl -s \"http://localhost:4321/cuenta/registro/\" -o /tmp/registro.html)",
+      "Read(//tmp/**)",
+      "Bash(netlify --version)",
+      "Bash(npx --no-install netlify --version)",
+      "Bash(npm install *)",
+      "Bash(npx netlify *)",
+      "Skill(claude-in-chrome)",
+      "Bash(curl -s -I https://ninuma.netlify.app/cuenta/login)",
+      "Bash(curl -s -D - -o /dev/null https://ninuma.netlify.app/cuenta/login)",
+      "Bash(curl *)"
     ]
   }
 }

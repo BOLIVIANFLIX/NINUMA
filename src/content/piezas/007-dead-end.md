@@ -14,4 +14,6 @@ estado: "Edición limitada · 24 uds"
 estadoKey: creaciones.estadoLimitada24
 anio: "2025"
 orden: 7
+alergenos: [frutos_cascara, soja, lacteos]
+caloriasAprox: 430
 ---

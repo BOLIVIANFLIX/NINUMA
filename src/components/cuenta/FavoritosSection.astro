@@ -68,5 +68,8 @@
     document.addEventListener("cuenta:profile-ready", (() => {
       render();
     }) as EventListener);
+    // La lista se genera por JS con el idioma vigente en ese momento — hay que
+    // reconstruirla si el usuario cambia de idioma después de la carga inicial.
+    document.addEventListener("ninuma:lang-changed", render);
   }
 </script>

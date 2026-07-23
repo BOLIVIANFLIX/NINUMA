@@ -14,4 +14,6 @@ estado: "Pieza única"
 estadoKey: creaciones.estadoUnica
 anio: "2025"
 orden: 6
+alergenos: [huevos, frutos_cascara, lacteos]
+caloriasAprox: 360
 ---

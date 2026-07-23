@@ -14,4 +14,6 @@ estado: "Pieza única"
 estadoKey: creaciones.estadoUnica
 anio: "2024"
 orden: 2
+alergenos: [lacteos, huevos, sulfitos]
+caloriasAprox: 350
 ---

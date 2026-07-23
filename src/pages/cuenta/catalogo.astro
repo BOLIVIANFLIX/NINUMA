@@ -71,13 +71,15 @@ import Layout from "../../layouts/Layout.astro";
   const listEl = document.getElementById("catalogo-list");
   const carritoCountEl = document.getElementById("carrito-count");
 
-  const eur = new Intl.NumberFormat(getCurrentLang(), { style: "currency", currency: "EUR" });
-
   function updateCarritoCount() {
     if (carritoCountEl) carritoCountEl.textContent = String(getCartCount());
   }
 
   async function init() {
+    // Recalculado en cada llamada, no una sola vez al cargar el script, para que
+    // precios y textos generados por JS sigan el idioma vigente aunque el
+    // usuario lo cambie después de la carga inicial (ver listener al final).
+    const eur = new Intl.NumberFormat(getCurrentLang(), { style: "currency", currency: "EUR" });
     try {
       const profile = await getSessionProfile();
       if (!profile) {
@@ -98,6 +100,7 @@ import Layout from "../../layouts/Layout.astro";
       } else if (listEl) {
         tablaEl?.classList.remove("hidden");
         tablaEl?.classList.add("flex");
+        listEl.innerHTML = "";
 
         for (const pieza of piezas) {
           const precioUnitario = preciosPorNumero.get(pieza.numero)!;
@@ -162,20 +165,23 @@ import Layout from "../../layouts/Layout.astro";
           fila.append(img, nombre, unidadesSelect, precio, addBtn, fichaBtn);
 
           const detalle = document.createElement("div");
-          detalle.className = "hidden mt-4 flex-col gap-3 border-t border-white/10 pt-4 text-xs text-white/60";
+          detalle.className = "hidden mt-4 flex-col gap-4 border-t border-white/10 pt-4 text-xs text-white/60 md:flex-row md:items-start md:justify-between md:gap-6";
+
+          const textCol = document.createElement("div");
+          textCol.className = "flex flex-1 flex-col gap-3";
 
           if (pieza.materiales) {
             const ingredientesRow = document.createElement("p");
             ingredientesRow.innerHTML = `<strong class="text-white/80">${t("cuenta.fichaIngredientes", "Ingredientes")}:</strong> `;
             ingredientesRow.append(pieza.materiales);
-            detalle.appendChild(ingredientesRow);
+            textCol.appendChild(ingredientesRow);
           }
 
           if (pieza.vegano) {
             const veganoRow = document.createElement("p");
             veganoRow.innerHTML = `<strong class="text-white/80">${t("cuenta.fichaVegano", "Dieta")}:</strong> `;
             veganoRow.append(t("cuenta.vegano", "Vegano"));
-            detalle.appendChild(veganoRow);
+            textCol.appendChild(veganoRow);
           }
 
           if (pieza.alergenos && pieza.alergenos.length > 0) {
@@ -183,28 +189,73 @@ import Layout from "../../layouts/Layout.astro";
             const labels = (pieza.alergenos as AlergenoId[]).map((id) => alergenoInfo(id).label);
             alergenosRow.innerHTML = `<strong class="text-white/80">${t("cuenta.fichaAlergenos", "Alérgenos")}:</strong> `;
             alergenosRow.append(labels.join(", "));
-            detalle.appendChild(alergenosRow);
+            textCol.appendChild(alergenosRow);
           }
 
           if (pieza.caloriasAprox != null) {
             const kcalRow = document.createElement("p");
             kcalRow.innerHTML = `<strong class="text-white/80">${t("cuenta.fichaCalorias", "Calorías aprox.")}:</strong> `;
             kcalRow.append(`${pieza.caloriasAprox} kcal`);
-            detalle.appendChild(kcalRow);
+            textCol.appendChild(kcalRow);
           }
 
           if (pieza.caducidadDias != null) {
             const caducidadRow = document.createElement("p");
             caducidadRow.innerHTML = `<strong class="text-white/80">${t("cuenta.fichaCaducidad", "Caducidad")}:</strong> `;
             caducidadRow.append(`${pieza.caducidadDias} ${t("cuenta.dias", "días")}`);
-            detalle.appendChild(caducidadRow);
+            textCol.appendChild(caducidadRow);
           }
 
           if (pieza.notasTecnicas) {
             const notasRow = document.createElement("p");
             notasRow.innerHTML = `<strong class="text-white/80">${t("cuenta.fichaNotas", "Notas")}:</strong> `;
             notasRow.append(pieza.notasTecnicas);
-            detalle.appendChild(notasRow);
+            textCol.appendChild(notasRow);
+          }
+
+          if (textCol.hasChildNodes()) {
+            detalle.appendChild(textCol);
+          }
+
+          // Bloque de iconos de alérgenos, aparte del texto — mismo icono/tooltip que la
+          // tienda pública (src/pages/tienda/index.astro), a un lado de la ficha B2B.
+          if (pieza.alergenos && pieza.alergenos.length > 0) {
+            const iconCol = document.createElement("div");
+            iconCol.className = "flex shrink-0 flex-col gap-2 md:items-end";
+
+            const iconLabel = document.createElement("span");
+            iconLabel.className = "text-[0.65rem] tracking-[0.1em] text-white/40 uppercase";
+            iconLabel.textContent = t("cuenta.fichaAlergenos", "Alérgenos");
+            iconCol.appendChild(iconLabel);
+
+            const iconRow = document.createElement("div");
+            iconRow.className = "flex flex-wrap gap-2 md:justify-end";
+            iconRow.setAttribute("role", "list");
+            iconRow.setAttribute("aria-label", t("cuenta.fichaAlergenos", "Alérgenos"));
+
+            for (const id of pieza.alergenos as AlergenoId[]) {
+              const info = alergenoInfo(id);
+              const wrap = document.createElement("span");
+              wrap.className = "group relative inline-flex";
+
+              const icon = document.createElement("span");
+              icon.className = "flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-black text-base";
+              icon.title = info.label;
+              icon.setAttribute("aria-label", info.label);
+              icon.textContent = info.icono;
+
+              const tooltip = document.createElement("span");
+              tooltip.className =
+                "pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 -translate-x-1/2 rounded-full border border-pink bg-black px-3 py-1 text-[0.65rem] whitespace-nowrap text-pink opacity-0 transition-opacity duration-150 group-hover:opacity-100";
+              tooltip.textContent = info.label;
+              tooltip.setAttribute("aria-hidden", "true");
+
+              wrap.append(icon, tooltip);
+              iconRow.appendChild(wrap);
+            }
+
+            iconCol.appendChild(iconRow);
+            detalle.appendChild(iconCol);
           }
 
           if (!detalle.hasChildNodes()) {
@@ -239,5 +290,9 @@ import Layout from "../../layouts/Layout.astro";
     }
   }
 
+  // El catálogo se genera por JS con el idioma vigente en ese momento — hay que
+  // reconstruirlo si el usuario cambia de idioma después de la carga inicial
+  // (mismo bug real de fragmentos sin traducir que en la tienda pública).
+  document.addEventListener("ninuma:lang-changed", init);
   init();
 </script>

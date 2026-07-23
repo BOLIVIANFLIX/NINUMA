@@ -14,4 +14,6 @@ estado: "Pieza única"
 estadoKey: creaciones.estadoUnica
 anio: "2024"
 orden: 1
+alergenos: [gluten, huevos, lacteos, frutos_cascara]
+caloriasAprox: 420
 ---

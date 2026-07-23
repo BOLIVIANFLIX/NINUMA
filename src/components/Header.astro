@@ -109,6 +109,21 @@ const links = [
   import { getSessionProfile } from "../lib/auth";
   import { t } from "../lib/i18n";
 
+  // Fondo sólido de la cabecera al hacer scroll — independiente de GSAP/Lenis
+  // a propósito, para que funcione también en páginas con motion={false}
+  // (todo /cuenta/*), donde antes se quedaba transparente para siempre y el
+  // contenido se veía solapado debajo al hacer scroll.
+  const headerEl = document.getElementById("site-header");
+  if (headerEl) {
+    const syncHeaderBg = () => {
+      const y = window.scrollY;
+      headerEl.classList.toggle("bg-black/85", y > 0);
+      headerEl.classList.toggle("backdrop-blur-sm", y > 80);
+    };
+    syncHeaderBg();
+    window.addEventListener("scroll", syncHeaderBg, { passive: true });
+  }
+
   const accountLinks = [document.getElementById("account-link-desktop"), document.getElementById("account-link-mobile")].filter(
     (el): el is HTMLAnchorElement => el instanceof HTMLAnchorElement
   );
