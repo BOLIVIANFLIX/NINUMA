@@ -1,0 +1,6 @@
+# Sin esta regla, Netlify sirve dist/404.html para rutas inexistentes por un
+# atajo interno que NO pasa por _headers (por eso el 404 no llevaba CSP ni
+# X-Frame-Options aunque el resto del sitio sí). Al convertirlo en una
+# redirección explícita con código 404, Netlify sí aplica las reglas de
+# public/_headers al servir la página.
+/*  /404.html  404
