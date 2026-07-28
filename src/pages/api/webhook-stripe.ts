@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
-import { sendOrderConfirmationEmail } from "../../lib/email";
+import { sendOrderConfirmationEmail, sendOrderNotificationEmail } from "../../lib/email";
 
 export const prerender = false;
 
@@ -121,15 +121,26 @@ export const POST: APIRoute = async ({ request }) => {
   );
   if (itemsError) return new Response("No se pudieron guardar las líneas del pedido", { status: 500 });
 
+  const itemsEmail = items.map((i) => ({ nombre: i.nombre, unidades: i.unidades, precioUnitarioCents: i.precio_unitario_cents }));
+
   const emailDestino = session.customer_details?.email;
   if (emailDestino) {
     await sendOrderConfirmationEmail({
       to: emailDestino,
       kind,
-      items: items.map((i) => ({ nombre: i.nombre, unidades: i.unidades, precioUnitarioCents: i.precio_unitario_cents })),
+      items: itemsEmail,
       totalCents,
     });
   }
+
+  await sendOrderNotificationEmail({
+    kind,
+    items: itemsEmail,
+    totalCents,
+    clienteNombre: session.customer_details?.name ?? null,
+    clienteEmail: session.customer_details?.email ?? null,
+    clienteTelefono: session.customer_details?.phone ?? null,
+  });
 
   return new Response(null, { status: 200 });
 };
