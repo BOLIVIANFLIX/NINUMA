@@ -2,7 +2,8 @@
 import Layout from "../layouts/Layout.astro";
 import CreacionesFiltros from "../components/CreacionesFiltros.astro";
 import CreacionesGrid from "../components/CreacionesGrid.astro";
-import { itemListSchema, breadcrumbSchema } from "../lib/schema";
+import CreacionesFaq from "../components/CreacionesFaq.astro";
+import { itemListSchema, breadcrumbSchema, faqSchema } from "../lib/schema";
 
 const piezaNombres = [
   { name: "Medusa" },
@@ -14,6 +15,72 @@ const piezaNombres = [
   { name: "Dead End" },
   { name: "Madre Noche" },
 ];
+
+const CREACIONES_FAQS = [
+  {
+    question: "¿Cómo encargo una tarta personalizada a NINUMÁ?",
+    questionKey: "creacionesFaq.q1",
+    answer:
+      "Cuéntanos la idea: una película, un color, una historia o una emoción que quieras convertir en pastelería, a través del formulario de contacto o por Instagram. A partir de ahí preparamos una propuesta de sabores y diseño antes de confirmar nada.",
+    answerKey: "creacionesFaq.a1",
+  },
+  {
+    question: "¿Cuánto cuesta una tarta de encargo?",
+    questionKey: "creacionesFaq.q2",
+    answer:
+      "No trabajamos con catálogo ni tarifa cerrada: el presupuesto depende del tamaño, la complejidad y los materiales de cada pieza. Podemos adaptarnos a formatos más sencillos si lo necesitas, aunque lo habitual —y lo que mejor representa a NINUMÁ— es un proyecto de diseño completo pensado para tu ocasión. Cuéntanos tu idea y te damos un presupuesto concreto.",
+    answerKey: "creacionesFaq.a2",
+  },
+  {
+    question: "¿Con cuánta antelación tengo que pedirla?",
+    questionKey: "creacionesFaq.q3",
+    answer:
+      "Lo habitual es una semana de antelación, y ese margen se mantiene incluso en fechas señaladas (Navidad, San Valentín, Halloween): las ediciones limitadas de esas fechas se diseñan y producen al margen del trabajo diario del obrador, así que no afectan al ritmo normal de encargos. Si tienes un imprevisto con menos margen, escríbenos y estudiamos si es posible ajustarnos.",
+    answerKey: "creacionesFaq.a3",
+  },
+  {
+    question: "¿Hacen tartas para cumpleaños o celebraciones privadas, no solo para hoteles?",
+    questionKey: "creacionesFaq.q4",
+    answer:
+      "Sí. Las tartas de encargo nacen tanto de proyectos B2B como de celebraciones privadas: cumpleaños, aniversarios o cualquier ocasión donde quieras algo que no exista en ningún otro sitio.",
+    answerKey: "creacionesFaq.a4",
+  },
+  {
+    question: "¿Tenéis tamaños o raciones fijas?",
+    questionKey: "creacionesFaq.q5",
+    answer:
+      "No. Evitamos las raciones estándar: cada pieza se diseña a medida para el número de personas y la ocasión concreta que nos cuentes, sea cual sea el tamaño que necesites.",
+    answerKey: "creacionesFaq.a5",
+  },
+  {
+    question: "¿Tengo que traer una idea concreta, o la proponéis vosotros?",
+    questionKey: "creacionesFaq.q6",
+    answer:
+      "No necesitas saber exactamente qué quieres, solo cómo quieres que se sienta. Trae una referencia —una película, un libro, un color, una historia— y a partir de ahí construimos la pieza contigo.",
+    answerKey: "creacionesFaq.a6",
+  },
+  {
+    question: "¿Se puede adaptar a alergias o intolerancias?",
+    questionKey: "creacionesFaq.q7",
+    answer:
+      "Sí, cada pieza se diseña desde cero, así que las alergias e intolerancias se tienen en cuenta desde el primer boceto. Indícalo al hacer el encargo.",
+    answerKey: "creacionesFaq.a7",
+  },
+  {
+    question: "¿Cómo se recoge o entrega la tarta?",
+    questionKey: "creacionesFaq.q8",
+    answer:
+      "Puedes recoger la pieza en el obrador (Carrer de Guillem Massot, 48) o pedir la entrega: cubrimos toda la isla de Mallorca, con el coste acordado según la zona y la urgencia.",
+    answerKey: "creacionesFaq.a8",
+  },
+  {
+    question: "¿Los bombones o piezas de edición limitada se pueden encargar en cualquier momento?",
+    questionKey: "creacionesFaq.q9",
+    answer:
+      "No: las colecciones temáticas tienen producción y fechas propias, así que solo están disponibles mientras dura la edición o quedan unidades. Sigue @ninuma_concept en Instagram para enterarte cuando se abre un nuevo lote.",
+    answerKey: "creacionesFaq.a9",
+  },
+];
 ---
 
 <Layout
@@ -22,6 +89,7 @@ const piezaNombres = [
   path="/creaciones/"
   schema={[
     itemListSchema(piezaNombres),
+    faqSchema(CREACIONES_FAQS.map((f) => ({ question: f.question, answer: f.answer }))),
     breadcrumbSchema([
       { name: "Inicio", item: "/" },
       { name: "Creaciones", item: "/creaciones/" },
@@ -43,6 +111,7 @@ const piezaNombres = [
 
     <CreacionesFiltros />
     <CreacionesGrid />
+    <CreacionesFaq faqs={CREACIONES_FAQS} />
 
     <section class="gs-reveal border-t border-white/10 px-6 py-24 text-center md:px-12 md:py-40" aria-labelledby="creaciones-cta-heading">
       <span class="text-xs tracking-[0.14em] text-pink uppercase" data-i18n="creaciones.ctaEyebrow">¿Algo te ha inspirado?</span>

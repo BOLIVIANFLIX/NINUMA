@@ -4,8 +4,82 @@ import PresenciaHero from "../components/PresenciaHero.astro";
 import PresenciaSectores from "../components/PresenciaSectores.astro";
 import PresenciaDiferenciadores from "../components/PresenciaDiferenciadores.astro";
 import PresenciaProceso from "../components/PresenciaProceso.astro";
+import PresenciaFaq from "../components/PresenciaFaq.astro";
 import PresenciaServiciosCTA from "../components/PresenciaServiciosCTA.astro";
-import { serviceSchema, breadcrumbSchema } from "../lib/schema";
+import { serviceSchema, breadcrumbSchema, faqSchema } from "../lib/schema";
+
+const PRESENCIA_FAQS = [
+  {
+    question: "¿Cuánto cuesta un servicio de pastelería B2B con NINUMÁ?",
+    questionKey: "presenciaFaq.q1",
+    answer:
+      "No trabajamos con tarifario cerrado ni catálogo fijo de precios. Cada colaboración se presupuesta después de la primera conversación, según el tipo de espacio, el volumen y la frecuencia. Solicita una propuesta para recibir un presupuesto orientativo sin compromiso.",
+    answerKey: "presenciaFaq.a1",
+  },
+  {
+    question: "¿Cuál es el pedido mínimo para trabajar con NINUMÁ?",
+    questionKey: "presenciaFaq.q2",
+    answer:
+      "Depende del servicio. En regalo corporativo aceptamos pedidos desde una unidad. En amenities de hotel o carta de restaurante trabajamos por acuerdo continuado, no por pedido suelto. El volumen y la frecuencia se concretan en la propuesta específica de tu espacio.",
+    answerKey: "presenciaFaq.a2",
+  },
+  {
+    question: "¿El diseño que creáis para mi hotel es exclusivo?",
+    questionKey: "presenciaFaq.q3",
+    answer:
+      "Sí. La pieza que diseñamos para tu espacio es exclusiva vuestra: no repetimos ese mismo diseño con otro cliente. Eso no significa que trabajemos con un solo hotel por ciudad —podemos colaborar con varios espacios de Mallorca a la vez—, cada uno con su propuesta propia y distinta a la de los demás.",
+    answerKey: "presenciaFaq.a3",
+  },
+  {
+    question: "¿Puede NINUMÁ abastecer un hotel grande con entregas diarias?",
+    questionKey: "presenciaFaq.q4",
+    answer:
+      "Trabajamos con un número selecto de colaboraciones B2B activas a la vez —no aceptamos cualquier proyecto—, pero eso no significa producción pequeña: nos adaptamos al volumen y la frecuencia real que necesita tu espacio, desde una colaboración puntual hasta acompañarte durante una temporada completa. Antes de cualquier acuerdo hablamos de las cantidades concretas para confirmar que encaja.",
+    answerKey: "presenciaFaq.a4",
+  },
+  {
+    question: "¿Hacen entregas fuera de Palma de Mallorca?",
+    questionKey: "presenciaFaq.q5",
+    answer:
+      "Sí, cubrimos toda la isla de Mallorca. La logística y la frecuencia de entrega se acuerdan según ubicación y necesidades de tu espacio.",
+    answerKey: "presenciaFaq.a5",
+  },
+  {
+    question: "¿Se puede adaptar la pastelería a alergias o intolerancias?",
+    questionKey: "presenciaFaq.q6",
+    answer:
+      "Cada pieza nace de un encargo a medida, así que las restricciones alimentarias forman parte del briefing inicial. Coméntalo en la primera conversación y se tiene en cuenta desde el diseño de la pieza.",
+    answerKey: "presenciaFaq.a6",
+  },
+  {
+    question: "¿Con qué hoteles o restaurantes ha trabajado NINUMÁ?",
+    questionKey: "presenciaFaq.q7",
+    answer:
+      "Colaboramos, de forma puntual o durante temporadas completas, con hoteles, beach clubs y restaurantes de Mallorca —desde amenities de habitación hasta cartas de postre completas—. Por los acuerdos de exclusividad y discreción que mantenemos con nuestros clientes, no publicamos un listado abierto; cuéntanos tu espacio en la primera conversación y hablamos del encaje con casos concretos.",
+    answerKey: "presenciaFaq.a7",
+  },
+  {
+    question: "¿NINUMÁ cumple con la normativa sanitaria para suministro B2B?",
+    questionKey: "presenciaFaq.q8",
+    answer:
+      "Sí. Contamos con registro sanitario y número de actividad en regla para la elaboración y el suministro de pastelería a negocios.",
+    answerKey: "presenciaFaq.a8",
+  },
+  {
+    question: "¿Qué diferencia a NINUMÁ de otras pastelerías de autor en Mallorca?",
+    questionKey: "presenciaFaq.q9",
+    answer:
+      "La capacidad de partir de una idea, una película, un color o una emoción y convertirla en una pieza comestible, sin trabajar de catálogo. A eso se suma que cada diseño es exclusivo de quien lo encarga, doce años de oficio como pastelera detrás de cada pieza, y una mirada de diseño —formación en moda— aplicada a cada creación.",
+    answerKey: "presenciaFaq.a9",
+  },
+  {
+    question: "¿Cómo empezamos a trabajar juntos?",
+    questionKey: "presenciaFaq.q10",
+    answer:
+      "Primera conversación sin compromiso sobre tu espacio y tus necesidades, propuesta específica con tipos de pieza y presupuesto orientativo, prueba de producto antes de decidir, y acuerdo con producción regular si encaja.",
+    answerKey: "presenciaFaq.a10",
+  },
+];
 ---
 
 <Layout
@@ -14,6 +88,7 @@ import { serviceSchema, breadcrumbSchema } from "../lib/schema";
   path="/presencia/"
   schema={[
     serviceSchema(["Pastelería B2B", "Amenities gourmet", "Carta de postres", "Pastelería para eventos"]),
+    faqSchema(PRESENCIA_FAQS.map((f) => ({ question: f.question, answer: f.answer }))),
     breadcrumbSchema([{ name: "Inicio", item: "/" }, { name: "Presencia", item: "/presencia/" }]),
   ]}
 >
@@ -22,6 +97,7 @@ import { serviceSchema, breadcrumbSchema } from "../lib/schema";
     <PresenciaSectores />
     <PresenciaDiferenciadores />
     <PresenciaProceso />
+    <PresenciaFaq faqs={PRESENCIA_FAQS} />
     <PresenciaServiciosCTA />
   </main>
 </Layout>

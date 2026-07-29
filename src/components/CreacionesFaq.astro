@@ -1,0 +1,24 @@
+---
+import FaqLista from "./FaqLista.astro";
+
+interface Faq {
+  question: string;
+  questionKey: string;
+  answer: string;
+  answerKey: string;
+}
+
+interface Props {
+  faqs: Faq[];
+}
+
+const { faqs } = Astro.props;
+---
+
+<section id="faq-particulares" class="gs-reveal border-t border-white/10 bg-charcoal px-6 pt-24 md:px-12 md:pt-36" aria-labelledby="faq-particulares-heading">
+  <div class="mx-auto max-w-[900px]">
+    <span class="text-xs tracking-[0.14em] text-pink uppercase" data-i18n="creacionesFaq.eyebrow">Antes de encargar</span>
+    <h2 id="faq-particulares-heading" class="mt-4 h2-fluid" data-i18n="creacionesFaq.heading">Preguntas frecuentes.</h2>
+  </div>
+</section>
+<FaqLista faqs={faqs} />
