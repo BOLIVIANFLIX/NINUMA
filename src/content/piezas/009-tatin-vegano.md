@@ -1,6 +1,6 @@
 ---
 numero: "009"
-imagen: ../../assets/img/creaciones/006.jpg
+imagen: ../../assets/img/piezas-tienda/postre-tatin-vegano.jpg
 alt: "Tatín Vegano — postre NINUMÁ. Manzana caramelizada y hojaldre vegano"
 categoria: postres
 tipo: "Postre"
