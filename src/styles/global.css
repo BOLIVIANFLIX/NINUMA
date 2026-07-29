@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "The Skinny";
+  src: url("/assets/fonts/TheSkinny.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
   --color-black:      #080808;
   --color-charcoal:   #111111;
@@ -78,6 +86,10 @@ a {
 
 .font-display {
   font-family: var(--font-display);
+}
+
+.font-logotipo {
+  font-family: "The Skinny", var(--font-display);
 }
 
 /* Escala fluida para titulares de sección — crece con el viewport en vez
