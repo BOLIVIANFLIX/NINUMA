@@ -15,10 +15,21 @@ const { lang, class: className = "" } = Astro.props;
   aria-hidden="true"
 >
   {
-    (lang === "es" || lang === "ca") && (
+    lang === "es" && (
       <svg viewBox="0 0 3 2" preserveAspectRatio="none" class="h-full w-full">
         <rect width="3" height="2" fill="#AA151B" />
         <rect y="0.5" width="3" height="1" fill="#F1BF00" />
+      </svg>
+    )
+  }
+  {
+    lang === "ca" && (
+      <svg viewBox="0 0 9 6" preserveAspectRatio="none" class="h-full w-full">
+        <rect width="9" height="6" fill="#FCDD09" />
+        <rect y="0.667" width="9" height="0.667" fill="#DA121A" />
+        <rect y="2" width="9" height="0.667" fill="#DA121A" />
+        <rect y="3.333" width="9" height="0.667" fill="#DA121A" />
+        <rect y="4.667" width="9" height="0.667" fill="#DA121A" />
       </svg>
     )
   }
