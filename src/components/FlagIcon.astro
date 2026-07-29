@@ -1,0 +1,63 @@
+---
+import type { Lang } from "../lib/i18n";
+
+interface Props {
+  lang: Lang;
+  class?: string;
+}
+
+const { lang, class: className = "" } = Astro.props;
+---
+
+<span
+  class={`flag-icon inline-flex h-[0.8em] w-[1.15em] shrink-0 overflow-hidden rounded-[1.5px] ring-1 ring-white/25 ${className}`}
+  data-lang={lang}
+  aria-hidden="true"
+>
+  {
+    (lang === "es" || lang === "ca") && (
+      <svg viewBox="0 0 3 2" preserveAspectRatio="none" class="h-full w-full">
+        <rect width="3" height="2" fill="#AA151B" />
+        <rect y="0.5" width="3" height="1" fill="#F1BF00" />
+      </svg>
+    )
+  }
+  {
+    lang === "en" && (
+      <svg viewBox="0 0 60 36" preserveAspectRatio="none" class="h-full w-full">
+        <rect width="60" height="36" fill="#00247D" />
+        <path d="M0,0 60,36 M60,0 0,36" stroke="#fff" stroke-width="7.2" />
+        <path d="M0,0 60,36 M60,0 0,36" stroke="#CF142B" stroke-width="2.4" />
+        <path d="M30,0 30,36 M0,18 60,18" stroke="#fff" stroke-width="12" />
+        <path d="M30,0 30,36 M0,18 60,18" stroke="#CF142B" stroke-width="4" />
+      </svg>
+    )
+  }
+  {
+    lang === "ru" && (
+      <svg viewBox="0 0 3 2" preserveAspectRatio="none" class="h-full w-full">
+        <rect width="3" height="2" fill="#D52B1E" />
+        <rect width="3" height="1.333" fill="#0039A6" />
+        <rect width="3" height="0.667" fill="#fff" />
+      </svg>
+    )
+  }
+  {
+    lang === "de" && (
+      <svg viewBox="0 0 3 2" preserveAspectRatio="none" class="h-full w-full">
+        <rect width="3" height="2" fill="#FFCE00" />
+        <rect width="3" height="1.333" fill="#D00" />
+        <rect width="3" height="0.667" fill="#000" />
+      </svg>
+    )
+  }
+  {
+    lang === "fr" && (
+      <svg viewBox="0 0 3 2" preserveAspectRatio="none" class="h-full w-full">
+        <rect width="3" height="2" fill="#ED2939" />
+        <rect width="2" height="2" fill="#fff" />
+        <rect width="1" height="2" fill="#002395" />
+      </svg>
+    )
+  }
+</span>

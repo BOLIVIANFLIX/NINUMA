@@ -1,5 +1,6 @@
 ---
-import { LANGS, LANG_LABELS, LANG_FLAGS } from "../lib/i18n";
+import { LANGS, LANG_LABELS } from "../lib/i18n";
+import FlagIcon from "./FlagIcon.astro";
 
 interface Props {
   id: string;
@@ -17,7 +18,13 @@ const { id, class: className = "" } = Astro.props;
     aria-expanded="false"
     aria-controls={`lang-menu-${id}`}
   >
-    <span aria-hidden="true">🌐</span>
+    {
+      LANGS.map((l) => (
+        <span class={`lang-toggle-flag-wrap ${l === "es" ? "contents" : "hidden"}`} data-lang={l}>
+          <FlagIcon lang={l} />
+        </span>
+      ))
+    }
     <span class="lang-current">ES</span>
   </button>
   <ul
@@ -36,7 +43,7 @@ const { id, class: className = "" } = Astro.props;
             class="lang-option flex w-full items-center gap-2 px-4 py-2 text-left text-xs tracking-wide text-white/80 uppercase hover:bg-charcoal-2 hover:text-pink aria-[current=true]:text-pink"
             data-lang={l}
           >
-            <span aria-hidden="true">{LANG_FLAGS[l]}</span>
+            <FlagIcon lang={l} />
             {LANG_LABELS[l]}
           </button>
         </li>
@@ -52,11 +59,17 @@ const { id, class: className = "" } = Astro.props;
     const toggle = wrap.querySelector<HTMLButtonElement>(".lang-toggle");
     const menu = wrap.querySelector<HTMLUListElement>(".lang-menu");
     const currentLabel = wrap.querySelector<HTMLElement>(".lang-current");
+    const toggleFlagWraps = wrap.querySelectorAll<HTMLElement>(".lang-toggle-flag-wrap");
     const options = wrap.querySelectorAll<HTMLButtonElement>(".lang-option");
     if (!toggle || !menu || !currentLabel) return;
 
     function syncCurrent(lang: string) {
       currentLabel!.textContent = lang.toUpperCase();
+      toggleFlagWraps.forEach((f) => {
+        const isCurrent = f.dataset.lang === lang;
+        f.classList.toggle("hidden", !isCurrent);
+        f.classList.toggle("contents", isCurrent);
+      });
       options.forEach((o) => o.setAttribute("aria-current", String(o.dataset.lang === lang)));
     }
     syncCurrent(getSavedLang());

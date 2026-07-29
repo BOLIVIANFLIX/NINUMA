@@ -11,18 +11,6 @@ export const LANG_LABELS: Record<Lang, string> = {
   fr: "Français",
 };
 
-/** Català no tiene bandera propia con soporte de emoji fiable multiplataforma —
- * se usa la de España, como para el castellano, en vez de arriesgar un
- * carácter que no se renderiza en algunos sistemas. */
-export const LANG_FLAGS: Record<Lang, string> = {
-  es: "🇪🇸",
-  ca: "🇪🇸",
-  en: "🇬🇧",
-  ru: "🇷🇺",
-  de: "🇩🇪",
-  fr: "🇫🇷",
-};
-
 type Dict = Record<string, string>;
 
 const loaders: Record<Exclude<Lang, "es">, () => Promise<{ default: Dict }>> = {
