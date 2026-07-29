@@ -3,30 +3,74 @@ import type { EdicionActiva } from "../lib/edition";
 
 interface Props {
   edition: EdicionActiva;
+  plazasRestantes?: number | null;
 }
-const { edition: EDITION } = Astro.props;
+const { edition: EDITION, plazasRestantes = null } = Astro.props;
+const esCena = EDITION.formato === "cena";
+const agotadoCena = esCena && plazasRestantes !== null && plazasRestantes <= 0;
+const maxPorReserva = esCena ? Math.max(1, Math.min(6, plazasRestantes ?? 6)) : 10;
 ---
 
 <section id="comprar" class="gs-reveal border-t border-white/10 bg-black px-6 py-24 md:px-12 md:py-36" aria-labelledby="comprar-heading">
   <div class="mx-auto grid max-w-[1440px] gap-12 md:grid-cols-2 md:gap-20">
     <div class="flex flex-col gap-6">
       <div>
-        <span class="text-xs tracking-[0.14em] text-pink uppercase" data-i18n="ediciones.comprarEyebrow">Compra tu caja</span>
-        <h2 id="comprar-heading" class="mt-4 h2-fluid" data-i18n="ediciones.comprarHeading">Asegura<br />tu pieza.</h2>
+        <span class="text-xs tracking-[0.14em] text-pink uppercase" data-i18n={esCena ? "ediciones.reservarEyebrow" : "ediciones.comprarEyebrow"}>
+          {esCena ? "Reserva tu plaza" : "Compra tu caja"}
+        </span>
+        <h2 id="comprar-heading" class="mt-4 h2-fluid" data-i18n={esCena ? "ediciones.reservarHeading" : "ediciones.comprarHeading"}>
+          {esCena ? <Fragment set:html="Asegura<br />tu sitio." /> : <Fragment set:html="Asegura<br />tu pieza." />}
+        </h2>
       </div>
-      <p class="text-sm leading-relaxed text-white/60" data-i18n="ediciones.comprarIntro">
-        Elige el tamaño de caja, añádela al carrito y paga online. Las unidades se reservan por orden de compra.
+      <p class="text-sm leading-relaxed text-white/60" data-i18n={esCena ? "ediciones.reservarIntro" : "ediciones.comprarIntro"}>
+        {esCena
+          ? "Elige cuántas plazas quieres y paga online para confirmar tu reserva. Aforo de 25 personas, por riguroso orden de compra."
+          : "Elige el tamaño de caja, añádela al carrito y paga online. Las unidades se reservan por orden de compra."}
       </p>
-      <div class="border-l-2 border-pink bg-charcoal p-5">
-        <p class="text-xs leading-relaxed text-white/60" data-i18n="ediciones.reservaNota">
-          <strong class="font-medium text-pink">Sin envíos.</strong> La recogida es únicamente en el obrador. Guillem Massot, 48 · Palma de Mallorca.
-        </p>
-      </div>
+      {
+        esCena ? (
+          <div class="border-l-2 border-pink bg-charcoal p-5">
+            <p class="text-xs leading-relaxed text-white/60" data-i18n="ediciones.reservaCenaNota">
+              <strong class="font-medium text-pink">{EDITION.ubicacionEvento}</strong>
+              {EDITION.fechaEventoISO && (
+                <>
+                  <br />
+                  {new Date(EDITION.fechaEventoISO).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })}
+                  {EDITION.horaEvento ? ` · ${EDITION.horaEvento}` : ""}
+                </>
+              )}
+              {plazasRestantes !== null && (
+                <>
+                  <br />
+                  <strong class="font-medium text-pink">
+                    {plazasRestantes > 0 ? `Quedan ${plazasRestantes} de ${EDITION.aforoMaximo} plazas.` : "Aforo completo — no quedan plazas."}
+                  </strong>
+                </>
+              )}
+            </p>
+          </div>
+        ) : (
+          <div class="border-l-2 border-pink bg-charcoal p-5">
+            <p class="text-xs leading-relaxed text-white/60" data-i18n="ediciones.reservaNota">
+              <strong class="font-medium text-pink">Sin envíos.</strong> La recogida es únicamente en el obrador. Guillem Massot, 48 · Palma de Mallorca.
+            </p>
+          </div>
+        )
+      }
     </div>
 
     <div>
+      {agotadoCena ? (
+        <div class="py-8" tabindex="-1" aria-live="polite">
+          <h3 class="font-display text-xl text-pink" data-i18n="ediciones.cenaAgotadaHeading">Aforo completo.</h3>
+          <p class="mt-2 text-sm text-white/60" data-i18n="ediciones.cenaAgotadaText">
+            Las 25 plazas de esta cena ya están reservadas. Escríbenos a <a href="mailto:ariadna@ninuma.es" class="text-pink underline">ariadna@ninuma.es</a> si quieres que te avisemos de la próxima.
+          </p>
+        </div>
+      ) : (
+      <>
       <div id="edicion-selector" data-edicion-slug={EDITION.slug} data-edicion-nombre={EDITION.nombre} class="flex flex-col gap-5">
-        <div class="flex flex-col gap-1.5">
+        <div class={esCena ? "hidden" : "flex flex-col gap-1.5"}>
           <label class="text-xs tracking-wide text-white/60" for="e-caja" data-i18n="ediciones.labelUnidades">Tamaño de caja *</label>
           <select id="e-caja" class="border-b border-white/20 bg-transparent py-2 text-sm outline-none focus:border-pink">
             {
@@ -40,9 +84,11 @@ const { edition: EDITION } = Astro.props;
         </div>
 
         <div class="flex flex-col gap-1.5">
-          <label class="text-xs tracking-wide text-white/60" for="e-unidades" data-i18n="ediciones.labelCantidadCajas">Cuántas cajas *</label>
+          <label class="text-xs tracking-wide text-white/60" for="e-unidades" data-i18n={esCena ? "ediciones.labelCantidadPlazas" : "ediciones.labelCantidadCajas"}>
+            {esCena ? "Cuántas plazas *" : "Cuántas cajas *"}
+          </label>
           <select id="e-unidades" class="w-24 border-b border-white/20 bg-transparent py-2 text-sm outline-none focus:border-pink">
-            {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => <option value={n}>{n}</option>)}
+            {Array.from({ length: maxPorReserva }, (_, i) => i + 1).map((n) => <option value={n}>{n}</option>)}
           </select>
         </div>
 
@@ -82,6 +128,8 @@ const { edition: EDITION } = Astro.props;
           El período de compra para esta edición ha finalizado. Escríbenos a <a href="mailto:ariadna@ninuma.es" class="text-pink underline">ariadna@ninuma.es</a> si quieres que te avisemos de la próxima.
         </p>
       </div>
+      </>
+      )}
     </div>
   </div>
 </section>

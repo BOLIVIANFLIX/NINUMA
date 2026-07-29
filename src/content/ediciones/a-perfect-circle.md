@@ -1,5 +1,5 @@
 ---
-estado: activa
+estado: cerrada
 nombre: "A Perfect Circle"
 anio: "2026"
 orden: 100

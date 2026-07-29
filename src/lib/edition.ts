@@ -4,9 +4,12 @@ type EdicionData = CollectionEntry<"ediciones">["data"];
 export type EdicionActiva = Extract<EdicionData, { estado: "activa" }> & { slug: string };
 export type EdicionCerrada = Extract<EdicionData, { estado: "cerrada" }> & { slug: string };
 
-/** Solo puede haber una edición activa a la vez (la que acepta compra real,
- * ver crear-sesion-pago.ts) — si hay varias marcadas "activa" por error de
- * contenido, se usa la primera y las demás se ignoran silenciosamente. */
+/** Solo puede haber UNA edición activa a la vez, sea del formato que sea
+ * ("producto" = tirada de cajas, "cena" = evento de plazas limitadas) — si hay
+ * varias marcadas "activa" por error de contenido, se usa la primera y las
+ * demás se ignoran silenciosamente. Cambiar qué se promociona (un producto o
+ * una cena) es tan simple como poner "estado: cerrada" en la que se retira y
+ * "estado: activa" en la nueva — nunca se muestran dos a la vez. */
 export async function getActiveEdition(): Promise<EdicionActiva | null> {
   const entries = await getCollection("ediciones", (e) => e.data.estado === "activa");
   const entry = entries[0];

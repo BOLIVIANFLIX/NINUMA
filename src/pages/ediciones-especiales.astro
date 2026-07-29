@@ -1,7 +1,9 @@
 ---
+import { createClient } from "@supabase/supabase-js";
 import Layout from "../layouts/Layout.astro";
 import EdicionHeroActiva from "../components/EdicionHeroActiva.astro";
 import EdicionDetalle from "../components/EdicionDetalle.astro";
+import EdicionCenaMenu from "../components/EdicionCenaMenu.astro";
 import EdicionComoFunciona from "../components/EdicionComoFunciona.astro";
 import EdicionReservaForm from "../components/EdicionReservaForm.astro";
 import EdicionEstadoEspera from "../components/EdicionEstadoEspera.astro";
@@ -9,7 +11,34 @@ import EdicionArchivo from "../components/EdicionArchivo.astro";
 import { getActiveEdition } from "../lib/edition";
 import { breadcrumbSchema } from "../lib/schema";
 
+// Página dinámica (no prerenderizada) solo para poder calcular en cada visita
+// cuántas plazas quedan cuando la edición activa es una cena — el resto de la
+// web es estático.
+export const prerender = false;
+
 const EDITION = await getActiveEdition();
+const esCena = EDITION?.formato === "cena";
+
+async function plazasVendidas(edicionSlug: string, cajaId: string): Promise<number> {
+  const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
+  const serviceRoleKey = import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!supabaseUrl || !serviceRoleKey) return 0;
+
+  const admin = createClient(supabaseUrl, serviceRoleKey, { auth: { autoRefreshToken: false, persistSession: false } });
+  const { data, error } = await admin
+    .from("order_items")
+    .select("unidades, orders!inner(payment_status)")
+    .eq("referencia", `${edicionSlug}:${cajaId}`)
+    .eq("orders.payment_status", "pagado");
+
+  if (error || !data) return 0;
+  return data.reduce((sum, row) => sum + row.unidades, 0);
+}
+
+const plazasRestantes =
+  esCena && EDITION && EDITION.aforoMaximo
+    ? Math.max(0, EDITION.aforoMaximo - (await plazasVendidas(EDITION.slug, EDITION.cajas[0]?.id ?? "plaza")))
+    : null;
 ---
 
 <Layout
@@ -27,8 +56,9 @@ const EDITION = await getActiveEdition();
         <>
           <EdicionHeroActiva edition={EDITION} />
           <EdicionDetalle edition={EDITION} />
-          <EdicionComoFunciona />
-          <EdicionReservaForm edition={EDITION} />
+          {esCena && <EdicionCenaMenu edition={EDITION} />}
+          <EdicionComoFunciona cena={esCena} />
+          <EdicionReservaForm edition={EDITION} plazasRestantes={plazasRestantes} />
         </>
       ) : (
         <EdicionEstadoEspera />

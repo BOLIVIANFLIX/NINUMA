@@ -12,23 +12,42 @@ interface ItemParaGuardar {
   unidades: number;
 }
 
-async function construirLineasDesdeStripe(stripe: Stripe, sessionId: string): Promise<ItemParaGuardar[]> {
+interface DatosCena {
+  fechaEvento: string;
+  horaEvento: string;
+  ubicacionEvento: string;
+}
+
+async function construirLineasDesdeStripe(
+  stripe: Stripe,
+  sessionId: string
+): Promise<{ items: ItemParaGuardar[]; cena: DatosCena | null }> {
   const lineItems = await stripe.checkout.sessions.listLineItems(sessionId, {
     limit: 100,
     expand: ["data.price.product"],
   });
 
-  return lineItems.data.map((item) => {
+  let cena: DatosCena | null = null;
+
+  const items = lineItems.data.map((item) => {
     const product = item.price?.product;
-    const referencia =
-      product && typeof product === "object" && "metadata" in product ? (product.metadata.referencia ?? "desconocida") : "desconocida";
+    const metadata = product && typeof product === "object" && "metadata" in product ? product.metadata : undefined;
+    if (metadata?.formatoEdicion === "cena" && !cena) {
+      cena = {
+        fechaEvento: metadata.fechaEvento ?? "",
+        horaEvento: metadata.horaEvento ?? "",
+        ubicacionEvento: metadata.ubicacionEvento ?? "",
+      };
+    }
     return {
-      referencia,
+      referencia: metadata?.referencia ?? "desconocida",
       nombre: item.description ?? "Pieza",
       precio_unitario_cents: item.price?.unit_amount ?? 0,
       unidades: item.quantity ?? 1,
     };
   });
+
+  return { items, cena };
 }
 
 export const POST: APIRoute = async ({ request }) => {
@@ -74,8 +93,9 @@ export const POST: APIRoute = async ({ request }) => {
   const userId = session.metadata?.user_id || session.client_reference_id || null;
 
   let items: ItemParaGuardar[];
+  let cena: DatosCena | null;
   try {
-    items = await construirLineasDesdeStripe(stripe, session.id);
+    ({ items, cena } = await construirLineasDesdeStripe(stripe, session.id));
   } catch {
     return new Response("No se pudieron leer las líneas del pedido", { status: 500 });
   }
@@ -83,7 +103,10 @@ export const POST: APIRoute = async ({ request }) => {
   const eur = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" });
   const totalCents = session.amount_total ?? items.reduce((sum, i) => sum + i.precio_unitario_cents * i.unidades, 0);
   const lineasTexto = items.map((i) => `- ${i.unidades}× ${i.nombre} (${eur.format((i.precio_unitario_cents * i.unidades) / 100)})`);
-  const descripcion = `Pedido de ${kind === "tienda" ? "tienda online" : "edición especial"}:\n${lineasTexto.join("\n")}\nTotal: ${eur.format(totalCents / 100)}\nRecogida en el obrador.`;
+  const cierre = cena
+    ? `Reserva de cena — ${cena.fechaEvento ? new Date(cena.fechaEvento).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }) : "fecha por confirmar"}${cena.horaEvento ? ` a las ${cena.horaEvento}` : ""}.\n${cena.ubicacionEvento || ""}`
+    : "Recogida en el obrador.";
+  const descripcion = `Pedido de ${kind === "tienda" ? "tienda online" : cena ? "cena temática" : "edición especial"}:\n${lineasTexto.join("\n")}\nTotal: ${eur.format(totalCents / 100)}\n${cierre}`;
 
   const { data: order, error: orderError } = await admin
     .from("orders")
@@ -130,6 +153,7 @@ export const POST: APIRoute = async ({ request }) => {
       kind,
       items: itemsEmail,
       totalCents,
+      cena,
     });
   }
 
@@ -137,6 +161,7 @@ export const POST: APIRoute = async ({ request }) => {
     kind,
     items: itemsEmail,
     totalCents,
+    cena,
     clienteNombre: session.customer_details?.name ?? null,
     clienteEmail: session.customer_details?.email ?? null,
     clienteTelefono: session.customer_details?.phone ?? null,

@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import Stripe from "stripe";
+import { createClient } from "@supabase/supabase-js";
 import { getCollection } from "astro:content";
 import { getActiveEdition } from "../../lib/edition";
 
@@ -27,6 +28,14 @@ interface RevalidatedLine {
   nombre: string;
   precioUnitarioCents: number;
   unidades: number;
+  // Solo presentes para líneas de cena — el webhook (webhook-stripe.ts) los lee
+  // de vuelta desde los metadatos de Stripe para no tener que reconsultar la
+  // colección de contenido y para no escribir "recogida en el obrador" en la
+  // descripción/emails de una reserva de cena.
+  formatoEdicion?: "producto" | "cena";
+  fechaEvento?: string;
+  horaEvento?: string;
+  ubicacionEvento?: string;
 }
 
 function jsonError(message: string, status = 400): Response {
@@ -38,6 +47,27 @@ function jsonError(message: string, status = 400): Response {
 
 function esUnidadesValida(unidades: unknown): unidades is number {
   return typeof unidades === "number" && Number.isInteger(unidades) && unidades > 0 && unidades <= 12;
+}
+
+/** Unidades ya pagadas para una referencia de edición ("slug:cajaId") — usa la
+ * service role key porque hay que sumar entre TODOS los clientes, no solo el
+ * de la sesión actual (la RLS de order_items limita el anon key a "sus propios
+ * pedidos"). Solo se llama cuando la edición define aforoMaximo (hoy, cenas
+ * temáticas de plazas limitadas) — las tiradas de producto normales no lo usan. */
+async function unidadesYaVendidas(referencia: string): Promise<number> {
+  const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
+  const serviceRoleKey = import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!supabaseUrl || !serviceRoleKey) return 0;
+
+  const admin = createClient(supabaseUrl, serviceRoleKey, { auth: { autoRefreshToken: false, persistSession: false } });
+  const { data, error } = await admin
+    .from("order_items")
+    .select("unidades, orders!inner(payment_status)")
+    .eq("referencia", referencia)
+    .eq("orders.payment_status", "pagado");
+
+  if (error || !data) return 0;
+  return data.reduce((sum, row) => sum + row.unidades, 0);
 }
 
 export const POST: APIRoute = async ({ request }) => {
@@ -86,10 +116,6 @@ export const POST: APIRoute = async ({ request }) => {
   } else {
     const edicion = await getActiveEdition();
     if (!edicion) return jsonError("No hay ninguna edición especial activa ahora mismo.");
-    if (Date.now() >= new Date(edicion.fechaLimiteISO).getTime()) {
-      return jsonError("El período de compra para esta edición ha finalizado.");
-    }
-    const cajasPorId = new Map(edicion.cajas.map((c) => [c.id, c]));
 
     for (const raw of lineasEntrada as LineaEntrada[]) {
       if (
@@ -101,16 +127,38 @@ export const POST: APIRoute = async ({ request }) => {
       ) {
         return jsonError("Línea de pedido inválida.");
       }
-      if (raw.edicionSlug !== edicion.slug) {
-        return jsonError("Esta edición ya no está activa.");
+      if (raw.edicionSlug !== edicion.slug) return jsonError("Esta edición ya no está activa.");
+      if (Date.now() >= new Date(edicion.fechaLimiteISO).getTime()) {
+        return jsonError("El período de compra para esta edición ha finalizado.");
       }
-      const caja = cajasPorId.get(raw.cajaId);
+      const caja = edicion.cajas.find((c) => c.id === raw.cajaId);
       if (!caja) return jsonError("Ese tamaño de caja ya no está disponible.");
+
+      const referencia = `${edicion.slug}:${caja.id}`;
+
+      // Aforo limitado (cenas temáticas) — no aplica a las tiradas de producto
+      // normales, que no definen aforoMaximo.
+      if (edicion.aforoMaximo) {
+        const vendidas = await unidadesYaVendidas(referencia);
+        if (vendidas + raw.unidades > edicion.aforoMaximo) {
+          const quedan = Math.max(0, edicion.aforoMaximo - vendidas);
+          return jsonError(
+            quedan > 0
+              ? `Solo quedan ${quedan} plaza${quedan === 1 ? "" : "s"} disponible${quedan === 1 ? "" : "s"} para esta cena.`
+              : "Esta cena ya no tiene plazas disponibles."
+          );
+        }
+      }
+
       revalidadas.push({
-        referencia: `${edicion.slug}:${caja.id}`,
+        referencia,
         nombre: `${edicion.nombre} — ${caja.label}`,
         precioUnitarioCents: Math.round(caja.precio * 100),
         unidades: raw.unidades,
+        formatoEdicion: edicion.formato,
+        fechaEvento: edicion.fechaEventoISO,
+        horaEvento: edicion.horaEvento,
+        ubicacionEvento: edicion.ubicacionEvento,
       });
     }
   }
@@ -136,7 +184,12 @@ export const POST: APIRoute = async ({ request }) => {
           unit_amount: l.precioUnitarioCents,
           product_data: {
             name: l.nombre,
-            metadata: { referencia: l.referencia },
+            metadata: {
+              referencia: l.referencia,
+              ...(l.formatoEdicion === "cena"
+                ? { formatoEdicion: "cena", fechaEvento: l.fechaEvento ?? "", horaEvento: l.horaEvento ?? "", ubicacionEvento: l.ubicacionEvento ?? "" }
+                : {}),
+            },
           },
         },
       })),

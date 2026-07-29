@@ -6,11 +6,34 @@ export interface OrderEmailItem {
   precioUnitarioCents: number;
 }
 
+export interface DatosCenaEmail {
+  fechaEvento: string;
+  horaEvento: string;
+  ubicacionEvento: string;
+}
+
 export interface SendOrderConfirmationParams {
   to: string;
   kind: "tienda" | "edicion";
   items: OrderEmailItem[];
   totalCents: number;
+  cena?: DatosCenaEmail | null;
+}
+
+function bloqueEntrega(cena: DatosCenaEmail | null | undefined): string {
+  if (cena) {
+    const fecha = cena.fechaEvento
+      ? new Date(cena.fechaEvento).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })
+      : "Fecha por confirmar";
+    return `
+                      <strong style="color:#f0b4c4;">Tu plaza está reservada.</strong><br />
+                      ${escapeHtml(fecha)}${cena.horaEvento ? ` a las ${escapeHtml(cena.horaEvento)}` : ""}.<br />
+                      ${escapeHtml(cena.ubicacionEvento || "")}`;
+  }
+  return `
+                      <strong style="color:#f0b4c4;">Recogida en el obrador.</strong><br />
+                      Carrer de Guillem Massot, 48, 07003 Palma de Mallorca.<br />
+                      Lun–Jue 10:00–13:30 · Vie 10:30–13:30 · Sáb 10:00–13:30. Domingos cerrado.`;
 }
 
 const eur = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" });
@@ -20,7 +43,7 @@ function escapeHtml(text: string): string {
   return text.replace(/[&<>"']/g, (c) => map[c]);
 }
 
-function buildOrderConfirmationHtml({ kind, items, totalCents }: Omit<SendOrderConfirmationParams, "to">): string {
+function buildOrderConfirmationHtml({ kind, items, totalCents, cena }: Omit<SendOrderConfirmationParams, "to">): string {
   const logoUrl = `${import.meta.env.SITE_URL}/images/ninuma-logo-email.png`;
   const filas = items
     .map(
@@ -32,7 +55,7 @@ function buildOrderConfirmationHtml({ kind, items, totalCents }: Omit<SendOrderC
     )
     .join("");
 
-  const origenLabel = kind === "tienda" ? "tu pedido en la tienda online" : "tu compra en Ediciones Especiales";
+  const origenLabel = cena ? "tu reserva para la cena" : kind === "tienda" ? "tu pedido en la tienda online" : "tu compra en Ediciones Especiales";
 
   return `<!doctype html>
 <html lang="es">
@@ -70,10 +93,7 @@ function buildOrderConfirmationHtml({ kind, items, totalCents }: Omit<SendOrderC
               <td style="padding:32px 40px 40px 40px;">
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-left:2px solid #f0b4c4;background-color:#191919;">
                   <tr>
-                    <td style="padding:16px 20px;font-family:Arial,sans-serif;font-size:13px;line-height:1.7;color:#aaaaaa;">
-                      <strong style="color:#f0b4c4;">Recogida en el obrador.</strong><br />
-                      Carrer de Guillem Massot, 48, 07003 Palma de Mallorca.<br />
-                      Lun–Jue 10:00–13:30 · Vie 10:30–13:30 · Sáb 10:00–13:30. Domingos cerrado.
+                    <td style="padding:16px 20px;font-family:Arial,sans-serif;font-size:13px;line-height:1.7;color:#aaaaaa;">${bloqueEntrega(cena)}
                     </td>
                   </tr>
                 </table>
@@ -98,12 +118,13 @@ export interface SendOrderNotificationParams {
   kind: "tienda" | "edicion";
   items: OrderEmailItem[];
   totalCents: number;
+  cena?: DatosCenaEmail | null;
   clienteNombre: string | null;
   clienteEmail: string | null;
   clienteTelefono: string | null;
 }
 
-function buildOrderNotificationHtml({ kind, items, totalCents, clienteNombre, clienteEmail, clienteTelefono }: SendOrderNotificationParams): string {
+function buildOrderNotificationHtml({ kind, items, totalCents, cena, clienteNombre, clienteEmail, clienteTelefono }: SendOrderNotificationParams): string {
   const logoUrl = `${import.meta.env.SITE_URL}/images/ninuma-logo-email.png`;
   const filas = items
     .map(
@@ -115,7 +136,7 @@ function buildOrderNotificationHtml({ kind, items, totalCents, clienteNombre, cl
     )
     .join("");
 
-  const origenLabel = kind === "tienda" ? "Tienda online" : "Ediciones Especiales";
+  const origenLabel = cena ? "Cena temática" : kind === "tienda" ? "Tienda online" : "Ediciones Especiales";
 
   return `<!doctype html>
 <html lang="es">
@@ -132,7 +153,7 @@ function buildOrderNotificationHtml({ kind, items, totalCents, clienteNombre, cl
             <tr>
               <td style="padding:32px 40px 8px 40px;">
                 <p style="margin:0 0 4px 0;font-family:Arial,sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#f0b4c4;">Nuevo pedido — ${origenLabel}</p>
-                <h1 style="margin:0;font-family:Georgia,serif;font-size:26px;font-weight:400;color:#f5f5f5;">Te han hecho un pedido.</h1>
+                <h1 style="margin:0;font-family:Georgia,serif;font-size:26px;font-weight:400;color:#f5f5f5;">${cena ? "Te han reservado una plaza." : "Te han hecho un pedido."}</h1>
               </td>
             </tr>
             <tr>
@@ -263,7 +284,11 @@ export async function sendOrderNotificationEmail(params: SendOrderNotificationPa
   if (!apiKey || !from) return;
 
   const resend = new Resend(apiKey);
-  const subject = params.kind === "tienda" ? "Nuevo pedido en la tienda — NINUMÁ" : "Nueva compra en Ediciones Especiales — NINUMÁ";
+  const subject = params.cena
+    ? "Nueva plaza reservada — Cena NINUMÁ"
+    : params.kind === "tienda"
+      ? "Nuevo pedido en la tienda — NINUMÁ"
+      : "Nueva compra en Ediciones Especiales — NINUMÁ";
 
   try {
     await resend.emails.send({
@@ -287,7 +312,7 @@ export async function sendOrderConfirmationEmail(params: SendOrderConfirmationPa
   if (!apiKey || !from) return;
 
   const resend = new Resend(apiKey);
-  const subject = params.kind === "tienda" ? "Tu pedido en NINUMÁ" : "Tu compra en Ediciones Especiales NINUMÁ";
+  const subject = params.cena ? "Tu plaza reservada — Cena NINUMÁ" : params.kind === "tienda" ? "Tu pedido en NINUMÁ" : "Tu compra en Ediciones Especiales NINUMÁ";
 
   try {
     await resend.emails.send({

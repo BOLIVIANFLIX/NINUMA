@@ -1,9 +1,20 @@
 ---
-const pasos = [
-  { num: "01", title: "Reserva", text: "Rellena el formulario antes del cierre. El número de unidades es limitado y no se añaden más una vez agotadas.", key: "ediciones.paso1" },
-  { num: "02", title: "Confirmación", text: "Recibirás un correo confirmando tu reserva con todos los detalles de recogida.", key: "ediciones.paso2" },
-  { num: "03", title: "Recogida", text: "Solo en el obrador. El pago se realiza en el momento de la recogida. Sin envíos.", key: "ediciones.paso3" },
-];
+interface Props {
+  cena?: boolean;
+}
+const { cena = false } = Astro.props;
+
+const pasos = cena
+  ? [
+      { num: "01", title: "Reserva tu plaza", text: "Elige el número de plazas y paga online. El aforo es de 25 personas y se cierra al completarse.", key: "ediciones.cenaPaso1" },
+      { num: "02", title: "Confirmación", text: "Recibirás un correo confirmando tu plaza con la fecha, la hora y la dirección del obrador.", key: "ediciones.cenaPaso2" },
+      { num: "03", title: "La cena", text: "Cena de 8 platos con maridaje incluido, en el obrador. Aforo íntimo, experiencia irrepetible.", key: "ediciones.cenaPaso3" },
+    ]
+  : [
+      { num: "01", title: "Reserva", text: "Rellena el formulario antes del cierre. El número de unidades es limitado y no se añaden más una vez agotadas.", key: "ediciones.paso1" },
+      { num: "02", title: "Confirmación", text: "Recibirás un correo confirmando tu reserva con todos los detalles de recogida.", key: "ediciones.paso2" },
+      { num: "03", title: "Recogida", text: "Solo en el obrador. El pago se realiza en el momento de la recogida. Sin envíos.", key: "ediciones.paso3" },
+    ];
 ---
 
 <section class="border-t border-white/10 bg-charcoal px-6 py-24 md:px-12 md:py-36" aria-labelledby="como-heading">

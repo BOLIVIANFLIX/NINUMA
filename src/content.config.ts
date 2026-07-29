@@ -57,11 +57,23 @@ const especificacionSchema = z.object({
 });
 
 const cajaSchema = z.object({
-  id: z.string(), // "caja-3", "caja-6", "caja-12"...
+  id: z.string(), // "caja-3", "caja-6", "caja-12"... o "plaza" para una cena.
   label: z.string(),
   labelKey: z.string(),
   unidades: z.number().int().positive(),
   precio: z.number().positive(), // EUR, IVA incluido
+});
+
+// Un plato del menú de una cena temática (ver formato "cena" más abajo) — cada
+// plato lleva el nombre del curso (Cóctel, Entrante...) y la reina/figura en la
+// que se inspira, siguiendo el formato del cartel promocional.
+const platoMenuSchema = z.object({
+  curso: z.string(),
+  cursoKey: z.string(),
+  nombre: z.string(),
+  nombreKey: z.string(),
+  descriptor: z.string(),
+  descriptorKey: z.string(),
 });
 
 const edicionCamposComunes = {
@@ -71,6 +83,28 @@ const edicionCamposComunes = {
   alt: z.string(),
   meta: z.string(),
   metaKey: z.string(),
+
+  // "producto" (por defecto) = tirada de bombones/tartas que se compran por caja,
+  // el modelo original de esta colección. "cena" = evento gastronómico de aforo
+  // limitado en el local — reutiliza exactamente el mismo mecanismo de `cajas` y
+  // de compra (una sola "caja" que representa 1 plaza), pero además necesita
+  // aforo/fecha/menú y un control de plazas vendidas que no existía antes (ver
+  // aforoMaximo más abajo y la comprobación en crear-sesion-pago.ts). Así se
+  // puede pasar de vender un producto a vender entradas para una cena sin
+  // reescribir la lógica de carrito/pago existente.
+  formato: z.enum(["producto", "cena"]).default("producto"),
+};
+
+// Campos exclusivos de formato "cena" — todos opcionales a nivel de Zod porque
+// Zod no puede condicionar un discriminated union por un campo que no es el
+// discriminante ("estado" ya cumple ese papel); quien los usa (EdicionReservaForm,
+// crear-sesion-pago.ts) comprueba `formato === "cena"` a mano antes de leerlos.
+const camposCena = {
+  aforoMaximo: z.number().int().positive().optional(),
+  fechaEventoISO: z.string().optional(),
+  horaEvento: z.string().optional(),
+  ubicacionEvento: z.string().optional(),
+  menu: z.array(platoMenuSchema).default([]),
 };
 
 const ediciones = defineCollection({
@@ -85,6 +119,7 @@ const ediciones = defineCollection({
       z.object({
         estado: z.literal("cerrada"),
         ...edicionCamposComunes,
+        ...camposCena,
         imagen: image().optional(),
         descripcion: z.string().optional(),
         descripcionKey: z.string().optional(),
@@ -96,6 +131,7 @@ const ediciones = defineCollection({
       z.object({
         estado: z.literal("activa"),
         ...edicionCamposComunes,
+        ...camposCena,
         imagen: image(),
         plazoLabel: z.string(),
         plazoLabelKey: z.string(),
